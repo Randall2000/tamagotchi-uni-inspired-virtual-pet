@@ -33,7 +33,7 @@
 
 | ID | 等級 | 前置 | 步驟 | 預期結果 | 方式 | 狀態 |
 |---|---|---|---|---|---|---|
-| WEB-DEPLOY-01 | 🔴 | 已推上 `main` 超過 2 分鐘 | 開驗收網址 → 選單 → 設定，看版本；比對 GitHub 最新 commit | 設定頁顯示的版本 = `package.json` 版本；線上 `app.js` 與 GitHub `main` 一致 | 手動 | NOT RUN（v0.8.2 重測） |
+| WEB-DEPLOY-01 | 🔴 | 已推上 `main` 超過 2 分鐘 | 開驗收網址 → 選單 → 設定，看版本；比對 GitHub 最新 commit | 設定頁顯示的版本 = `package.json` 版本；線上 `app.js` 與 GitHub `main` 一致 | 手動 | PASS（`39e35da` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-DEPLOY-02 | 🔴 | — | 推上 `main` | GitHub Actions「Verify pet MVP」綠燈 | 自動（CI） | PASS（`4498b03`） |
 | WEB-DEPLOY-03 | 🔴 | 本機 `npm run serve` | 要求 `/.env.local`、`/.git/config` | 都回 404，只提供網頁本身與圖檔 | 自動：`local server never exposes secrets…` | PASS（`4498b03`） |
 
@@ -50,10 +50,10 @@
 | WEB-INPUT-01 | 🔴 | 任一畫面 | 用滑鼠或手指點螢幕上的圖示、選單 | 完全沒反應；只有下方 A/B/C 按鈕與鍵盤有效 | 自動：`screen is explicitly non-touch…`、`device screen contains no clickable buttons…` | PASS（`4498b03`） |
 | WEB-INPUT-02 | 🔴 | 房間 | 鍵盤分別按 A/B/C 與 J/K/L | 兩組按鍵效果相同；其他按鍵不觸發任何照顧 | 自動：`invalid keys never trigger…`＋手動 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-INPUT-03 | 🔴 | 房間 | 同一顆鍵 0.1 秒內按兩下；A 後 0.06 秒按 B；按住鍵盤 A 不放 | 同鍵只算一次；**A 與 B 都有反應**（B-INPUT-02）；按住不會連續輪選 | 自動：`debounce only swallows a repeat…`＋手動 | PASS（`962d92a` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
-| WEB-UI-01 | 🔴 | — | 視窗寬 320、375、768、1440 各看一次 | 沒有左右捲軸；電子機完整在畫面內；手機寬度時蛋形外殼左右貼齊畫面、各留約 6px；A/B/C 點按位置對準粉紅按鈕（B-UI-03） | 手動截圖 | NOT RUN（v0.8.2 重測） |
+| WEB-UI-01 | 🔴 | — | 視窗寬 320、375、768、1440 各看一次 | 沒有左右捲軸；電子機完整在畫面內；手機寬度時蛋形外殼左右貼齊畫面、各留約 6px；A/B/C 點按位置對準粉紅按鈕（B-UI-03） | 手動截圖 | PASS（`39e35da` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-UI-03 | 🔴 | 房間、選單、設定、狀態頁 | 各截一張圖 | 選單項目、標題列、狀態列、提示列、計數、數值條都是直角缺角的像素框與硬邊色塊；選中項目有像素箭頭；畫面內沒有圓角或漸層（B-UI-01） | 手動截圖 | PASS（`5a3a039` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-UI-04 | 🔴 | 舊存檔名字為 MOMO | 載入 | 標題、上方名稱、狀態頁、長大畫面都顯示 didi；存檔名字改為 didi（B-UI-02） | 自動＋手動 | PASS（`5a3a039` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
-| WEB-UI-05 | 🔴 | 任一寬度 | 看電子機以外的區域 | 沒有任何文字（標題、說明、頁尾都不顯示）；操作說明只留給讀螢幕軟體（B-UI-03） | 自動：`nothing but the device is visible…`＋手動 | NOT RUN（v0.8.2 重測） |
+| WEB-UI-05 | 🔴 | 任一寬度 | 看電子機以外的區域 | 沒有任何文字（標題、說明、頁尾都不顯示）；操作說明只留給讀螢幕軟體（B-UI-03） | 自動：`nothing but the device is visible…`＋手動 | PASS（`39e35da` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-UI-02 | 🟡 | 房間 | 觀察提示文字與角色 | 提示列在房間和底列之間，不蓋住角色 | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
 ### 2.3 照顧
@@ -132,9 +132,9 @@
 
 | 項目 | 數量 |
 |---|---|
-| 總數 | 47 |
-| PASS | 46 |
+| 總數 | 48 |
+| PASS | 47 |
 | NOT RUN | 1（WEB-ANIM-05 需人眼觀看） |
 | FAIL | 0 |
 
-**Web v0.8.1**（2026-11-05，commit `962d92a`）：47 項中 46 項 PASS、0 件 FAIL；WEB-ANIM-05 需要人眼看動畫，請驗收者補做。
+**Web v0.8.2**（2026-11-05，commit `39e35da`）：48 項中 47 項 PASS、0 件 FAIL；WEB-ANIM-05 需要人眼看動畫，請驗收者補做。
