@@ -4,6 +4,8 @@
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
+> **現行版本 v0.6**，變更見 [docs/RELEASE_0.6.md](docs/RELEASE_0.6.md)。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+
 ## 網頁原型 v0.5：使用 4×4 Sprite Atlas 逐格角色動畫
 
 - 240×240 全彩寵物畫面，**螢幕下緣固定六個不可點擊、僅供顯示選取狀態的功能圖示**：餵食、玩耍、清潔、睡覺／喚醒、狀態、選單。透過 A 移動選取，B 執行功能。一般照顧無須開主選單。
@@ -29,7 +31,7 @@
 - motion.js：固定四列十六格的影格時間軸與 atlas 坐標，獨立於遊戲數值。
 - pet.js：目前 Web prototype 的暫時養成數值。
 - firmware/：硬體無關的 Rust game-core、game-app、platform-api 骨架，尚非韌體映像。
-- docs/：PRD v1.1 與 QA 驗收計畫。
+- docs/：[PRD.md](docs/PRD.md) 產品規則、[BALANCE.md](docs/BALANCE.md) 所有數值、[ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md) Web 驗收清單、[ACCEPTANCE_MAC_HW.md](docs/ACCEPTANCE_MAC_HW.md) Mac／實機驗收；舊版 v1.1 在 docs/archive/（不要用來驗收）。
 - .github/workflows/ci.yml：Node 回歸測試與 Web 原型壓縮包。
 
 ## 本機執行
@@ -57,4 +59,4 @@ Vercel 已連結 GitHub `main`：推上 `main` 就會自動重新部署 Preview�
 - Mac 本機 headless Chrome UI smoke test：底部六項功能輪選、螢幕滑鼠／觸控無效、外部 A/B/C、逐格餵食／玩耍／清潔、睡眠與喚醒及瀏覽器執行錯誤檢查均通過。Playwright 在影格切換前後比較角色定位矩形，確認固定座標且沒有 CSS transform。
 - 這些證據不等同 PRD M3 的所有 P0 驗收均完成。
 
-以 PRD v1.1 的功能與驗收項目作為後續開發依據。
+驗收 Web 版請照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)；數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準。

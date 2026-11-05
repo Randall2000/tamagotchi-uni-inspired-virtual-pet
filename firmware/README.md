@@ -1,6 +1,6 @@
 # Firmware workspace
 
-This Rust workspace starts the hardware-independent core described in PRD v1.1.
+This Rust workspace starts the hardware-independent core described in the PRD.
 It is a development scaffold, not a flashable ESP32 firmware image.
 
 ## Crates
@@ -9,10 +9,10 @@ It is a development scaffold, not a flashable ESP32 firmware image.
 - `game-app`: A/B/C menu state machine that turns physical or simulated keys into core commands.
 - `platform-api`: replaceable input, clock, random, storage, display, and audio interfaces. ESP32-C6/S3 and Mac implementations are future adapters.
 
-Requirements source: [`../docs/PRD_Uni_Inspired_Virtual_Pet_v1.1.md`](../docs/PRD_Uni_Inspired_Virtual_Pet_v1.1.md) and [`../docs/QA_Acceptance_Test_Plan_v1.1.md`](../docs/QA_Acceptance_Test_Plan_v1.1.md).
+Requirements source: [`../docs/PRD.md`](../docs/PRD.md), numbers in [`../docs/BALANCE.md`](../docs/BALANCE.md), acceptance in [`../docs/ACCEPTANCE_MAC_HW.md`](../docs/ACCEPTANCE_MAC_HW.md).
 
 ## Current boundary
 
-The web demo remains a separate JavaScript application. These crates establish a portable firmware core; they do not yet synchronize browser saves or implement the Mac simulator, button debouncing, persistence encoding, graphics, or a board target. Hardware remains undecided in PRD v1.1.
+The web demo remains a separate JavaScript application. These crates establish a portable firmware core; they do not yet synchronize browser saves or implement the Mac simulator, button debouncing, persistence encoding, graphics, or a board target. Hardware remains undecided in the PRD (D-01).
 
 `game-core` keeps bond outside decaying needs. Successful care commands raise bond, and crossing 10/30 points advances Child → Growing → Adult permanently; Rest, status checks, and rejected actions do not raise bond. These thresholds and action gains mirror the current Web MVP and remain balance configuration candidates.
