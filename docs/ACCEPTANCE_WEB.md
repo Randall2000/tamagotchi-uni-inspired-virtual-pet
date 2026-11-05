@@ -95,6 +95,8 @@
 |---|---|---|---|---|---|---|
 | WEB-ANIM-01 | 🔴 | — | 檢查圖集 | 幼年、成年各 64 格透明 PNG（B-ANIM-09） | 自動：`both ages have a complete…` | PASS（`4498b03`） |
 | WEB-ANIM-02 | 🔴 | — | 檢查每個主要動作 | 8 個不同姿勢，總長 4–6 秒 | 自動：`every main action has eight distinct poses…` | PASS（`4498b03`） |
+| WEB-ANIM-04 | 🔴 | — | 量測每個動作相鄰兩格整隻貓的位移（`node scripts/sprite-align.mjs`） | 幼年、成年所有動作的相鄰影格位移都 ≤1px；程式對每格套用同一個定位，不逐格推動角色（B-ANIM-12） | 自動：`the whole cat moves at most 1px…`、`registration is one fixed offset…` | NOT RUN（v0.7 重測） |
+| WEB-ANIM-05 | 🔴 | 幼年、成年各一次 | 依序播放正餐、清潔、毛線球、休息、陪伴、伸懶腰、看窗外，盯著腳底與身體 | 腳底不上下跳、身體不左右滑；只有頭、爪子、尾巴在動 | 手動（錄影） | NOT RUN |
 | WEB-ANIM-03 | 🔴 | 同一成長階段 | 播放任一動作，比對動作前後角色外框 | 位置與尺寸誤差 ≤1px；不旋轉、不縮放；尺寸只在長大時改變（B-ANIM-10） | 自動：`character scale depends only on growth…`＋手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
 ## 3. 不在 Web 驗收範圍

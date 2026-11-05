@@ -10,7 +10,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
       - run: npm test
-      - run: tar -czf tamagotchi-uni-inspired-virtual-pet-${{ github.sha }}.tar.gz index.html app.js motion.js navigation.js pet.js styles.css server.mjs package.json README.md public/assets tests
+      - run: tar -czf tamagotchi-uni-inspired-virtual-pet-${{ github.sha }}.tar.gz index.html app.js motion.js navigation.js pet.js styles.css server.mjs package.json README.md public/assets scripts tests
       - uses: actions/upload-artifact@v4
         with:
           name: tamagotchi-web-mvp
