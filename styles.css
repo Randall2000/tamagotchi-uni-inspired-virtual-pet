@@ -358,3 +358,89 @@ h1 { font-family: ui-monospace, "PingFang TC", monospace; font-weight: 900; lett
 .controls button { border: 3px solid #49372a; box-shadow: inset 2px 2px 0 #eaa17a, 0 4px 0 #49372a; }
 .controls button:active, .controls button.is-pressed { transform: translateY(2px); box-shadow: inset 2px 2px 0 #975b3d, 0 2px 0 #49372a; }
 .device-model, .speaker { color: #654a2c; }
+
+/* Egg shaped shell inspired by the user's reference device. */
+.device {
+  position: relative;
+  margin-top: 34px;
+  padding: 40px 18px 18px;
+  overflow: visible;
+  border: 4px solid #8c3029;
+  border-radius: 48% 48% 45% 45% / 20% 20% 24% 24%;
+  background-color: #fff0bd;
+  background-image:
+    radial-gradient(circle at 17% 39%, #62afd0 0 3px, transparent 4px),
+    radial-gradient(circle at 82% 45%, #ee8bb4 0 3px, transparent 4px),
+    radial-gradient(circle at 22% 68%, #ee8bb4 0 4px, transparent 5px),
+    radial-gradient(circle at 78% 72%, #62afd0 0 3px, transparent 4px),
+    radial-gradient(circle at 30% 28%, #62afd0 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 30%, #ee8bb4 0 2px, transparent 3px);
+  box-shadow: inset 6px 7px 0 #fff9df, inset -5px -7px 0 #f1ce83, 0 7px 0 #70413a;
+}
+.device-antenna {
+  position: absolute;
+  z-index: 2;
+  width: 76px;
+  height: 54px;
+  left: 50%;
+  top: -48px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent 44%, #8c3029 44% 56%, transparent 56%);
+}
+.device-antenna b {
+  position: absolute;
+  left: 29px;
+  bottom: 0;
+  width: 18px;
+  height: 26px;
+  border: 4px solid #8c3029;
+  border-radius: 10px 10px 5px 5px;
+  background: #f18eb6;
+}
+.device-antenna i {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 4px solid #8c3029;
+  border-radius: 50%;
+  background: #ffe78c;
+  top: 0;
+}
+.device-antenna i:nth-child(1) { left: 0; }
+.device-antenna i:nth-child(2) { left: 18px; top: 15px; width: 14px; height: 14px; }
+.device-antenna i:nth-child(3) { right: 18px; top: 15px; width: 14px; height: 14px; }
+.device-antenna i:nth-child(4) { right: 0; }
+.brand { margin: 0 0 17px; color: #549fbe; font-weight: 1000; text-shadow: 1px 2px 0 #fff; }
+.brand span { color: #df658d; }
+.bezel {
+  position: relative;
+  z-index: 0;
+  width: 264px;
+  padding: 11px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.bezel::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -2px -8px;
+  background: #65b2d1;
+  clip-path: polygon(7% 9%, 25% 11%, 42% 0, 60% 8%, 76% 2%, 94% 13%, 92% 35%, 100% 50%, 93% 68%, 97% 90%, 75% 96%, 58% 100%, 40% 94%, 21% 100%, 6% 89%, 9% 69%, 0 51%, 8% 33%);
+}
+.screen { outline: 4px solid #8c3029; outline-offset: -4px; border-radius: 0; }
+.controls button {
+  border-color: #8c3029;
+  background: #ee91b5;
+  box-shadow: inset 2px 2px 0 #ffd6e3, 0 4px 0 #8c3029;
+}
+.controls button:active, .controls button.is-pressed {
+  box-shadow: inset 2px 2px 0 #d96b98, 0 2px 0 #8c3029;
+}
+.controls > div:nth-child(2) { padding-top: 10px; }
+.controls > div:nth-child(2) button { margin-top: 10px; }
+@media (max-width: 350px) {
+  .device { padding-left: 10px; padding-right: 10px; }
+}
