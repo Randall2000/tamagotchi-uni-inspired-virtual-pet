@@ -5,6 +5,15 @@ const $ = (id) => document.getElementById(id);
 let pet = hydratePet(JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'));
 let lastActionAt = Date.now();
 let currentPose = 'idle';
+let menuOpen = false;
+let selectedAction = 0;
+const actions = [
+  { id: 'feed', title: 'FEED', place: '食碗' },
+  { id: 'play', title: 'PLAY', place: '毛線球' },
+  { id: 'rest', title: 'REST', place: '床' },
+  { id: 'pet', title: 'PET', place: '摸摸 MOMO' },
+  { id: 'window', title: 'LOOK', place: '看看窗外' },
+];
 const poses = {
   idle: '/public/assets/momo-cat-pixel.png',
   eat: '/public/assets/momo-eat.png',
@@ -24,6 +33,15 @@ function render() {
   $('hunger-value').textContent = pet.hunger; $('joy-value').textContent = pet.happiness; $('coins').textContent = pet.coins;
   $('mood-label').textContent = mood.label; $('mood-face').textContent = mood.face; $('pet-age').textContent = `DAY ${String(pet.age).padStart(2, '0')}`;
   $('pet-sprite').src = poses[currentPose];
+  renderMenu();
+}
+function renderMenu() {
+  const panel = $('device-menu');
+  const selected = actions[selectedAction];
+  panel.classList.toggle('is-open', menuOpen);
+  panel.querySelector('.menu-state').textContent = menuOpen ? `ACTION ${selectedAction + 1}/05` : 'READY';
+  $('menu-display').textContent = menuOpen ? `${selected.title}  ·  ${selected.place}` : 'A 開啟行動選單';
+  $('menu-hint').textContent = menuOpen ? 'A 下一項 · B 確認 · C 返回' : 'B 選擇 · C 返回待機';
 }
 function pose(name) {
   currentPose = name;
@@ -34,22 +52,35 @@ function pose(name) {
   sprite.src = poses[name];
 }
 function act(action) {
-  pet = applyAction(pet, action); lastActionAt = Date.now(); save(); render();
-  const copy = { feed: 'MOMO 吃飽了一點。', play: 'MOMO 開心得轉圈圈。', rest: 'MOMO 進入柔軟休息時間。' };
-  pose({ feed: 'eat', play: 'play', rest: 'sleep' }[action] || 'idle');
+  if (['feed', 'play', 'rest'].includes(action)) pet = applyAction(pet, action);
+  else pet.happiness = clamp(pet.happiness + (action === 'window' ? 4 : 8));
+  lastActionAt = Date.now(); save();
+  pose({ feed: 'eat', play: 'play', rest: 'sleep', pet: 'happy', window: 'happy' }[action]);
+  const copy = {
+    feed: 'MOMO 吃飽了一點。', play: 'MOMO 開心得玩起毛線球。', rest: 'MOMO 在小床上休息。',
+    pet: 'MOMO 開心地蹭蹭你的手。', window: 'MOMO 靠著窗邊看外面。',
+  };
   $('helper').textContent = copy[action]; $('helper').classList.remove('flash'); requestAnimationFrame(() => $('helper').classList.add('flash'));
+  render();
 }
-function interactRoom(object) {
-  const actions = { bed: 'rest', bowl: 'feed', toy: 'play' };
-  if (actions[object]) { act(actions[object]); return; }
-  pet.happiness = clamp(pet.happiness + (object === 'window' ? 4 : 8));
-  lastActionAt = Date.now(); save(); render(); pose('happy');
-  $('helper').textContent = object === 'window' ? 'MOMO 在窗邊看了一下外面。' : 'MOMO 開心地蹭蹭你的手。';
-  $('helper').classList.remove('flash'); requestAnimationFrame(() => $('helper').classList.add('flash'));
+function control(key) {
+  if (key === 'a') {
+    if (!menuOpen) menuOpen = true;
+    else selectedAction = (selectedAction + 1) % actions.length;
+    renderMenu(); return;
+  }
+  if (key === 'b') {
+    if (!menuOpen) { $('helper').textContent = '先按 A 開啟行動選單。'; return; }
+    const action = actions[selectedAction].id;
+    menuOpen = false; renderMenu(); act(action); return;
+  }
+  if (key === 'c') {
+    menuOpen = false; renderMenu();
+    $('helper').textContent = 'MOMO 正在房間裡陪著你。';
+  }
 }
-document.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => act(button.dataset.action)));
-document.querySelectorAll('[data-room-action]').forEach((button) => button.addEventListener('click', () => interactRoom(button.dataset.roomAction)));
-document.addEventListener('keydown', (event) => { const map = { a: 'feed', b: 'play', c: 'rest' }; if (map[event.key.toLowerCase()]) act(map[event.key.toLowerCase()]); });
+document.querySelectorAll('[data-control]').forEach((button) => button.addEventListener('click', () => control(button.dataset.control)));
+document.addEventListener('keydown', (event) => { const key = event.key.toLowerCase(); if (['a', 'b', 'c'].includes(key)) control(key); });
 $('reset').addEventListener('click', () => { if (confirm('要把 MOMO 的存檔重置嗎？')) { pet = createInitialPet(); save(); render(); $('helper').textContent = '新的旅程開始了。'; } });
 setInterval(() => { const now = Date.now(); const minutes = Math.floor((now - lastActionAt) / 60000); if (minutes > 0) { pet = tick(pet, minutes); lastActionAt = now; save(); render(); } $('clock').textContent = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }); }, 1000);
 render();
