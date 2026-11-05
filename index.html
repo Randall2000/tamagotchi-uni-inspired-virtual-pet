@@ -1,30 +1,19 @@
 <!doctype html>
 <html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f5c46d" />
-    <title>塔麻過幾 · Pocket Pet</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
-  <body>
-    <main class="app-shell">
-      <header class="topbar"><div><span class="eyebrow">POCKET PET / 01</span><h1>塔麻過幾 <em>PLAY LAB</em></h1></div><div class="top-meta"><span id="clock">--:--</span><span class="save-dot" aria-label="已儲存"></span></div></header>
-      <section class="stage" aria-label="寵物畫面">
-        <div class="stage-top"><span><b id="pet-age">DAY 01</b><i>·</i> MOMO'S ROOM</span><span>240 × 240 COLOR</span></div>
-        <div class="scene" id="room-scene" aria-label="MOMO 的像素風房間場景">
-          <img class="room-art" src="/public/assets/momo-room.png" alt="像素風房間，有床、食碗、毛線球、窗戶與盆栽" />
-          <div class="pet-shadow"></div><img id="pet-sprite" class="pixel-pet" src="/public/assets/momo-cat-pixel.png" alt="MOMO：黑白花色、黃綠眼睛的像素貓" />
-          <div class="mood-bubble" id="mood-face">✦</div>
-        </div>
-        <div class="status-row"><div><span class="status-label">HUNGER</span><div class="meter"><i id="hunger-meter"></i></div></div><strong id="hunger-value">78</strong><div><span class="status-label">JOY</span><div class="meter"><i id="joy-meter"></i></div></div><strong id="joy-value">72</strong></div>
-        <div class="device-menu" id="device-menu" aria-live="polite"><span class="menu-state">READY</span><strong id="menu-display">A 開啟行動選單</strong><small id="menu-hint">B 選擇 · C 返回</small></div>
-      </section>
-      <section class="info-line"><div class="mood-lockup"><span class="eyebrow">CURRENT MOOD</span><div><span class="mood-dot"></span><strong id="mood-label">GLOWING</strong></div></div><div class="coins"><span>◈</span><strong id="coins">12</strong><small>COINS</small></div></section>
-      <section class="controls" aria-label="電子雞三鍵操作"><button data-control="a"><span class="key">A</span><span><b>MENU / NEXT</b><small>開啟／瀏覽行動</small></span></button><button data-control="b"><span class="key">B</span><span><b>SELECT</b><small>確認行動</small></span></button><button data-control="c"><span class="key">C</span><span><b>BACK</b><small>返回待機</small></span></button></section>
-      <p class="helper" id="helper">用 A/B/C 按鍵選行動；房間是場景，不需點擊。</p>
-      <footer><span>v0.1 MVP · cloud-ready</span><button id="reset" class="text-button">重置存檔</button></footer>
-    </main>
-    <script type="module" src="/app.js"></script>
-  </body>
-</html>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#eee7dc"><title>MOMO · 口袋電子寵物</title><link rel="stylesheet" href="/styles.css"></head>
+<body><main class="app-shell">
+<header><span class="eyebrow">POCKET COMPANION</span><h1>和 MOMO 的小日子</h1><p>三顆按鍵，一起慢慢生活。</p></header>
+<section class="device" aria-label="MOMO 電子寵物">
+<div class="brand">MOMO <span>•</span> POCKET PET</div>
+<div class="bezel"><div class="screen" id="screen">
+<div class="screen-top"><span id="pet-age">第 1 天</span><span id="clock">--:--</span><span class="save-dot" aria-label="存檔狀態"></span></div>
+<div class="scene" id="room-scene"><img class="room-art" src="/public/assets/momo-room.png" alt="MOMO 的像素房間"><img id="pet-sprite" class="pixel-pet" src="/public/assets/momo-cat-pixel.png" alt="MOMO 坐著待機"><div id="pet-atlas" role="img" hidden></div><span id="pose-caption">陪著你</span></div>
+<div id="device-menu" hidden><div class="menu-heading"><strong id="menu-title"></strong><span id="menu-count"></span></div><ul id="menu-items" aria-label="按 A 選擇，B 確認"></ul><div id="detail-content"></div><div class="screen-hint">A 選擇　B 確認　C 返回</div></div>
+<div class="screen-bottom" id="screen-message" role="status" aria-live="polite">A 選單 · B 選單</div>
+</div></div>
+<div class="device-model">COLOR · 240</div>
+<section class="controls" aria-label="電子雞三鍵操作"><div><button type="button" data-control="a" aria-label="A 選擇下一項">A</button><span>選擇</span></div><div><button type="button" data-control="b" aria-label="B 確認">B</button><span>確認</span></div><div><button type="button" data-control="c" aria-label="C 返回">C</button><span>返回</span></div></section>
+<div class="speaker" aria-hidden="true">•••••</div></section>
+<p class="helper" id="helper">按 A 開啟選單，再按 B 確認。<br>鍵盤 A / B / C 或 J / K / L 都可以。</p>
+<footer><span>像素貓咪 · 本機自動存檔</span><span>v0.2</span></footer>
+</main><script type="module" src="/app.js"></script></body></html>
