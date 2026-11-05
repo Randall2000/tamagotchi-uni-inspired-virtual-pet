@@ -48,7 +48,8 @@ test('CSS keeps pet fixed and uses background-position only for frame changes', 
   assert.match(petBlock, /bottom:\s*0/);
   assert.doesNotMatch(petBlock, /animation:|transform:|transition:/);
   assert.doesNotMatch(css, /@keyframes\s+pet-|\.pet-visual\s*\{\s*animation:/);
-  assert.match(app, /backgroundPosition\s*=\s*x\s*\+\s*'% '/);
+  assert.match(app, /backgroundPosition\s*=\s*kittenAtRest\s*\?/);
+  assert.match(app, /backgroundSize\s*=\s*kittenAtRest\s*\?/);
   assert.doesNotMatch(app, /style\.transform|style\.left|style\.top/);
 });
 

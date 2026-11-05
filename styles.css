@@ -113,8 +113,6 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   background-repeat: no-repeat;
   image-rendering: pixelated;
 }
-#room-scene[data-growth="kitten"] #pet-atlas { background-image: url('/public/assets/momo-kitten.png'); background-size: contain; background-position: center bottom !important; }
-#room-scene[data-growth="growing"] #pet-atlas { background-size: 360% 360%; }
 .quick-actions {
   position: absolute;
   bottom: 0;
