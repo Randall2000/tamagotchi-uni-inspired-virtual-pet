@@ -1,11 +1,11 @@
 {
     "schema_version": 2,
-    "commit": "",
-    "indexed_at": "2026-11-05T02:58:16Z",
+    "commit": "38262abfe24209b4be5d26081945dd20ff0e071c",
+    "indexed_at": "2026-11-05T03:03:33Z",
     "project": "tamagotchi-uni-inspired-virtual-pet",
-    "nodes": 2,
-    "edges": 1,
+    "nodes": 48,
+    "edges": 101,
     "original_size": 1572864,
-    "compressed_size": 2671,
+    "compressed_size": 49054,
     "compression_level": 9
 }
