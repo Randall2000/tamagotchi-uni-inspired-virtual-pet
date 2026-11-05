@@ -1,12 +1,12 @@
 # didi｜Web 原型驗收清單
 
-> 文件版本：1.5｜2026-11-05｜適用：Web 原型 v0.8.1（自動起床、點心只看飽足、同鍵防連按）
+> 文件版本：1.6｜2026-11-05｜適用：Web 原型 v0.8.2（只顯示電子機、手機版放大）
 > 驗收網址：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>（推上 GitHub `main` 後自動更新）
 > 數值一律見 [BALANCE.md](BALANCE.md)；產品規則見 [PRD.md](PRD.md)；Mac／實機／擴充功能見 [ACCEPTANCE_MAC_HW.md](ACCEPTANCE_MAC_HW.md)。
 
 ## 1. 怎麼驗
 
-1. **先確認版本**：做 WEB-DEPLOY-01。版本不對，後面全部不算。
+1. **先確認版本**：做 WEB-DEPLOY-01（選單 → 設定 看版本）。版本不對，後面全部不算。
 2. **自動項目**：在專案資料夾跑 `npm test`，全部通過即 PASS。證據是 commit SHA ＋ 測試名稱。
 3. **手動項目**：照「步驟」在驗收網址操作，截圖或錄影存證。
 4. 每次驗收開新的乾淨狀態：瀏覽器開無痕視窗，或在選單→設定→重新開始。
@@ -33,7 +33,7 @@
 
 | ID | 等級 | 前置 | 步驟 | 預期結果 | 方式 | 狀態 |
 |---|---|---|---|---|---|---|
-| WEB-DEPLOY-01 | 🔴 | 已推上 `main` 超過 2 分鐘 | 開驗收網址，看頁尾版本；比對 GitHub 最新 commit | 頁尾顯示的版本 = `package.json` 版本；線上 `app.js` 與 GitHub `main` 一致 | 手動 | PASS（`4498b03`，2026-11-05 逐檔比對 4 檔一致） |
+| WEB-DEPLOY-01 | 🔴 | 已推上 `main` 超過 2 分鐘 | 開驗收網址 → 選單 → 設定，看版本；比對 GitHub 最新 commit | 設定頁顯示的版本 = `package.json` 版本；線上 `app.js` 與 GitHub `main` 一致 | 手動 | NOT RUN（v0.8.2 重測） |
 | WEB-DEPLOY-02 | 🔴 | — | 推上 `main` | GitHub Actions「Verify pet MVP」綠燈 | 自動（CI） | PASS（`4498b03`） |
 | WEB-DEPLOY-03 | 🔴 | 本機 `npm run serve` | 要求 `/.env.local`、`/.git/config` | 都回 404，只提供網頁本身與圖檔 | 自動：`local server never exposes secrets…` | PASS（`4498b03`） |
 
@@ -50,9 +50,10 @@
 | WEB-INPUT-01 | 🔴 | 任一畫面 | 用滑鼠或手指點螢幕上的圖示、選單 | 完全沒反應；只有下方 A/B/C 按鈕與鍵盤有效 | 自動：`screen is explicitly non-touch…`、`device screen contains no clickable buttons…` | PASS（`4498b03`） |
 | WEB-INPUT-02 | 🔴 | 房間 | 鍵盤分別按 A/B/C 與 J/K/L | 兩組按鍵效果相同；其他按鍵不觸發任何照顧 | 自動：`invalid keys never trigger…`＋手動 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-INPUT-03 | 🔴 | 房間 | 同一顆鍵 0.1 秒內按兩下；A 後 0.06 秒按 B；按住鍵盤 A 不放 | 同鍵只算一次；**A 與 B 都有反應**（B-INPUT-02）；按住不會連續輪選 | 自動：`debounce only swallows a repeat…`＋手動 | PASS（`962d92a` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
-| WEB-UI-01 | 🟡 | — | 視窗寬 320、390、768、1440 各看一次 | 外殼完整、沒有左右捲軸；A/B/C 點按位置對準粉紅按鈕 | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-UI-01 | 🔴 | — | 視窗寬 320、375、768、1440 各看一次 | 沒有左右捲軸；電子機完整在畫面內；手機寬度時蛋形外殼左右貼齊畫面、各留約 6px；A/B/C 點按位置對準粉紅按鈕（B-UI-03） | 手動截圖 | NOT RUN（v0.8.2 重測） |
 | WEB-UI-03 | 🔴 | 房間、選單、設定、狀態頁 | 各截一張圖 | 選單項目、標題列、狀態列、提示列、計數、數值條都是直角缺角的像素框與硬邊色塊；選中項目有像素箭頭；畫面內沒有圓角或漸層（B-UI-01） | 手動截圖 | PASS（`5a3a039` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-UI-04 | 🔴 | 舊存檔名字為 MOMO | 載入 | 標題、上方名稱、狀態頁、長大畫面都顯示 didi；存檔名字改為 didi（B-UI-02） | 自動＋手動 | PASS（`5a3a039` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-UI-05 | 🔴 | 任一寬度 | 看電子機以外的區域 | 沒有任何文字（標題、說明、頁尾都不顯示）；操作說明只留給讀螢幕軟體（B-UI-03） | 自動：`nothing but the device is visible…`＋手動 | NOT RUN（v0.8.2 重測） |
 | WEB-UI-02 | 🟡 | 房間 | 觀察提示文字與角色 | 提示列在房間和底列之間，不蓋住角色 | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
 ### 2.3 照顧

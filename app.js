@@ -130,6 +130,12 @@ function render() {
     if (index === nav.cursor) requestAnimationFrame(() => { const list = $('menu-items'); if (li.offsetTop + li.offsetHeight > list.scrollTop + list.clientHeight) list.scrollTop = li.offsetTop + li.offsetHeight - list.clientHeight; });
   }
 
+  if (nav.screen === 'settings') {
+    const version = document.createElement('p');
+    version.className = 'growth-note';
+    version.textContent = `版本 v${document.documentElement.dataset.version}`;
+    $('detail-content').append(version);
+  }
   if (nav.screen === 'status') {
     const summary = document.createElement('p');
     summary.className = 'growth-summary';

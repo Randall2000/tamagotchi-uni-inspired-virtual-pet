@@ -24,3 +24,16 @@ test('instructions explicitly explain A/B/C controls and non-touch operation', (
   assert.match(html, /螢幕不支援觸控/);
   assert.match(html, /A 選功能、B 確認、C 返回/);
 });
+
+test('nothing but the device is visible: no header, footer or visible helper text', () => {
+  const body = html.slice(html.indexOf('<body>'), html.indexOf('</body>'));
+  assert.doesNotMatch(body, /<header\b|<footer\b/);
+  assert.match(body, /<h1 class="sr-only">/);
+  assert.match(body, /<p class="helper sr-only"/);
+  assert.match(css, /\.sr-only\s*\{[^}]*clip:rect\(0 0 0 0\)/);
+});
+
+test('device width lets the egg fill a phone screen with a 6px gutter', () => {
+  assert.match(css, /\.device \{[^}]*width:min\(calc\(\(100vw - 12px\) \/ \.81\)/);
+  assert.match(css, /\.app-shell \{[^}]*overflow:hidden/);
+});

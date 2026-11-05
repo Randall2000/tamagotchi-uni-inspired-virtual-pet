@@ -1,12 +1,11 @@
 :root { --ink:#3e3029; --muted:#7a6657; --paper:#e6ddca; --cream:#fff2d5; --pink:#db6685; }
 * { box-sizing:border-box; }
 body { margin:0; background:var(--paper); color:var(--ink); font-family:ui-monospace,"SFMono-Regular",Menlo,"PingFang TC",monospace; }
-.app-shell { max-width:620px; margin:auto; padding:22px 16px; }
-header { text-align:center; }
-.eyebrow { font-size:9px; letter-spacing:.22em; color:var(--muted); }
-h1 { font-size:24px; margin:7px 0; }
-header p { font-size:12px; color:var(--muted); margin:0; }
-.device { position:relative; width:min(560px,calc(100vw - 32px)); aspect-ratio:1127/1396; margin:18px auto 8px; }
+.app-shell { min-height:100vh; min-height:100svh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.sr-only { position:absolute; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+/* The egg spans 81% of the shell bitmap width and 94% of its height, so the device may be wider than the
+   viewport: the transparent sides overflow and the egg itself fills the screen with a 6px gutter. */
+.device { position:relative; flex:none; width:min(calc((100vw - 12px) / .81), calc((100vh - 12px) * 1127 / 1396 / .94), 680px); width:min(calc((100vw - 12px) / .81), calc((100svh - 12px) * 1127 / 1396 / .94), 680px); aspect-ratio:1127/1396; }
 .device-shell-art { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
 .brand { position:absolute; top:22.5%; width:100%; text-align:center; color:#4b9ec0; font:900 clamp(10px,3vw,16px)/1 system-ui,sans-serif; text-shadow:1px 2px #fff8dc; }
 /* Native shell glass bounds: x321..799, y464..939. Everything scales from this rectangle. */
@@ -75,7 +74,4 @@ header p { font-size:12px; color:var(--muted); margin:0; }
 .controls button:active,.controls button.is-pressed { background:#9c244b38; box-shadow:inset 0 0 0 3px #a3385370; }
 button:focus-visible { outline:3px solid #29617c; outline-offset:3px; }
 .controls span,.device-model,.speaker { display:none; }
-.helper { margin:12px 0; text-align:center; font-size:11px; color:var(--muted); line-height:1.8; }
-footer { display:flex; justify-content:space-between; border-top:1px solid #c6b89e; padding-top:10px; font-size:9px; color:var(--muted); }
 [hidden] { display:none !important; }
-@media(max-width:360px) { .app-shell { padding:16px 10px; } .device { width:calc(100vw - 20px); } h1 { font-size:21px; } }

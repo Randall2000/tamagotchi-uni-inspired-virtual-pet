@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" data-version="0.8.2">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,11 +9,7 @@
 </head>
 <body>
 <main class="app-shell">
-  <header>
-    <span class="eyebrow">POCKET COMPANION</span>
-    <h1>和 didi 的小日子</h1>
-    <p>三顆按鍵，一起慢慢生活。</p>
-  </header>
+  <h1 class="sr-only">和 didi 的小日子</h1>
   <section class="device" aria-label="didi 電子寵物">
     <img class="device-shell-art" src="/public/assets/pokegotchi-shell.png" alt="" aria-hidden="true">
     <div class="brand">didi</div>
@@ -63,8 +59,8 @@
     </section>
     <div class="speaker" aria-hidden="true">•••••</div>
   </section>
-  <p class="helper" id="helper">螢幕不支援觸控。A 選功能、B 確認、C 返回。<br>也可以使用鍵盤 A / B / C 或 J / K / L。</p>
-  <footer><span>像素貓咪 · 本機自動存檔</span><span>v0.8.1</span></footer>
+  <!-- Only the device is shown; instructions stay available to screen readers. -->
+  <p class="helper sr-only" id="helper">螢幕不支援觸控。A 選功能、B 確認、C 返回。也可以使用鍵盤 A / B / C 或 J / K / L。</p>
 </main>
 <script type="module" src="/app.js"></script>
 </body>
