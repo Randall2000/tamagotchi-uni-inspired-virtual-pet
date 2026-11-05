@@ -25,9 +25,9 @@ export const sequences = Object.freeze({
     { frame: 12, caption: '找到毛線球', phase: 'notice', ms: 310 },
     { frame: 13, caption: '伸出爪爪', phase: 'reach', ms: 230 },
     { frame: 14, caption: '推推毛線球', phase: 'bat', ms: 230 },
-    { frame: 15, caption: '再來一次', phase: 'return', ms: 220 },
-    { frame: 13, caption: '伸出爪爪', phase: 'reach', ms: 230 },
-    { frame: 14, caption: '拍拍毛線球', phase: 'bat', ms: 260 },
+    { frame: 15, caption: '收回小爪', phase: 'return', ms: 220 },
+    { frame: 14, caption: '再拍拍一下', phase: 'bat', ms: 230 },
+    { frame: 13, caption: '收回小爪', phase: 'return', ms: 230 },
     { frame: 15, caption: '玩得開心！', phase: 'reward', ms: 440 },
   ],
   clean: [
