@@ -35,4 +35,4 @@ npm run serve
 
 ## PRD 來源註記
 
-本次工作區未找到使用者指定的 `/mnt/data/virtual-pet-prd/PRD_Uni_Inspired_Virtual_Pet_v1.0.md`，因此本 README 僅根據交接訊息內明確列出的 MVP 條件實作；取得原檔後應再逐條對照驗收條件。
+目前採用使用者提供的 [PRD v1.1](docs/PRD_Uni_Inspired_Virtual_Pet_v1.1.md) 與 [QA 驗收計畫 v1.1](docs/QA_Acceptance_Test_Plan_v1.1.md) 作為後續韌體與模擬器開發基準。文件中的驗收項目尚未因此自動視為通過。
