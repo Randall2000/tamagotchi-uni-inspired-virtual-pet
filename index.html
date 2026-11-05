@@ -12,12 +12,21 @@
       <header class="topbar"><div><span class="eyebrow">POCKET PET / 01</span><h1>塔麻過幾 <em>PLAY LAB</em></h1></div><div class="top-meta"><span id="clock">--:--</span><span class="save-dot" aria-label="已儲存"></span></div></header>
       <section class="stage" aria-label="寵物畫面">
         <div class="stage-top"><span><b id="pet-age">DAY 01</b><i>·</i> MOMO'S ROOM</span><span>240 × 240 COLOR</span></div>
-        <div class="scene"><div class="sun"></div><div class="cloud cloud-one"></div><div class="cloud cloud-two"></div><div class="pet-shadow"></div><img class="pixel-pet" src="/public/assets/momo-cat-pixel.png" alt="MOMO：黑白花色、黃綠眼睛的像素貓" /><div class="mood-bubble" id="mood-face">✦</div></div>
+        <div class="scene" id="room-scene" aria-label="MOMO 的房間，可點選物件互動">
+          <img class="room-art" src="/public/assets/momo-room.png" alt="像素風房間，有床、食碗、毛線球、窗戶與盆栽" />
+          <div class="pet-shadow"></div><img id="pet-sprite" class="pixel-pet" src="/public/assets/momo-cat-pixel.png" alt="MOMO：黑白花色、黃綠眼睛的像素貓" />
+          <button class="room-hotspot bed-zone" data-room-action="bed" aria-label="點床休息"><span>休息</span></button>
+          <button class="room-hotspot bowl-zone" data-room-action="bowl" aria-label="點食碗餵食"><span>餵食</span></button>
+          <button class="room-hotspot toy-zone" data-room-action="toy" aria-label="點毛線球玩耍"><span>玩耍</span></button>
+          <button class="room-hotspot window-zone" data-room-action="window" aria-label="點窗邊看看"><span>看窗外</span></button>
+          <button class="room-hotspot cat-zone" data-room-action="cat" aria-label="摸摸 MOMO"><span>摸摸</span></button>
+          <div class="mood-bubble" id="mood-face">✦</div>
+        </div>
         <div class="status-row"><div><span class="status-label">HUNGER</span><div class="meter"><i id="hunger-meter"></i></div></div><strong id="hunger-value">78</strong><div><span class="status-label">JOY</span><div class="meter"><i id="joy-meter"></i></div></div><strong id="joy-value">72</strong></div>
       </section>
       <section class="info-line"><div class="mood-lockup"><span class="eyebrow">CURRENT MOOD</span><div><span class="mood-dot"></span><strong id="mood-label">GLOWING</strong></div></div><div class="coins"><span>◈</span><strong id="coins">12</strong><small>COINS</small></div></section>
       <section class="controls" aria-label="三鍵操作"><button data-action="feed"><span class="key">A</span><span><b>FEED</b><small>補充能量</small></span></button><button data-action="play"><span class="key">B</span><span><b>PLAY</b><small>一起玩耍</small></span></button><button data-action="rest"><span class="key">C</span><span><b>REST</b><small>好好休息</small></span></button></section>
-      <p class="helper" id="helper">按下 A / B / C，讓 MOMO 今天過得更好。</p>
+      <p class="helper" id="helper">按下 A / B / C，或點房間裡的物件和 MOMO 互動。</p>
       <footer><span>v0.1 MVP · cloud-ready</span><button id="reset" class="text-button">重置存檔</button></footer>
     </main>
     <script type="module" src="/app.js"></script>
