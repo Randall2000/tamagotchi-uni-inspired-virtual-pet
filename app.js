@@ -1,6 +1,6 @@
 import { applyAction, createInitialPet, growthStage, hydratePet, tick } from './pet.js';
 import { Navigation, menus, quickActions } from './navigation.js';
-import { timelineFor, framePosition, SPRITE_ATLAS } from './motion.js';
+import { timelineFor, framePosition, frameOffset, SPRITE_ATLAS } from './motion.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = 'tower-pet-save-v1'; // Existing browser saves remain accessible.
@@ -20,13 +20,16 @@ let lastTick = Date.now();
 // Frames change inside one fixed 4x4 atlas cell; never move the whole character.
 function showFrame(index, label = 'MOMO') {
   const { x, y } = framePosition(index);
+  const offset = frameOffset(index);
   const atlas = $('pet-atlas');
   const kittenAtRest = growthStage(pet) === 'kitten' && $('room-scene').dataset.action === 'idle' && index === 0;
   atlas.style.backgroundImage = kittenAtRest
     ? "url('/public/assets/momo-kitten.png')"
     : `url('${SPRITE_ATLAS}')`;
   atlas.style.backgroundSize = kittenAtRest ? 'contain' : '400% 400%';
-  atlas.style.backgroundPosition = kittenAtRest ? 'center bottom' : `${x}% ${y}%`;
+  atlas.style.backgroundPosition = kittenAtRest
+    ? 'center bottom'
+    : `calc(${x}% + ${offset.x}px) calc(${y}% + ${offset.y}px)`;
   $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
   $('screen').dataset.frame = String(index);
   $('room-scene').setAttribute('aria-label', 'MOMO 的像素房間；' + label);

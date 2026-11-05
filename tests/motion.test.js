@@ -5,7 +5,7 @@ import { FRAME_COUNT, SPRITE_ATLAS, sequences, timelineFor, framePosition } from
 
 test('every action uses real frame indices inside a 4x4 atlas', () => {
   assert.equal(FRAME_COUNT, 16);
-  assert.equal(SPRITE_ATLAS, '/public/assets/momo-16frames.webp');
+  assert.equal(SPRITE_ATLAS, '/public/assets/momo-16frames.png');
   for (const [name, sequence] of Object.entries(sequences)) {
     assert.ok(sequence.length >= 3, name);
     let totalMs = 0;
@@ -53,10 +53,9 @@ test('CSS keeps pet fixed and uses background-position only for frame changes', 
   assert.doesNotMatch(app, /style\.transform|style\.left|style\.top/);
 });
 
-test('the source atlas is a real WebP bitmap, not an empty or missing placeholder', () => {
-  const url = new URL('../public/assets/momo-16frames.webp', import.meta.url);
+test('the source atlas is a real PNG bitmap, not an empty or missing placeholder', () => {
+  const url = new URL('../public/assets/momo-16frames.png', import.meta.url);
   assert.ok(statSync(url).size > 3000);
   const bytes = readFileSync(url);
-  assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
-  assert.equal(bytes.toString('ascii', 8, 12), 'WEBP');
+  assert.equal(bytes.toString('hex', 0, 8), '89504e470d0a1a0a');
 });
