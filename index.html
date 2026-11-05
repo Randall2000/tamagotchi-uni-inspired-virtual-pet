@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5c46d" />
+    <title>塔麻過幾 · Pocket Pet</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar"><div><span class="eyebrow">POCKET PET / 01</span><h1>塔麻過幾</h1></div><div class="top-meta"><span id="clock">--:--</span><span class="save-dot" aria-label="已儲存"></span></div></header>
+      <section class="stage" aria-label="寵物畫面">
+        <div class="stage-top"><span id="pet-age">DAY 01</span><span>240 × 240 COLOR</span></div>
+        <div class="scene"><div class="sun"></div><div class="cloud cloud-one"></div><div class="cloud cloud-two"></div><div class="pet-shadow"></div><div class="pet" role="img" aria-label="MOMO 佔位角色"><div class="ear ear-left"></div><div class="ear ear-right"></div><div class="face"><span class="eye left"></span><span class="eye right"></span><span class="blush left"></span><span class="blush right"></span><span class="mouth">⌣</span></div><div class="body"></div><div class="foot foot-left"></div><div class="foot foot-right"></div></div><div class="mood-bubble" id="mood-face">✦</div></div>
+        <div class="status-row"><div><span class="status-label">HUNGER</span><div class="meter"><i id="hunger-meter"></i></div></div><strong id="hunger-value">78</strong><div><span class="status-label">JOY</span><div class="meter"><i id="joy-meter"></i></div></div><strong id="joy-value">72</strong></div>
+      </section>
+      <section class="info-line"><div><span class="eyebrow">CURRENT MOOD</span><strong id="mood-label">GLOWING</strong></div><div class="coins"><span>◈</span><strong id="coins">12</strong><small>COINS</small></div></section>
+      <section class="controls" aria-label="三鍵操作"><button data-action="feed"><span class="key">A</span><span><b>FEED</b><small>補充能量</small></span></button><button data-action="play"><span class="key">B</span><span><b>PLAY</b><small>一起玩耍</small></span></button><button data-action="rest"><span class="key">C</span><span><b>REST</b><small>好好休息</small></span></button></section>
+      <p class="helper" id="helper">按下 A / B / C，讓 MOMO 今天過得更好。</p>
+      <footer><span>v0.1 MVP · cloud-ready</span><button id="reset" class="text-button">重置存檔</button></footer>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
