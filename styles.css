@@ -95,30 +95,22 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   object-fit: cover;
   image-rendering: pixelated;
 }
+/* Fixed character anchor: sprite changes only via 4x4 background frame selection. */
 .pet-visual {
   position: absolute;
-  left: 50%;
-  bottom: -10px;
-  width: 176px;
-  height: 176px;
-  transform: translateX(-50%);
-  transform-origin: 50% 85%;
-  will-change: transform;
-}
-.pixel-pet {
-  width: 176px;
-  height: 176px;
-  object-fit: contain;
-  image-rendering: pixelated;
+  left: 42px;
+  bottom: 0;
+  width: 156px;
+  height: 156px;
 }
 #pet-atlas {
-  width: 116px;
-  height: 116px;
   position: absolute;
-  left: 30px;
-  bottom: 12px;
-  background-image: url('/public/assets/momo-actions-v2.png');
-  background-size: 200% 200%;
+  inset: 0;
+  width: 156px;
+  height: 156px;
+  background-image: url('/public/assets/momo-16frames.webp');
+  background-size: 400% 400%;
+  background-repeat: no-repeat;
   image-rendering: pixelated;
 }
 .pose-caption {
@@ -289,88 +281,8 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   font-size: 10px;
   color: #796647;
 }
-.action-effects {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  color: #a46b49;
-}
-.action-effects span {
-  position: absolute;
-  display: inline-block;
-  font: bold 18px system-ui, sans-serif;
-  opacity: 0;
-  text-shadow: 1px 1px #fff5e0;
-}
-.action-effects span:nth-child(1) { left: 23%; bottom: 39%; }
-.action-effects span:nth-child(2) { left: 64%; bottom: 56%; }
-.action-effects span:nth-child(3) { left: 72%; bottom: 31%; }
-.action-effects[data-effect="hearts"] { color: #dc7180; }
-.action-effects[data-effect="bubbles"] { color: #6d9faf; }
-.action-effects[data-effect="sleep"] { color: #6578b1; }
-.action-effects[data-effect="toy"] { color: #ad738d; }
-.action-effects[data-effect="sparkles"] { color: #b77d21; }
-.action-effects[data-effect="food"] { color: #9b6c35; }
-
-/* Animated changes to the pet's body position are synchronized to each motion timeline. */
-.scene[data-phase="notice"] .pet-visual { animation: pet-notice .42s ease-in-out both; }
-.scene[data-phase="bite"] .pet-visual,
-.scene[data-phase="chew"] .pet-visual { animation: pet-nibble .25s ease-in-out infinite alternate; }
-.scene[data-phase="bat"] .pet-visual { animation: pet-bat .32s ease-in-out infinite alternate; }
-.scene[data-phase="reach"] .pet-visual { animation: pet-reach .43s cubic-bezier(.25,.75,.3,1) infinite alternate; }
-.scene[data-phase="scrub"] .pet-visual,
-.scene[data-phase="rinse"] .pet-visual { animation: pet-scrub .28s ease-in-out infinite alternate; }
-.scene[data-phase="drowsy"] .pet-visual,
-.scene[data-phase="settle"] .pet-visual { animation: pet-drowsy .7s ease-out both; }
-.scene[data-phase="sleep"] .pet-visual { animation: pet-breathe 2.5s ease-in-out infinite; }
-.scene[data-phase="nuzzle"] .pet-visual { animation: pet-nuzzle .48s ease-in-out infinite alternate; }
-.scene[data-phase="reward"] .pet-visual { animation: pet-reward .55s cubic-bezier(.2,.85,.4,1) both; }
-.action-effects:not([data-effect="none"]) span { animation: float-sparkle 1.15s ease-out infinite; }
-.action-effects:not([data-effect="none"]) span:nth-child(2) { animation-delay: .3s; }
-.action-effects:not([data-effect="none"]) span:nth-child(3) { animation-delay: .55s; }
-@keyframes pet-notice {
-  0% { transform: translateX(-50%) rotate(0); }
-  40% { transform: translateX(-49%) rotate(5deg); }
-  100% { transform: translateX(-50%) rotate(-2deg); }
-}
-@keyframes pet-nibble {
-  from { transform: translate(-50%, 0) rotate(-2deg); }
-  to { transform: translate(-50%, 5px) rotate(2deg); }
-}
-@keyframes pet-bat {
-  from { transform: translate(-54%, -1px) rotate(-7deg); }
-  to { transform: translate(-46%, -6px) rotate(7deg); }
-}
-@keyframes pet-reach {
-  from { transform: translate(-50%, 2px) scaleY(.94) rotate(-3deg); }
-  to { transform: translate(-50%, -5px) scaleY(1.05) rotate(4deg); }
-}
-@keyframes pet-scrub {
-  from { transform: translate(-51%, 0) rotate(-5deg); }
-  to { transform: translate(-49%, -2px) rotate(5deg); }
-}
-@keyframes pet-drowsy {
-  0% { transform: translate(-50%, -8px) rotate(1deg); }
-  100% { transform: translate(-50%, 4px) scaleY(.94) rotate(-2deg); }
-}
-@keyframes pet-breathe {
-  0%, 100% { transform: translate(-50%, 3px) scale(1); }
-  50% { transform: translate(-50%, 3px) scale(1.015, .98); }
-}
-@keyframes pet-nuzzle {
-  from { transform: translate(-49%, -2px) rotate(-3deg); }
-  to { transform: translate(-51%, -3px) rotate(3deg); }
-}
-@keyframes pet-reward {
-  0% { transform: translate(-50%, 3px) scale(.97); }
-  50% { transform: translate(-50%, -8px) scale(1.05); }
-  100% { transform: translate(-50%, 0) scale(1); }
-}
-@keyframes float-sparkle {
-  0% { opacity: 0; transform: translateY(8px) scale(.6) rotate(-10deg); }
-  25%, 65% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-24px) scale(1.1) rotate(12deg); }
-}
+/* Intentionally no translate, scale, rotation, wobble or pet keyframe animation.
+   Frame replacement is controlled by motion.js, not CSS transforms. */
 .device-model {
   text-align: center;
   font: 9px monospace;
@@ -410,7 +322,7 @@ footer {
 }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) {
-  .pet-visual, .action-effects span { animation: none !important; }
+  .pet-visual, #pet-atlas { animation: none !important; }
 }
 @media (max-width: 350px) {
   .app-shell { padding: 24px 8px; }

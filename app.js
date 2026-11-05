@@ -1,6 +1,6 @@
 import { applyAction, createInitialPet, hydratePet, tick } from './pet.js';
 import { Navigation, menus, quickActions } from './navigation.js';
-import { timelineFor } from './motion.js';
+import { timelineFor, framePosition } from './motion.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = 'tower-pet-save-v1'; // Existing browser saves remain accessible.
@@ -16,52 +16,14 @@ let sleeping = false;
 let actionTimer;
 let idleTimer;
 let lastTick = Date.now();
-let idleIndex = 0;
 
-const poses = {
-  idle: ['momo-cat-pixel.png', '陪著你'],
-  eat: ['momo-eat.png', '慢慢吃飯'],
-  play: ['momo-play.png', '伸爪玩耍'],
-  sleep: ['momo-sleep.png', '窩著睡覺'],
-  happy: ['momo-happy.png', '開心回應'],
-  groom: [0, '洗洗臉'],
-  stretch: [1, '伸懶腰'],
-  look: [2, '看看窗外'],
-  blink: [3, '閉眼休息'],
-};
-const effectSymbols = {
-  food: ['●', '●', '✦'],
-  crumbs: ['·', '·', '✦'],
-  toy: ['◆', '✦', '◆'],
-  bubbles: ['○', '◯', '○'],
-  hearts: ['♥', '♥', '♥'],
-  sparkles: ['✦', '✧', '✦'],
-  sleep: ['z', 'z', 'z'],
-};
-
-function pose(name) {
-  const [source, label] = poses[name] || poses.idle;
-  const atlas = typeof source === 'number';
-  $('pet-sprite').hidden = atlas;
-  $('pet-atlas').hidden = !atlas;
-  if (atlas) {
-    $('pet-atlas').style.backgroundPosition =
-      (source % 2 * 100) + '% ' + (Math.floor(source / 2) * 100) + '%';
-    $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
-  } else {
-    $('pet-sprite').src = '/public/assets/' + source;
-    $('pet-sprite').alt = 'MOMO ' + label;
-  }
+// Frames change inside one fixed 4x4 atlas cell; never move the whole character.
+function showFrame(index, label = 'MOMO') {
+  const { x, y } = framePosition(index);
+  $('pet-atlas').style.backgroundPosition = x + '% ' + y + '%';
+  $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
+  $('screen').dataset.frame = String(index);
   $('pose-caption').textContent = label;
-  $('screen').dataset.pose = name;
-}
-
-function setEffect(effect = '') {
-  const symbols = effectSymbols[effect] || ['', '', ''];
-  $('action-effects').dataset.effect = effect || 'none';
-  [...$('action-effects').children].forEach((element, index) => {
-    element.textContent = symbols[index];
-  });
 }
 
 function message(text = '') {
@@ -152,8 +114,7 @@ function idle() {
   sleeping = false;
   $('room-scene').dataset.action = 'idle';
   $('room-scene').dataset.phase = 'idle';
-  pose('idle');
-  setEffect();
+  showFrame(0, '陪著你');
   render();
 }
 
@@ -167,9 +128,7 @@ function runMotion(action, onDone = idle) {
     const frame = frames[index++];
     $('room-scene').dataset.action = action;
     $('room-scene').dataset.phase = frame.phase;
-    pose(frame.pose);
-    setEffect(frame.effect);
-    message(frame.caption);
+    showFrame(frame.frame, frame.caption);
     actionTimer = setTimeout(next, frame.ms);
   };
   next();
@@ -180,8 +139,7 @@ function sleepSettled() {
   sleeping = true;
   $('room-scene').dataset.action = 'rest';
   $('room-scene').dataset.phase = 'sleep';
-  pose('sleep');
-  setEffect('sleep');
+  showFrame(2, '睡著了');
   render();
   message('熟睡中 · B / C 喚醒');
 }
@@ -230,8 +188,11 @@ function control(key) {
     if (key === 'c') idle();
     return;
   }
-  pose('idle');
-  setEffect();
+  // A/B/C input interrupts an idle blink without leaving a timer running.
+  clearTimeout(actionTimer);
+  $('room-scene').dataset.action = 'idle';
+  $('room-scene').dataset.phase = 'idle';
+  showFrame(0, '陪著你');
   const action = nav.key(key);
   render();
   if (action) act(action);
@@ -248,12 +209,12 @@ document.addEventListener('keydown', event => {
 });
 setInterval(() => {
   if (busy || sleeping || nav.screen !== 'room' || document.hidden) return;
-  const name = ['blink', 'look', 'groom', 'stretch'][idleIndex++ % 4];
-  pose(name);
-  idleTimer = setTimeout(() => {
-    if (!busy && !sleeping && nav.screen === 'room') pose('idle');
-  }, name === 'blink' ? 650 : 2200);
-}, 10000);
+  runMotion('blink', () => {
+    $('room-scene').dataset.action = 'idle';
+    $('room-scene').dataset.phase = 'idle';
+    showFrame(0, '陪著你');
+  });
+}, 8000);
 setInterval(() => {
   const now = Date.now();
   const minutes = Math.floor((now - lastTick) / 60000);
@@ -267,6 +228,5 @@ setInterval(() => {
     hour: '2-digit', minute: '2-digit', hour12: false,
   });
 }, 1000);
-pose('idle');
-setEffect();
+showFrame(0, '陪著你');
 render();

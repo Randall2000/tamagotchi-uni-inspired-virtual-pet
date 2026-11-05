@@ -1,54 +1,90 @@
-// The UI is a visual adapter: timing and poses do not change core game rules.
-// Each care action has a clear anticipation / action / reaction sequence.
+// Deterministic sprite frames from the user's 4x4 atlas.
+// Row 0: neutral/blink; row 1: feed; row 2: groom; row 3: ball play.
+// Do NOT animate the entire pet element with transforms or CSS wobble.
+export const FRAME_COUNT = 16;
+export const SPRITE_ATLAS = '/public/assets/momo-16frames.webp';
+
+// All action animation is done by replacing frames while keeping the pet anchored.
 export const sequences = Object.freeze({
+  blink: [
+    { frame: 1, caption: '眨眨眼', phase: 'blink', ms: 130 },
+    { frame: 2, caption: '眨眨眼', phase: 'blink', ms: 150 },
+    { frame: 3, caption: '眨眨眼', phase: 'blink', ms: 130 },
+    { frame: 0, caption: '陪著你', phase: 'idle', ms: 150 },
+  ],
   feed: [
-    { pose: 'look', caption: '聞到香味了', effect: 'food', phase: 'notice', ms: 420 },
-    { pose: 'eat', caption: '咬一小口', effect: 'food', phase: 'bite', ms: 460 },
-    { pose: 'eat', caption: '嚼嚼嚼…', effect: 'crumbs', phase: 'chew', ms: 690 },
-    { pose: 'happy', caption: '吃飽了！', effect: 'sparkles', phase: 'reward', ms: 570 },
+    { frame: 4, caption: '聞到香味了', phase: 'notice', ms: 260 },
+    { frame: 5, caption: '張嘴吃一口', phase: 'bite', ms: 220 },
+    { frame: 6, caption: '慢慢嚼', phase: 'chew', ms: 210 },
+    { frame: 7, caption: '舔舔嘴巴', phase: 'lick', ms: 240 },
+    { frame: 5, caption: '再吃一口', phase: 'bite', ms: 200 },
+    { frame: 6, caption: '嚼嚼', phase: 'chew', ms: 220 },
+    { frame: 7, caption: '吃飽了！', phase: 'reward', ms: 420 },
   ],
   play: [
-    { pose: 'look', caption: '發現玩具！', effect: 'toy', phase: 'notice', ms: 400 },
-    { pose: 'play', caption: '伸爪抓抓！', effect: 'toy', phase: 'bat', ms: 650 },
-    { pose: 'stretch', caption: '再玩一下', effect: 'toy', phase: 'reach', ms: 440 },
-    { pose: 'happy', caption: '玩得好開心', effect: 'hearts', phase: 'reward', ms: 630 },
+    { frame: 12, caption: '找到毛線球', phase: 'notice', ms: 310 },
+    { frame: 13, caption: '伸出爪爪', phase: 'reach', ms: 230 },
+    { frame: 14, caption: '推推毛線球', phase: 'bat', ms: 230 },
+    { frame: 15, caption: '再來一次', phase: 'return', ms: 220 },
+    { frame: 13, caption: '伸出爪爪', phase: 'reach', ms: 230 },
+    { frame: 14, caption: '拍拍毛線球', phase: 'bat', ms: 260 },
+    { frame: 15, caption: '玩得開心！', phase: 'reward', ms: 440 },
   ],
   clean: [
-    { pose: 'look', caption: '準備洗乾淨', effect: 'bubbles', phase: 'notice', ms: 360 },
-    { pose: 'groom', caption: '舔舔小爪子', effect: 'bubbles', phase: 'scrub', ms: 650 },
-    { pose: 'blink', caption: '擦擦小臉', effect: 'bubbles', phase: 'rinse', ms: 500 },
-    { pose: 'happy', caption: '清爽乾淨！', effect: 'sparkles', phase: 'reward', ms: 610 },
+    { frame: 8, caption: '抬起小爪子', phase: 'notice', ms: 240 },
+    { frame: 9, caption: '舔舔爪子', phase: 'scrub', ms: 260 },
+    { frame: 10, caption: '擦擦小臉', phase: 'rinse', ms: 280 },
+    { frame: 11, caption: '換另一邊', phase: 'scrub', ms: 260 },
+    { frame: 9, caption: '舔舔爪子', phase: 'scrub', ms: 260 },
+    { frame: 10, caption: '乾淨了！', phase: 'reward', ms: 400 },
   ],
   rest: [
-    { pose: 'stretch', caption: '打個哈欠', effect: 'sleep', phase: 'yawn', ms: 520 },
-    { pose: 'blink', caption: '慢慢閉上眼睛', effect: 'sleep', phase: 'drowsy', ms: 480 },
-    { pose: 'sleep', caption: '進入夢鄉', effect: 'sleep', phase: 'settle', ms: 430 },
+    { frame: 0, caption: '準備休息', phase: 'notice', ms: 370 },
+    { frame: 1, caption: '眼皮變重了', phase: 'drowsy', ms: 350 },
+    { frame: 2, caption: '睡著了', phase: 'sleep', ms: 380 },
   ],
   wake: [
-    { pose: 'blink', caption: '醒過來了', effect: 'sparkles', phase: 'notice', ms: 400 },
-    { pose: 'stretch', caption: '伸個懶腰', effect: 'sparkles', phase: 'reach', ms: 500 },
-    { pose: 'idle', caption: '精神滿滿', effect: 'hearts', phase: 'reward', ms: 420 },
+    { frame: 2, caption: '醒來囉', phase: 'notice', ms: 280 },
+    { frame: 3, caption: '張開眼睛', phase: 'wake', ms: 240 },
+    { frame: 0, caption: '精神滿滿', phase: 'reward', ms: 280 },
   ],
   pet: [
-    { pose: 'look', caption: '有人在摸摸我？', effect: 'hearts', phase: 'notice', ms: 360 },
-    { pose: 'happy', caption: '呼嚕呼嚕', effect: 'hearts', phase: 'nuzzle', ms: 800 },
-    { pose: 'blink', caption: '好舒服', effect: 'hearts', phase: 'reward', ms: 510 },
+    { frame: 8, caption: '抬起爪爪', phase: 'notice', ms: 260 },
+    { frame: 10, caption: '好舒服', phase: 'nuzzle', ms: 320 },
+    { frame: 0, caption: '喵～', phase: 'reward', ms: 300 },
   ],
   groom: [
-    { pose: 'groom', caption: '洗洗臉', effect: 'bubbles', phase: 'scrub', ms: 900 },
-    { pose: 'blink', caption: '洗好囉', effect: 'sparkles', phase: 'reward', ms: 520 },
+    { frame: 8, caption: '準備洗臉', phase: 'notice', ms: 270 },
+    { frame: 9, caption: '舔舔爪子', phase: 'scrub', ms: 270 },
+    { frame: 10, caption: '洗洗臉', phase: 'rinse', ms: 270 },
+    { frame: 11, caption: '清爽！', phase: 'reward', ms: 340 },
   ],
+  // The sheet has no distinct stretch/window illustrations. Use neutral poses
+  // rather than moving, rotating or stretching the full sprite as a substitute.
   stretch: [
-    { pose: 'blink', caption: '準備活動筋骨', effect: '', phase: 'notice', ms: 340 },
-    { pose: 'stretch', caption: '大大伸懶腰', effect: 'sparkles', phase: 'reach', ms: 860 },
-    { pose: 'idle', caption: '舒服！', effect: '', phase: 'reward', ms: 430 },
+    { frame: 0, caption: '活動一下', phase: 'notice', ms: 360 },
+    { frame: 8, caption: '伸伸爪爪', phase: 'reach', ms: 440 },
+    { frame: 0, caption: '舒服！', phase: 'reward', ms: 380 },
   ],
   window: [
-    { pose: 'look', caption: '今天窗外有什麼？', effect: 'sparkles', phase: 'notice', ms: 920 },
-    { pose: 'blink', caption: '靜靜觀察', effect: '', phase: 'reward', ms: 560 },
+    { frame: 0, caption: '看看窗外', phase: 'notice', ms: 450 },
+    { frame: 1, caption: '靜靜觀察', phase: 'watch', ms: 390 },
+    { frame: 0, caption: '看完了', phase: 'reward', ms: 350 },
   ],
 });
 
 export function timelineFor(action) {
   return sequences[action] || null;
+}
+
+export function framePosition(frame) {
+  if (!Number.isInteger(frame) || frame < 0 || frame >= FRAME_COUNT) {
+    throw new RangeError('Invalid 4x4 sprite frame: ' + frame);
+  }
+  return {
+    column: frame % 4,
+    row: Math.floor(frame / 4),
+    x: (frame % 4) * (100 / 3),
+    y: Math.floor(frame / 4) * (100 / 3),
+  };
 }
