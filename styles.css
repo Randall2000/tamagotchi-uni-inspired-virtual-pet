@@ -110,7 +110,7 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   height: 156px;
   transform-origin: center bottom;
   transition: none !important;
-  background-image: url('/public/assets/momo-16frames.webp');
+  background-image: url('/public/assets/momo-16frames.png');
   background-size: 400% 400%;
   background-repeat: no-repeat;
   image-rendering: pixelated;
@@ -463,10 +463,7 @@ h1 { font-family: ui-monospace, "PingFang TC", monospace; font-weight: 900; lett
 @media (max-width: 390px) {
   .device { margin-top: 46px; }
 }
-#room-scene[data-growth="kitten"][data-action="idle"] #pet-atlas {
-  transform: translateY(22px);
-}
-#room-scene[data-growth="kitten"]:not([data-action="idle"]) #pet-atlas {
+#room-scene[data-growth="kitten"] #pet-atlas {
   transform: scale(.69);
 }
 #room-scene[data-growth="growing"] #pet-atlas {

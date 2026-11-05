@@ -21,14 +21,11 @@ let lastTick = Date.now();
 function showFrame(index, label = 'MOMO') {
   const { x, y } = framePosition(index);
   const atlas = $('pet-atlas');
-  const kittenAtRest = growthStage(pet) === 'kitten' && $('room-scene').dataset.action === 'idle' && index === 0;
-  atlas.style.backgroundImage = kittenAtRest
-    ? "url('/public/assets/momo-kitten.png')"
-    : `url('${SPRITE_ATLAS}')`;
-  atlas.style.backgroundSize = kittenAtRest ? 'contain' : '400% 400%';
-  atlas.style.backgroundPosition = kittenAtRest
-    ? 'center bottom'
-    : `${x}% ${y}%`;
+  // One character source for idle, blinking and every action at every age.
+  // Only the growth stage controls scale; actions select an atlas cell.
+  atlas.style.backgroundImage = `url('${SPRITE_ATLAS}')`;
+  atlas.style.backgroundSize = '400% 400%';
+  atlas.style.backgroundPosition = `${x}% ${y}%`;
   $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
   $('screen').dataset.frame = String(index);
   $('room-scene').setAttribute('aria-label', 'MOMO 的像素房間；' + label);
