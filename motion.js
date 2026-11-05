@@ -76,7 +76,6 @@ export const sequences = Object.freeze({
 export function timelineFor(action) {
   return sequences[action] || null;
 }
-
 export function framePosition(frame) {
   if (!Number.isInteger(frame) || frame < 0 || frame >= FRAME_COUNT) {
     throw new RangeError('Invalid 4x4 sprite frame: ' + frame);
@@ -86,26 +85,5 @@ export function framePosition(frame) {
     row: Math.floor(frame / 4),
     x: (frame % 4) * (100 / 3),
     y: Math.floor(frame / 4) * (100 / 3),
-  };
-}
-
-// The supplied atlas has small per-cell placement drift. These pixel offsets
-// normalize the cat's feet and visual center without moving the sprite layer.
-export function frameOffset(frame) {
-  if (!Number.isInteger(frame) || frame < 0 || frame >= FRAME_COUNT) {
-    throw new RangeError('Invalid 4x4 sprite frame: ' + frame);
-  }
-  const column = frame % 4;
-  const row = Math.floor(frame / 4);
-  const xByRow = [
-    [0, 3, 6, 9],
-    [0, 4, 7, 9],
-    [0, 3, 6, 10],
-    [0, 3.5, 5.5, 9],
-  ];
-  const yByRow = [0, 1, 1, 0];
-  return {
-    x: xByRow[row][column],
-    y: yByRow[row],
   };
 }

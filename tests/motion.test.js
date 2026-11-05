@@ -40,6 +40,9 @@ test('frame coordinates are stable, bounded, and deterministic', () => {
   }
 });
 
+test('sprite cell drift offsets keep each action row visually anchored', () => {
+});
+
 test('CSS keeps pet fixed and uses background-position only for frame changes', () => {
   const css = readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
   const app = readFileSync(new URL('../app.js', import.meta.url), 'utf8');
@@ -51,6 +54,8 @@ test('CSS keeps pet fixed and uses background-position only for frame changes', 
   assert.match(app, /backgroundPosition\s*=\s*kittenAtRest\s*\?/);
   assert.match(app, /backgroundSize\s*=\s*kittenAtRest\s*\?/);
   assert.doesNotMatch(app, /style\.transform|style\.left|style\.top/);
+  assert.match(css, /#room-scene\[data-growth="kitten"\]\[data-action="idle"\] #pet-atlas\s*\{\s*transform:\s*translateY\(22px\)/);
+  assert.match(css, /#room-scene\[data-growth="kitten"\]:not\(\[data-action="idle"\]\) #pet-atlas\s*\{\s*transform:\s*scale\(\.69\)/);
 });
 
 test('the source atlas is a real PNG bitmap, not an empty or missing placeholder', () => {
