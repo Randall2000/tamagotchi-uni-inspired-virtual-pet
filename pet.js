@@ -1,10 +1,13 @@
 export const MAX_STAT = 100;
-export const GROWTH_BOND = Object.freeze({ kitten: 0, growing: 10, adult: 30 });
+export const GROWTH_BOND = Object.freeze({ kitten: 0, growing: 30, adult: 80 });
+// v0.6 and earlier grew at 10/30; saves made under that rule keep the stage they reached.
+const LEGACY_GROWTH_BOND = Object.freeze({ kitten: 0, growing: 10, adult: 30 });
+export const GROWTH_STAGES = Object.freeze(['kitten', 'growing', 'adult']);
 const BOND_GAINS = Object.freeze({ feed: 1, play: 2, clean: 1, pet: 2, groom: 1 });
 export const BOND_COOLDOWN_MS = 60000;
 export const INITIAL_PET = Object.freeze({
   name: 'MOMO', age: 1, ageMinutes: 0, bond: 0, hunger: 78, happiness: 72,
-  hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0, lastBondAt: null, sleeping: false,
+  hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0, lastBondAt: null, sleeping: false, stageFloor: 'kitten',
 });
 
 export function clamp(value, min = 0, max = MAX_STAT) {
@@ -80,11 +83,17 @@ export function tick(pet, minutes = 1) {
   };
 }
 
-export function growthStage(pet) {
-  const bond = clamp(pet.bond || 0);
-  if (bond < GROWTH_BOND.growing) return 'kitten';
-  if (bond < GROWTH_BOND.adult) return 'growing';
+function stageForBond(value, rule = GROWTH_BOND) {
+  const bond = clamp(value || 0);
+  if (bond < rule.growing) return 'kitten';
+  if (bond < rule.adult) return 'growing';
   return 'adult';
+}
+
+// Growth never reverses: the stage is the later of the bond stage and the saved floor.
+export function growthStage(pet) {
+  const floor = GROWTH_STAGES.indexOf(pet.stageFloor);
+  return GROWTH_STAGES[Math.max(GROWTH_STAGES.indexOf(stageForBond(pet.bond)), floor)];
 }
 
 export function moodFor(pet) {
@@ -114,9 +123,12 @@ export function hydratePet(raw, now = Date.now()) {
   } else {
     // Preserve the one-way growth reached by saves from the old age-based rule.
     restored.bond = restored.age >= 8
-      ? GROWTH_BOND.adult
-      : restored.age >= 4 ? GROWTH_BOND.growing : 0;
+      ? LEGACY_GROWTH_BOND.adult
+      : restored.age >= 4 ? LEGACY_GROWTH_BOND.growing : 0;
   }
+  restored.stageFloor = GROWTH_STAGES.includes(raw.stageFloor)
+    ? raw.stageFloor
+    : stageForBond(restored.bond, LEGACY_GROWTH_BOND);
   if (typeof raw.name === 'string' && raw.name.length <= 20) restored.name = raw.name;
   if (Number.isFinite(raw.lastSavedAt) && raw.lastSavedAt >= 0) restored.lastSavedAt = raw.lastSavedAt;
   if (Number.isFinite(raw.lastBondAt) && raw.lastBondAt >= 0) restored.lastBondAt = Math.min(raw.lastBondAt, now);

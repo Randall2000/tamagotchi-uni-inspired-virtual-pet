@@ -236,10 +236,35 @@ function completeAction() {
   pet = applyAction(pet, transaction.action);
   save();
   if (transaction.action === 'rest') { sleepSettled(); return; }
+  const newStage = growthStage(pet);
+  const grew = newStage !== oldStage;
   Object.assign(nav, transaction.navigation);
+  // Growing up returns to the room so the player sees the new size.
+  if (grew) {
+    nav.home();
+    $('room-scene').classList.add('is-growing-up'); // Must precede the stage change for the size transition.
+  }
   idle();
   const labels = {feed:'吃飽一點了',snack:'點心吃完了',play:'玩得很開心',clean:'身體乾淨了',groom:'小臉洗好了',pet:'喜歡你的陪伴',stretch:'伸展完成',window:'看完窗外了'};
-  message(growthStage(pet) !== oldStage ? '關係更近了 · MOMO 長大了' : `${labels[transaction.action]}${pet.bond > previousBond ? ` · 關係 +${pet.bond - previousBond}` : ''}`);
+  message(grew ? '關係更近了 · MOMO 長大了' : `${labels[transaction.action]}${pet.bond > previousBond ? ` · 關係 +${pet.bond - previousBond}` : ''}`);
+  if (grew) celebrateGrowth(oldStage, newStage);
+}
+
+const STAGE_LABELS = { kitten: '幼年', growing: '成長中', adult: '成年' };
+const GROWTH_CELEBRATION_MS = 4000;
+let celebrationTimer;
+
+function celebrateGrowth(from, to) {
+  $('growth-path').textContent = `${STAGE_LABELS[from]} → ${STAGE_LABELS[to]}`;
+  $('growth-celebration').hidden = false;
+  clearTimeout(celebrationTimer);
+  celebrationTimer = setTimeout(endCelebration, GROWTH_CELEBRATION_MS);
+}
+
+function endCelebration() {
+  clearTimeout(celebrationTimer);
+  $('growth-celebration').hidden = true;
+  $('room-scene').classList.remove('is-growing-up');
 }
 
 function cancelAction() {
@@ -256,7 +281,11 @@ function cancelAction() {
 }
 
 function control(key) {
-
+  // Any key closes the growth celebration early; that press does nothing else.
+  if (!$('growth-celebration').hidden) {
+    endCelebration();
+    return;
+  }
   if (sleeping) {
     if (key === 'b' || key === 'c') wake();
     else message('熟睡中 · B / C 喚醒');

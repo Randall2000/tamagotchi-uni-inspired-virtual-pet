@@ -51,5 +51,8 @@ test('character scale depends only on growth and action code cannot move its con
   assert.doesNotMatch(app,/atlas\.style\.(transform|left|top)/);
   assert.doesNotMatch(css,/#room-scene[^{}]*data-action[^{}]*#pet-atlas/);
   assert.match(css,/#room-scene\[data-growth="kitten"\] #pet-atlas\s*\{\s*transform:\s*scale\(\.69\)/);
-  assert.match(css,/#room-scene\[data-growth="growing"\] #pet-atlas\s*\{\s*transform:\s*scale\(\.84\)/);
+  assert.match(css,/#room-scene\[data-growth="growing"\] #pet-atlas\s*\{\s*transform:\s*scale\(\.78\)/);
+  assert.match(css,/#room-scene\[data-growth="adult"\] #pet-atlas\s*\{\s*transform:\s*scale\(\.88\)/);
+  // Size may animate only while a growth event is running.
+  for (const rule of css.match(/[^{}]*\{[^{}]*transition:\s*transform[^{}]*\}/g) || []) assert.match(rule, /\.is-growing-up/);
 });

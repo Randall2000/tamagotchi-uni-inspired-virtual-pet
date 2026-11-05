@@ -1,6 +1,6 @@
 # MOMO｜Web 原型驗收清單
 
-> 文件版本：1.2｜2026-11-05｜適用：Web 原型 v0.6（commit `4498b03` 起）
+> 文件版本：1.3｜2026-11-05｜適用：Web 原型 v0.7（成長改為 30／80 與長大演出）
 > 驗收網址：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>（推上 GitHub `main` 後自動更新）
 > 數值一律見 [BALANCE.md](BALANCE.md)；產品規則見 [PRD.md](PRD.md)；Mac／實機／擴充功能見 [ACCEPTANCE_MAC_HW.md](ACCEPTANCE_MAC_HW.md)。
 
@@ -71,10 +71,12 @@
 |---|---|---|---|---|---|---|
 | WEB-GROW-01 | 🔴 | 好感 0 | 陪伴 1 次，60 秒內再陪伴 1 次 | 第 1 次 +2；第 2 次心情照加，但好感 +0；狀態頁顯示「關係加分冷卻 N 秒」（B-BOND-02） | 自動：`relationship cooldown is shared…`＋手動 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-GROW-02 | 🔴 | 冷卻中 | 重新整理頁面，再照顧 | 冷卻沒有被重置，好感仍 +0 | 自動：同上 | PASS（`4498b03`） |
-| WEB-GROW-03 | 🔴 | — | 好感累積跨過 10、30 | 9→10 變成長中，29→30 變成年；顯示「關係更近了 · MOMO 長大了」 | 自動：`growth follows permanent bond…`＋手動看畫面 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-GROW-03 | 🔴 | — | 好感累積跨過 30、80 | 29→30 變成長中，79→80 變成年；28 以下做一次照顧不會長大（B-BOND-03、B-BOND-04） | 自動：`growth follows permanent bond…`＋手動看畫面 | NOT RUN（v0.7 重測） |
 | WEB-GROW-04 | 🔴 | 成年 | 放著讓需求下降、時間經過很多天 | 永遠不會變回較小的階段；好感不會下降 | 自動：同上 | PASS（`4498b03`） |
 | WEB-GROW-05 | 🔴 | 沒有好感欄位的舊存檔 | 載入 | 依 B-BOND-06 換算好感，不會縮小 | 自動：同上 | PASS（`4498b03`） |
-| WEB-GROW-06 | 🟡 | 好感 0、30、55、100 | 看房間上方愛心 | 分別為 0 顆、1.5 顆、2.75 顆、5 顆，旁邊數字一致（B-BOND-05） | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-GROW-06 | 🟡 | 好感 0、30、55、100 | 看房間上方愛心 | 分別為 0 顆、1.5 顆、2.75 顆、5 顆，旁邊數字一致（B-BOND-05） |
+| WEB-GROW-07 | 🔴 | 好感 29，在食物選單 | 正餐 → 等動畫結束 | 回到房間；角色約 1.2 秒放大到成長中尺寸；慶祝畫面顯示「MOMO 長大了！」「幼年 → 成長中」，4 秒後自動消失；期間按任一鍵提早關閉且不觸發其他動作（B-ANIM-11） | 手動 | NOT RUN |
+| WEB-GROW-08 | 🔴 | v0.6 存檔：好感 12、沒有 `stageFloor` | 載入 | 仍是成長中，不縮回幼年（B-BOND-06） | 自動：`saves from the old 10/30 rule…`＋手動 | NOT RUN | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
 ### 2.5 時間與存檔
 
@@ -93,7 +95,7 @@
 |---|---|---|---|---|---|---|
 | WEB-ANIM-01 | 🔴 | — | 檢查圖集 | 幼年、成年各 64 格透明 PNG（B-ANIM-09） | 自動：`both ages have a complete…` | PASS（`4498b03`） |
 | WEB-ANIM-02 | 🔴 | — | 檢查每個主要動作 | 8 個不同姿勢，總長 4–6 秒 | 自動：`every main action has eight distinct poses…` | PASS（`4498b03`） |
-| WEB-ANIM-03 | 🔴 | 同一成長階段 | 播放任一動作，比對動作前後角色外框 | 位置與尺寸誤差 ≤1px；不旋轉、不縮放 | 自動：`character scale depends only on growth…`＋手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-ANIM-03 | 🔴 | 同一成長階段 | 播放任一動作，比對動作前後角色外框 | 位置與尺寸誤差 ≤1px；不旋轉、不縮放；尺寸只在長大時改變（B-ANIM-10） | 自動：`character scale depends only on growth…`＋手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
 ## 3. 不在 Web 驗收範圍
 

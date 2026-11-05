@@ -33,14 +33,14 @@ test('growth follows permanent bond and never reverses when needs decay', () => 
   assert.equal(growthStage(older), 'kitten');
   let cared = older;
   let now = 1000;
-  for (let i = 0; i < 4; i++) cared = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
+  for (let i = 0; i < (GROWTH_BOND.growing - 2) / 2; i++) cared = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(cared.bond, GROWTH_BOND.growing - 2);
   assert.equal(growthStage(cared), 'kitten');
   const growing = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(growing.bond, GROWTH_BOND.growing);
   assert.equal(growthStage(growing), 'growing');
   cared = growing;
-  for (let i = 0; i < 9; i++) cared = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
+  for (let i = 0; i < (GROWTH_BOND.adult - GROWTH_BOND.growing - 2) / 2; i++) cared = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(cared.bond, GROWTH_BOND.adult - 2);
   assert.equal(growthStage(cared), 'growing');
   const adult = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
@@ -51,6 +51,28 @@ test('growth follows permanent bond and never reverses when needs decay', () => 
   // Legacy saves retain any growth already earned under the age-based rule.
   assert.equal(growthStage(hydratePet({ age: 8, ageMinutes: 0 })), 'adult');
   assert.equal(hydratePet({ age: 8, bond: 0 }).bond, 0);
+});
+
+test('growth is paced at 30/80 bond and one care action cannot jump a stage', () => {
+  assert.deepEqual({ ...GROWTH_BOND }, { kitten: 0, growing: 30, adult: 80 });
+  const nearlyGrowing = { ...createInitialPet(0), bond: GROWTH_BOND.growing - 3 };
+  assert.equal(growthStage(applyAction(nearlyGrowing, 'pet', 0)), 'kitten');
+  assert.equal(growthStage({ ...createInitialPet(0), bond: 12 }), 'kitten');
+});
+
+test('saves from the old 10/30 rule keep the stage they reached', () => {
+  // v0.6 save: bond 12 was already growing, 30 was adult; no stageFloor field.
+  assert.equal(growthStage(hydratePet({ bond: 12, age: 1 })), 'growing');
+  assert.equal(growthStage(hydratePet({ bond: 30, age: 1 })), 'adult');
+  assert.equal(growthStage(hydratePet({ bond: 5, age: 1 })), 'kitten');
+  // Saves written by the new rule carry stageFloor and follow 30/80.
+  const fresh = hydratePet(createInitialPet(0));
+  assert.equal(fresh.stageFloor, 'kitten');
+  assert.equal(growthStage(hydratePet({ ...createInitialPet(0), bond: 12 })), 'kitten');
+  assert.equal(growthStage(hydratePet({ ...createInitialPet(0), bond: 12, stageFloor: 'bogus' })), 'growing');
+  // A floor never shrinks even after more care.
+  const legacyAdult = hydratePet({ bond: 30, age: 1 });
+  assert.equal(growthStage(applyAction(legacyAdult, 'pet', 0)), 'adult');
 });
 
 
