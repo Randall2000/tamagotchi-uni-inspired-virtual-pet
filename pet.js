@@ -24,7 +24,8 @@ export function createInitialPet(now = Date.now()) {
 export function actionBlockReason(pet, action) {
   if (pet.sleeping) return '熟睡中 · B / C 喚醒';
   if (action === 'feed' && pet.hunger >= 100) return '已經吃飽了，晚點再吃';
-  if (action === 'snack' && (pet.hunger >= 100 || pet.happiness >= 100)) return '現在不需要點心';
+  if (action === 'snack' && pet.hunger >= 100) return '已經吃飽了，不需要點心';
+  if (action === 'rest' && pet.hunger < WAKE_RULES.hungryBelow) return '肚子太餓睡不著 · 先吃餐食';
   if (action === 'play' && pet.energy < 8) return '有點累了 · 選單→睡覺';
   if (['clean', 'groom'].includes(action) && pet.hygiene >= 100) return '已經很乾淨了';
   return '';
@@ -68,18 +69,41 @@ export function applyAction(pet, action, now = Date.now()) {
   return next;
 }
 
+export const WAKE_RULES = Object.freeze({ rested: 100, hungryBelow: 15 });
+const DECAY = Object.freeze({ hunger: 40, happiness: 15, hygiene: 12, awakeEnergy: -10, sleepEnergy: 200 }); // hundredths per minute
+
+// Minutes of sleep until the pet wakes on its own: energy full, or hunger dropping below the floor.
+export function minutesUntilWake(pet) {
+  const energy = Math.round(pet.energy * 100), hunger = Math.round(pet.hunger * 100);
+  const rested = Math.max(1, Math.ceil((WAKE_RULES.rested * 100 - energy) / DECAY.sleepEnergy));
+  const hungry = hunger < WAKE_RULES.hungryBelow * 100 ? 1 : Math.floor((hunger - WAKE_RULES.hungryBelow * 100) / DECAY.hunger) + 1;
+  return Math.min(rested, hungry);
+}
+
 export function tick(pet, minutes = 1) {
   const elapsed = Number.isFinite(minutes) ? Math.max(0, Math.floor(minutes)) : 0;
-  const bounded = value => Math.min(100, Math.max(0, Math.round(value * 100) / 100));
+  // A sleeping pet wakes partway through a long stretch; the rest of it passes awake.
+  if (pet.sleeping && elapsed > 0) {
+    const untilWake = minutesUntilWake(pet);
+    if (untilWake <= elapsed) {
+      const lastSleepyMinute = tick(pet, untilWake - 1);
+      const awake = { ...lastSleepyMinute, ...advance(lastSleepyMinute, 1), sleeping: false };
+      return tick(awake, elapsed - untilWake);
+    }
+  }
+  return { ...pet, ...advance(pet, elapsed) };
+}
+
+function advance(pet, elapsed) {
+  const step = (value, perMinute) => Math.min(10000, Math.max(0, Math.round(value * 100) + perMinute * elapsed)) / 100;
   const ageMinutes = (Number.isFinite(pet.ageMinutes) ? pet.ageMinutes : 0) + elapsed;
   return {
-    ...pet,
     ageMinutes,
     age: Math.max(pet.age, Math.floor(ageMinutes / 1440) + 1),
-    hunger: bounded(pet.hunger - elapsed * 0.4),
-    happiness: bounded(pet.happiness - elapsed * 0.15),
-    hygiene: bounded(pet.hygiene - elapsed * 0.12),
-    energy: bounded(pet.energy + elapsed * (pet.sleeping ? 2 : -0.1)),
+    hunger: step(pet.hunger, -DECAY.hunger),
+    happiness: step(pet.happiness, -DECAY.happiness),
+    hygiene: step(pet.hygiene, -DECAY.hygiene),
+    energy: step(pet.energy, pet.sleeping ? DECAY.sleepEnergy : DECAY.awakeEnergy),
   };
 }
 

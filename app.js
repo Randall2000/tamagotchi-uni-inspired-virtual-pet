@@ -1,5 +1,5 @@
-import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS } from './pet.js';
-import { Navigation, menus, quickActions } from './navigation.js';
+import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS, WAKE_RULES } from './pet.js';
+import { Navigation, menus, quickActions, makeDebouncer } from './navigation.js';
 import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle } from './motion.js';
 
 const $ = id => document.getElementById(id);
@@ -20,7 +20,7 @@ let pendingAction = null;
 let feedback = '';
 let feedbackUntil = 0;
 let activeCaption = '';
-let lastInputAt = -Infinity;
+const debounced = makeDebouncer();
 let lastTick = Date.now();
 
 // A growth stage owns one complete atlas; actions never swap character sources.
@@ -196,14 +196,19 @@ function sleepSettled() {
   message('熟睡中 · B / C 喚醒');
 }
 
-function wake() {
+function wake(note = '') {
   if (!sleeping || busy) return;
   sleeping = false;
   pet = { ...pet, sleeping: false };
   save();
   busy = true;
   render();
-  runMotion('wake');
+  runMotion('wake', () => { idle(); if (note) message(note); });
+}
+
+// Why a sleeping pet got up by itself (see WAKE_RULES).
+function wakeNote() {
+  return pet.hunger < WAKE_RULES.hungryBelow ? '肚子餓醒了 · 先吃餐食' : '睡飽起床了';
 }
 
 function act(action) {
@@ -313,9 +318,7 @@ function control(key) {
 }
 
 function acceptInput(key) {
-  const now = performance.now();
-  if (now - lastInputAt < 120) return;
-  lastInputAt = now;
+  if (!debounced(key, performance.now())) return;
   const button = document.querySelector(`[data-control="${key}"]`);
   button.classList.add('is-pressed');
   setTimeout(() => button.classList.remove('is-pressed'), 140);
@@ -350,10 +353,15 @@ setInterval(() => {
   const now = Date.now();
   const minutes = Math.floor((now - lastTick) / 60000);
   if (minutes > 0) {
+    const wasAsleep = pet.sleeping;
     pet = tick(pet, minutes);
     lastTick += minutes * 60000;
     save();
     render();
+    if (wasAsleep && !pet.sleeping) {
+      pet = { ...pet, sleeping: true }; // Let wake() play the animation and persist the change.
+      wake(wakeNote());
+    }
   }
   refreshStatus();
   $('clock').textContent = new Date().toLocaleTimeString('zh-TW', {
@@ -361,6 +369,7 @@ setInterval(() => {
   });
 }, 1000);
 if (sleeping) sleepSettled(); else idle();
+if (raw?.sleeping === true && !pet.sleeping) message(wakeNote()); // Woke up while the page was closed.
 save();
 
 // Register live display and hit areas to the actual 1127 x 1396 shell bitmap.

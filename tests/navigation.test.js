@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Navigation, menus, quickActions } from '../navigation.js';
+import { Navigation, menus, quickActions, makeDebouncer } from '../navigation.js';
 
 test('care shortcuts run on B directly without an option layer', () => {
   const n = new Navigation();
@@ -98,4 +98,15 @@ test('invalid keys never trigger a care action', () => {
   assert.equal(n.key('enter'), null);
   assert.equal(n.quickCursor, 0);
   assert.equal(n.screen, 'room');
+});
+
+test('debounce only swallows a repeat of the same key, never a different key', () => {
+  const accept = makeDebouncer(120);
+  assert.equal(accept('a', 0), true);
+  assert.equal(accept('a', 60), false);
+  assert.equal(accept('b', 60), true);
+  assert.equal(accept('c', 70), true);
+  assert.equal(accept('a', 130), true);
+  assert.equal(accept('b', 150), false);
+  assert.equal(accept('b', 181), true);
 });

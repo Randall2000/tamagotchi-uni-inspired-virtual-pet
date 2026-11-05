@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyAction, clamp, createInitialPet, GROWTH_BOND, growthStage, hydratePet, moodFor, tick, actionBlockReason, BOND_COOLDOWN_MS } from '../pet.js';
+import { applyAction, clamp, createInitialPet, GROWTH_BOND, growthStage, hydratePet, moodFor, tick, actionBlockReason, BOND_COOLDOWN_MS, minutesUntilWake } from '../pet.js';
 
 test('initial state is playable and bounded', () => { const pet = createInitialPet(123); assert.equal(pet.lastSavedAt, 123); assert.ok(pet.hunger > 0 && pet.happiness > 0 && pet.energy > 0); });
 test('care actions raise the permanent bond while rest does not', () => {
@@ -88,7 +88,7 @@ test('relationship cooldown is shared across actions, persists on reload, and ca
 });
 
 test('rejected actions do not award bond or change needs', () => {
-  for (const [action, state] of [['feed',{hunger:100}],['snack',{happiness:100}],['play',{energy:7}],['clean',{hygiene:100}],['groom',{hygiene:100}],['pet',{sleeping:true}]]) {
+  for (const [action, state] of [['feed',{hunger:100}],['snack',{hunger:100}],['play',{energy:7}],['clean',{hygiene:100}],['groom',{hygiene:100}],['pet',{sleeping:true}],['rest',{hunger:10}]]) {
     const pet = {...createInitialPet(),...state};
     assert.ok(actionBlockReason(pet,action));
     assert.equal(applyAction(pet,action),pet);
@@ -104,4 +104,45 @@ test('minute-by-minute decay matches one elapsed batch; sleep restores energy', 
   assert.equal(tick(sleeping,5).energy,58);
   assert.equal(hydratePet(sleeping).sleeping,true);
   assert.equal(tick(start,-100).hunger,start.hunger);
+});
+
+test('a hungry pet can have a snack even when already happy', () => {
+  const pet = { ...createInitialPet(0), hunger: 30, happiness: 100 };
+  assert.equal(actionBlockReason(pet, 'snack'), '');
+  const after = applyAction(pet, 'snack', 0);
+  assert.equal(after.hunger, 34);
+  assert.equal(after.happiness, 100);
+});
+
+test('a sleeping pet wakes by itself when fully rested', () => {
+  const asleep = { ...createInitialPet(0), energy: 30, hunger: 80, sleeping: true };
+  assert.equal(minutesUntilWake(asleep), 35);
+  assert.equal(tick(asleep, 34).sleeping, true);
+  assert.equal(tick(asleep, 34).energy, 98);
+  const rested = tick(asleep, 35);
+  assert.equal(rested.sleeping, false);
+  assert.equal(rested.energy, 100);
+  assert.equal(tick(asleep, 45).energy, 99); // awake for the last 10 minutes
+});
+
+test('a sleeping pet wakes up when hunger drops below the floor', () => {
+  const asleep = { ...createInitialPet(0), energy: 10, hunger: 20, sleeping: true };
+  assert.equal(minutesUntilWake(asleep), 13);
+  const woke = tick(asleep, 13);
+  assert.equal(woke.sleeping, false);
+  assert.equal(woke.hunger, 14.8);
+  assert.equal(tick(asleep, 12).sleeping, true);
+});
+
+test('waking up gives the same result in one batch or minute by minute', () => {
+  for (const start of [
+    { ...createInitialPet(0), energy: 30, hunger: 80, sleeping: true },
+    { ...createInitialPet(0), energy: 10, hunger: 20, sleeping: true },
+    { ...createInitialPet(0), energy: 99.5, hunger: 55, sleeping: true },
+  ]) {
+    let stepped = start;
+    for (let i = 0; i < 240; i++) stepped = tick(stepped, 1);
+    assert.deepEqual(tick(start, 240), stepped);
+    assert.equal(stepped.sleeping, false);
+  }
 });

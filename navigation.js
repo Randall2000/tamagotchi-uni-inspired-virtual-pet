@@ -24,6 +24,18 @@ export const menus = {
   ],
 };
 
+export const DEBOUNCE_MS = 120;
+
+// Ignores a second press of the same key within the window; different keys never block each other.
+export function makeDebouncer(windowMs = DEBOUNCE_MS) {
+  const last = new Map();
+  return (key, now) => {
+    if (now - (last.get(key) ?? -Infinity) < windowMs) return false;
+    last.set(key, now);
+    return true;
+  };
+}
+
 export class Navigation {
   constructor() {
     this.screen = 'room';
