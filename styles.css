@@ -313,3 +313,48 @@ footer {
   .app-shell { padding: 24px 8px; }
   .device { padding-left: 10px; padding-right: 10px; }
 }
+
+/* Pixel UI: crisp edges, fixed palette, and stepped shadows. */
+:root {
+  --ink: #342b24;
+  --muted: #75634b;
+  --paper: #ded4bf;
+  --shell: #eab86e;
+  --outline: #49372a;
+  --cream: #fff0c4;
+  --screen-bg: #f4dfaa;
+}
+body, button, .menu-option, .quick-actions .quick-item, .screen-top,
+.screen-toast, .screen-hint, .helper, footer, header, .brand {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, "PingFang TC", monospace;
+  letter-spacing: 0;
+}
+.app-shell { image-rendering: pixelated; }
+header { margin-bottom: 18px; }
+h1 { font-family: ui-monospace, "PingFang TC", monospace; font-weight: 900; letter-spacing: 0; }
+.device {
+  border: 3px solid #59422e;
+  border-radius: 28px;
+  box-shadow: inset 4px 4px 0 #ffdc96, inset -4px -5px 0 #cf9550, 0 7px 0 #92754e;
+}
+.brand { font-weight: 900; }
+.bezel { border: 3px solid #33281f; border-radius: 5px; box-shadow: none; }
+.screen { border-radius: 0; }
+.screen-top, .quick-actions { border-color: #47382a; }
+.screen-toast {
+  border: 2px solid #49372a;
+  border-radius: 0;
+  box-shadow: 3px 3px 0 #49372a;
+}
+.quick-actions { box-shadow: none; }
+.quick-actions .quick-item { border-radius: 0; }
+.quick-actions .quick-item.is-selected { border: 2px solid #30251d; box-shadow: inset 2px 2px 0 #9b7953; }
+.quick-actions .quick-item.is-selected::after { border-radius: 0; height: 3px; }
+.menu-heading { border-bottom: 2px solid #58432e; }
+.back-glyph, .menu-option { border-radius: 0; box-shadow: 2px 2px 0 #665039; }
+.menu-option { border: 2px solid #947548; }
+.menu-option.selected { border: 2px solid #30251d; box-shadow: inset 2px 2px 0 #9b7953; }
+.screen-hint { background: #f9edc9; border-top: 1px solid #bba276; }
+.controls button { border: 3px solid #49372a; box-shadow: inset 2px 2px 0 #eaa17a, 0 4px 0 #49372a; }
+.controls button:active, .controls button.is-pressed { transform: translateY(2px); box-shadow: inset 2px 2px 0 #975b3d, 0 2px 0 #49372a; }
+.device-model, .speaker { color: #654a2c; }
