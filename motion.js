@@ -1,124 +1,49 @@
-// Deterministic sprite frames from the user's 4x4 atlas.
-// Row 0: neutral/blink; row 1: feed; row 2: groom; row 3: ball play.
-// Do NOT animate the entire pet element with transforms or CSS wobble.
-export const FRAME_COUNT = 16;
-export const SPRITE_ATLAS = '/public/assets/momo-16frames.png';
-export const KITTEN_ATLAS = '/public/assets/momo-kitten-actions-v1.png';
-
+// 8 action rows x 8 original poses, with drawn tail variations in both age atlases.
+export const FRAME_COUNT = 64;
+export const SPRITE_ATLAS = '/public/assets/momo-adult-64-v2.png';
+export const KITTEN_ATLAS = '/public/assets/momo-kitten-64-v2.png';
 export function atlasFor(stage = 'adult') {
-  return stage === 'kitten'
-    ? { src: KITTEN_ATLAS, columns: 4, rows: 8, frames: 32 }
-    : { src: SPRITE_ATLAS, columns: 4, rows: 4, frames: FRAME_COUNT };
+  return { src: stage === 'kitten' ? KITTEN_ATLAS : SPRITE_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
 }
-
-// All action animation is done by replacing frames while keeping the pet anchored.
+const captions = {
+  blink: ['陪著你','搖搖尾巴','眨眨眼','閉上眼睛','張開眼睛','動動耳朵','看看你','陪著你'],
+  feed: ['聞到香味','看看碗裡','張嘴吃一口','慢慢咀嚼','再嚼一下','吃得開心','舔舔嘴巴','吃完了'],
+  clean: ['準備洗臉','抬起小爪','舔舔爪子','再舔一下','擦擦臉頰','擦擦額頭','放下爪子','乾淨了'],
+  play: ['發現毛線球','觀察一下','伸出小爪','碰到毛線球','推推毛線球','再拍拍一下','收回爪子','玩得開心'],
+  rest: ['有點想睡','打個呵欠','收起呵欠','眼皮變重','閉上眼睛','放鬆下來','安靜休息','睡著了'],
+  pet: ['看著你','放鬆耳朵','喜歡摸摸','瞇起眼睛','好舒服','張開眼睛','開心陪伴','陪著你'],
+  stretch: ['準備伸展','抬起小爪','伸出雙爪','慢慢伸展','再伸一下','收回雙爪','放下小爪','舒服了'],
+  window: ['看看窗外','望向左邊','聽聽聲音','轉回目光','望向右邊','好奇看看','眨眨眼睛','回頭看你'],
+};
+const phases = ['anticipation','anticipation','action','action','action','reaction','recover','idle'];
+const row = (name, start, ms, order = [0,1,2,3,4,5,6,7]) => order.map(i => ({ frame:start+i, caption:captions[name][i], phase:phases[i], ms }));
 export const sequences = Object.freeze({
-  blink: [
-    { frame: 1, caption: '眨眨眼', phase: 'blink', ms: 130 },
-    { frame: 2, caption: '眨眨眼', phase: 'blink', ms: 150 },
-    { frame: 3, caption: '眨眨眼', phase: 'blink', ms: 130 },
-    { frame: 0, caption: '陪著你', phase: 'idle', ms: 150 },
-  ],
-  feed: [
-    { frame: 4, caption: '聞到香味了', phase: 'notice', ms: 260 },
-    { frame: 5, caption: '張嘴吃一口', phase: 'bite', ms: 220 },
-    { frame: 6, caption: '慢慢嚼', phase: 'chew', ms: 210 },
-    { frame: 7, caption: '舔舔嘴巴', phase: 'lick', ms: 240 },
-    { frame: 5, caption: '再吃一口', phase: 'bite', ms: 200 },
-    { frame: 6, caption: '嚼嚼', phase: 'chew', ms: 220 },
-    { frame: 7, caption: '吃飽了！', phase: 'reward', ms: 420 },
-  ],
-  play: [
-    { frame: 12, caption: '找到毛線球', phase: 'notice', ms: 310 },
-    { frame: 13, caption: '伸出爪爪', phase: 'reach', ms: 230 },
-    { frame: 14, caption: '推推毛線球', phase: 'bat', ms: 230 },
-    { frame: 15, caption: '收回小爪', phase: 'return', ms: 220 },
-    { frame: 14, caption: '再拍拍一下', phase: 'bat', ms: 230 },
-    { frame: 13, caption: '收回小爪', phase: 'return', ms: 230 },
-    { frame: 15, caption: '玩得開心！', phase: 'reward', ms: 440 },
-  ],
-  clean: [
-    { frame: 8, caption: '抬起小爪子', phase: 'notice', ms: 240 },
-    { frame: 9, caption: '舔舔爪子', phase: 'scrub', ms: 260 },
-    { frame: 10, caption: '擦擦小臉', phase: 'rinse', ms: 280 },
-    { frame: 11, caption: '換另一邊', phase: 'scrub', ms: 260 },
-    { frame: 9, caption: '舔舔爪子', phase: 'scrub', ms: 260 },
-    { frame: 10, caption: '乾淨了！', phase: 'reward', ms: 400 },
-  ],
-  rest: [
-    { frame: 0, caption: '準備休息', phase: 'notice', ms: 370 },
-    { frame: 1, caption: '眼皮變重了', phase: 'drowsy', ms: 350 },
-    { frame: 2, caption: '睡著了', phase: 'sleep', ms: 380 },
-  ],
-  wake: [
-    { frame: 2, caption: '醒來囉', phase: 'notice', ms: 280 },
-    { frame: 3, caption: '張開眼睛', phase: 'wake', ms: 240 },
-    { frame: 0, caption: '精神滿滿', phase: 'reward', ms: 280 },
-  ],
-  pet: [
-    { frame: 8, caption: '抬起爪爪', phase: 'notice', ms: 260 },
-    { frame: 10, caption: '好舒服', phase: 'nuzzle', ms: 320 },
-    { frame: 0, caption: '喵～', phase: 'reward', ms: 300 },
-  ],
-  groom: [
-    { frame: 8, caption: '準備洗臉', phase: 'notice', ms: 270 },
-    { frame: 9, caption: '舔舔爪子', phase: 'scrub', ms: 270 },
-    { frame: 10, caption: '洗洗臉', phase: 'rinse', ms: 270 },
-    { frame: 11, caption: '清爽！', phase: 'reward', ms: 340 },
-  ],
-  // The sheet has no distinct stretch/window illustrations. Use neutral poses
-  // rather than moving, rotating or stretching the full sprite as a substitute.
-  stretch: [
-    { frame: 0, caption: '活動一下', phase: 'notice', ms: 360 },
-    { frame: 8, caption: '伸伸爪爪', phase: 'reach', ms: 440 },
-    { frame: 0, caption: '舒服！', phase: 'reward', ms: 380 },
-  ],
-  window: [
-    { frame: 0, caption: '看看窗外', phase: 'notice', ms: 450 },
-    { frame: 1, caption: '靜靜觀察', phase: 'watch', ms: 390 },
-    { frame: 0, caption: '看完了', phase: 'reward', ms: 350 },
-  ],
+  blink: row('blink',0,220),
+  feed: row('feed',8,450,[0,1,2,3,4,3,4,5,6,7]),
+  clean: row('clean',16,460,[0,1,2,3,4,5,3,4,6,7]),
+  play: row('play',24,460,[0,1,2,3,4,5,3,4,6,7]),
+  rest: row('rest',32,650),
+  wake: [39,38,37,36,35,34,33,32,0].map(frame=>({frame,caption:'慢慢醒來',phase:'recover',ms:380})),
+  sleep: [37,38,39,38,37,38,39,39].map(frame=>({frame,caption:'安靜熟睡',phase:'sleep',ms:500})),
+  pet: row('pet',40,500),
+  groom: row('clean',16,460,[0,1,2,3,4,5,3,4,6,7]),
+  stretch: row('stretch',48,550),
+  window: row('window',56,550),
 });
-
-const kittenRow = (start, captions, phases, ms = 300) => captions.map((caption, i) => ({
-  frame: start + i, caption, phase: phases[i], ms,
-}));
-export const kittenSequences = Object.freeze({
-  ...sequences,
-  rest: kittenRow(16, ['想睡了', '閉上眼睛', '放鬆休息', '熟睡中'], ['notice', 'drowsy', 'settle', 'sleep'], 380),
-  wake: [19, 18, 17, 16, 0].map(frame => ({ frame, caption: '慢慢醒來', phase: 'wake', ms: 240 })),
-  pet: kittenRow(20, ['看著你', '喜歡摸摸', '好舒服', '陪著你'], ['notice', 'nuzzle', 'relax', 'reward']),
-  stretch: kittenRow(24, ['準備伸懶腰', '抬起雙爪', '伸展小爪', '放下小爪'], ['notice', 'reach', 'stretch', 'return'], 360),
-  window: kittenRow(28, ['看向窗外', '看看左邊', '看看右邊', '回頭看你'], ['notice', 'watch', 'watch', 'return'], 380),
-});
-
+export const kittenSequences = sequences;
 export function timelineFor(action, stage = 'adult') {
-  return (stage === 'kitten' ? kittenSequences : sequences)[action] || null;
+  return sequences[action === 'snack' ? 'feed' : action] || null;
 }
 export function framePosition(frame, stage = 'adult') {
-  const atlas = atlasFor(stage);
-  if (!Number.isInteger(frame) || frame < 0 || frame >= atlas.frames) {
-    throw new RangeError('Invalid sprite frame: ' + frame);
-  }
-  return {
-    column: frame % 4,
-    row: Math.floor(frame / 4),
-    x: (frame % 4) * (100 / 3),
-    y: Math.floor(frame / 4) * (100 / (atlas.rows - 1)),
-  };
+  if (!Number.isInteger(frame) || frame < 0 || frame >= FRAME_COUNT) throw new RangeError('Invalid sprite frame: ' + frame);
+  return { column:frame%8,row:Math.floor(frame/8),x:(frame%8)*100/7,y:Math.floor(frame/8)*100/7 };
 }
-
-// Source-pixel registration, measured on the opaque feet (excluding props).
-// Correct cell placement without rescaling individual poses or the pet container.
+// Registered from source face center / planted foot baseline, excluding props.
+// This offsets bitmap contents inside a fixed cell; it never scales individual poses.
+const anchors = {"kitten":[[86.0,147.0],[86.25,147.0],[86.5,147.0],[86.75,147.0],[87.5,147.0],[87.25,147.0],[88.5,147.0],[87.75,147.0],[86.5,147.25],[86.25,147.25],[86.5,147.25],[87.75,147.25],[87.5,148.25],[87.25,147.25],[88.5,148.25],[87.75,147.25],[86.0,147.5],[86.25,147.5],[86.5,147.5],[86.75,147.5],[88.0,147.5],[87.25,147.5],[88.5,148.5],[87.75,147.5],[86.0,147.75],[87.25,147.75],[87.5,147.75],[87.25,147.75],[88.0,147.75],[87.25,147.75],[87.5,147.75],[86.75,147.75],[86.5,147.0],[86.25,147.0],[86.5,147.0],[86.75,147.0],[87.5,147.0],[86.75,147.0],[87.5,147.0],[87.25,147.0],[86.5,147.25],[87.25,147.25],[87.5,147.25],[87.75,147.25],[88.0,147.25],[87.25,147.25],[88.5,147.25],[87.75,147.25],[86.0,147.5],[87.25,147.5],[86.5,147.5],[86.75,147.5],[88.0,147.5],[88.25,147.5],[87.5,147.5],[87.75,147.5],[86.0,146.75],[86.25,147.75],[86.5,147.75],[86.75,147.75],[88.0,147.75],[88.25,147.75],[87.5,147.75],[86.75,146.75]],"adult":[[94.0,147.0],[93.25,147.0],[93.5,147.0],[93.75,147.0],[94.0,147.0],[93.25,147.0],[93.5,147.0],[93.75,147.0],[94.0,146.25],[91.25,146.25],[93.5,146.25],[92.75,147.25],[91.0,147.25],[91.25,146.25],[93.5,147.25],[93.25,147.25],[94.0,146.5],[93.25,146.5],[93.5,147.5],[92.75,147.5],[93.0,146.5],[93.25,146.5],[93.0,146.5],[93.75,147.5],[94.0,146.75],[92.25,147.75],[93.5,147.75],[93.75,147.75],[93.0,146.75],[93.25,147.75],[93.5,147.75],[93.75,147.75],[94.0,147.0],[93.25,147.0],[93.5,147.0],[93.25,147.0],[93.0,147.0],[91.25,147.0],[93.5,147.0],[93.25,147.0],[94.0,146.25],[93.25,146.25],[93.0,146.25],[93.25,146.25],[93.0,146.25],[94.25,146.25],[92.5,146.25],[93.75,146.25],[94.0,146.5],[93.25,146.5],[93.5,146.5],[93.75,146.5],[93.0,146.5],[93.25,146.5],[92.5,146.5],[93.75,146.5],[94.0,146.75],[92.25,146.75],[92.5,146.75],[93.75,146.75],[95.0,146.75],[93.25,146.75],[93.5,146.75],[93.75,146.75]]};
 export function frameRegistration(frame, stage = 'adult') {
-  framePosition(frame, stage);
-  if (stage !== 'kitten') return { x: 0, y: 0 };
-  const ground = [204,203,203,204,203,203,203,203,202,202,202,202,204,204,204,203,
-    202,202,202,202,202,202,202,202,202,202,202,202,202,202,202,202];
-  const cell = 887 / 4;
-  const rowStart = Math.floor(frame / 4) * cell;
-  return {
-    x: [0, -.25, -.5, -1][frame % 4] * 156 / cell,
-    y: (204 - ground[frame] - (Math.round(rowStart) - rowStart)) * 156 / cell,
-  };
+  framePosition(frame,stage);
+  const [x,y] = anchors[stage === 'kitten' ? 'kitten' : 'adult'][frame];
+  const cell = 1254/8;
+  return { x:(cell/2-x)*156/cell, y:(147-y)*156/cell };
 }

@@ -3,3 +3,4 @@
 
 .playwright-cli/
 output/playwright/
+.DS_Store

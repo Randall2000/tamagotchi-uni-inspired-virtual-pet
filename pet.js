@@ -1,9 +1,10 @@
 export const MAX_STAT = 100;
 export const GROWTH_BOND = Object.freeze({ kitten: 0, growing: 10, adult: 30 });
 const BOND_GAINS = Object.freeze({ feed: 1, play: 2, clean: 1, pet: 2, groom: 1 });
+export const BOND_COOLDOWN_MS = 60000;
 export const INITIAL_PET = Object.freeze({
   name: 'MOMO', age: 1, ageMinutes: 0, bond: 0, hunger: 78, happiness: 72,
-  hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0,
+  hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0, lastBondAt: null, sleeping: false,
 });
 
 export function clamp(value, min = 0, max = MAX_STAT) {
@@ -17,13 +18,31 @@ export function createInitialPet(now = Date.now()) {
   return { ...INITIAL_PET, lastSavedAt: now };
 }
 
-export function applyAction(pet, action) {
+export function actionBlockReason(pet, action) {
+  if (pet.sleeping) return '熟睡中 · B / C 喚醒';
+  if (action === 'feed' && pet.hunger >= 100) return '已經吃飽了，晚點再吃';
+  if (action === 'snack' && (pet.hunger >= 100 || pet.happiness >= 100)) return '現在不需要點心';
+  if (action === 'play' && pet.energy < 8) return '有點累了 · 選單→休息';
+  if (['clean', 'groom'].includes(action) && pet.hygiene >= 100) return '已經很乾淨了';
+  return '';
+}
+
+export function applyAction(pet, action, now = Date.now()) {
+  if (actionBlockReason(pet, action)) return pet;
   const next = { ...pet };
-  next.bond = clamp((next.bond || 0) + (BOND_GAINS[action] || 0));
+  const gain = BOND_GAINS[action] || 0;
+  const eligible = pet.lastBondAt == null || now - pet.lastBondAt >= BOND_COOLDOWN_MS;
+  if (gain && eligible) {
+    next.bond = clamp((next.bond || 0) + gain);
+    next.lastBondAt = now;
+  }
   if (action === 'feed') {
     next.hunger = clamp(next.hunger + 12);
     next.energy = clamp(next.energy - 2);
-    next.coins += 1; // Existing prototype economy; will be reconciled with Rust core.
+  }
+  if (action === 'snack') {
+    next.hunger = clamp(next.hunger + 4);
+    next.happiness = clamp(next.happiness + 6);
   }
   if (action === 'play') {
     next.happiness = clamp(next.happiness + 14);
@@ -37,24 +56,27 @@ export function applyAction(pet, action) {
   if (action === 'rest') {
     next.energy = clamp(next.energy + 18);
     next.hunger = clamp(next.hunger - 2);
+    next.sleeping = true;
   }
   if (action === 'pet') {
     next.happiness = clamp(next.happiness + 8);
   }
+  if (action === 'groom') next.hygiene = clamp(next.hygiene + 10);
   return next;
 }
 
 export function tick(pet, minutes = 1) {
-  const elapsed = Math.max(0, Math.floor(minutes));
+  const elapsed = Number.isFinite(minutes) ? Math.max(0, Math.floor(minutes)) : 0;
+  const bounded = value => Math.min(100, Math.max(0, Math.round(value * 100) / 100));
   const ageMinutes = (Number.isFinite(pet.ageMinutes) ? pet.ageMinutes : 0) + elapsed;
   return {
     ...pet,
     ageMinutes,
     age: Math.max(pet.age, Math.floor(ageMinutes / 1440) + 1),
-    hunger: clamp(pet.hunger - elapsed * 0.4),
-    happiness: clamp(pet.happiness - elapsed * 0.15),
-    hygiene: clamp(pet.hygiene - elapsed * 0.12),
-    energy: clamp(pet.energy - elapsed * 0.1),
+    hunger: bounded(pet.hunger - elapsed * 0.4),
+    happiness: bounded(pet.happiness - elapsed * 0.15),
+    hygiene: bounded(pet.hygiene - elapsed * 0.12),
+    energy: bounded(pet.energy + elapsed * (pet.sleeping ? 2 : -0.1)),
   };
 }
 
@@ -97,5 +119,16 @@ export function hydratePet(raw, now = Date.now()) {
   }
   if (typeof raw.name === 'string' && raw.name.length <= 20) restored.name = raw.name;
   if (Number.isFinite(raw.lastSavedAt) && raw.lastSavedAt >= 0) restored.lastSavedAt = raw.lastSavedAt;
+  if (Number.isFinite(raw.lastBondAt) && raw.lastBondAt >= 0) restored.lastBondAt = Math.min(raw.lastBondAt, now);
+  restored.sleeping = raw.sleeping === true;
   return restored;
+}
+
+export function needsNotice(pet) {
+  if (pet.sleeping) return '熟睡中 · B / C 喚醒';
+  if (pet.hunger < 25) return '肚子餓了 · 食物→正餐';
+  if (pet.energy < 15) return '想休息了 · 選單→休息';
+  if (pet.hygiene < 25) return '想洗乾淨 · 清潔';
+  if (pet.happiness < 25) return '想和你玩 · 玩耍 / 陪伴';
+  return 'A 選擇 · B 確認';
 }

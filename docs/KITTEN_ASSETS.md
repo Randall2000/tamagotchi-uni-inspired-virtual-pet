@@ -1,3 +1,5 @@
+> 歷史版本：目前已改用各 64 格的 v2 圖集，見 [ANIMATION_V2.md](ANIMATION_V2.md)。
+
 # MOMO 幼年專屬動作圖集 v1
 
 素材：`public/assets/momo-kitten-actions-v1.png`，887×1774，RGBA 透明 PNG，4 欄×8 列，共 32 格。使用內建 imagegen 生成；原始參考為 `momo-kitten.png`。

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyAction, clamp, createInitialPet, GROWTH_BOND, growthStage, hydratePet, moodFor, tick } from '../pet.js';
+import { applyAction, clamp, createInitialPet, GROWTH_BOND, growthStage, hydratePet, moodFor, tick, actionBlockReason, BOND_COOLDOWN_MS } from '../pet.js';
 
 test('initial state is playable and bounded', () => { const pet = createInitialPet(123); assert.equal(pet.lastSavedAt, 123); assert.ok(pet.hunger > 0 && pet.happiness > 0 && pet.energy > 0); });
 test('care actions raise the permanent bond while rest does not', () => {
@@ -32,17 +32,18 @@ test('growth follows permanent bond and never reverses when needs decay', () => 
   assert.equal(older.age, 10);
   assert.equal(growthStage(older), 'kitten');
   let cared = older;
-  for (let i = 0; i < 4; i++) cared = applyAction(cared, 'pet');
+  let now = 1000;
+  for (let i = 0; i < 4; i++) cared = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(cared.bond, GROWTH_BOND.growing - 2);
   assert.equal(growthStage(cared), 'kitten');
-  const growing = applyAction(cared, 'pet');
+  const growing = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(growing.bond, GROWTH_BOND.growing);
   assert.equal(growthStage(growing), 'growing');
   cared = growing;
-  for (let i = 0; i < 9; i++) cared = applyAction(cared, 'pet');
+  for (let i = 0; i < 9; i++) cared = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(cared.bond, GROWTH_BOND.adult - 2);
   assert.equal(growthStage(cared), 'growing');
-  const adult = applyAction(cared, 'pet');
+  const adult = applyAction(cared, 'pet', now += BOND_COOLDOWN_MS);
   assert.equal(adult.bond, GROWTH_BOND.adult);
   assert.equal(growthStage(adult), 'adult');
   assert.equal(growthStage(tick(adult, 365 * 1440)), 'adult');
@@ -50,4 +51,35 @@ test('growth follows permanent bond and never reverses when needs decay', () => 
   // Legacy saves retain any growth already earned under the age-based rule.
   assert.equal(growthStage(hydratePet({ age: 8, ageMinutes: 0 })), 'adult');
   assert.equal(hydratePet({ age: 8, bond: 0 }).bond, 0);
+});
+
+
+test('relationship cooldown is shared across actions, persists on reload, and cannot reverse growth', () => {
+  const first = applyAction(createInitialPet(1000), 'pet', 1000);
+  assert.equal(first.bond, 2);
+  const second = applyAction(first, 'feed', 1001);
+  assert.equal(second.bond, 2);
+  assert.equal(second.hunger, 90);
+  const restored = hydratePet(second, 2000);
+  assert.equal(applyAction(restored, 'clean', 2000).bond, 2);
+  assert.equal(applyAction(restored, 'pet', 1000 + BOND_COOLDOWN_MS).bond, 4);
+});
+
+test('rejected actions do not award bond or change needs', () => {
+  for (const [action, state] of [['feed',{hunger:100}],['snack',{happiness:100}],['play',{energy:7}],['clean',{hygiene:100}],['groom',{hygiene:100}],['pet',{sleeping:true}]]) {
+    const pet = {...createInitialPet(),...state};
+    assert.ok(actionBlockReason(pet,action));
+    assert.equal(applyAction(pet,action),pet);
+  }
+});
+
+test('minute-by-minute decay matches one elapsed batch; sleep restores energy', () => {
+  const start = createInitialPet();
+  let repeated = start;
+  for(let i=0;i<10;i++) repeated=tick(repeated,1);
+  assert.deepEqual(repeated,tick(start,10));
+  const sleeping=applyAction({...start,energy:30},'rest');
+  assert.equal(tick(sleeping,5).energy,58);
+  assert.equal(hydratePet(sleeping).sleeping,true);
+  assert.equal(tick(start,-100).hunger,start.hunger);
 });

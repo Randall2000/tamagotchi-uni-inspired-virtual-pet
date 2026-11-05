@@ -2,15 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Navigation, menus, quickActions } from '../navigation.js';
 
-test('home screen uses A to move focus and B to run only the focused command', () => {
+test('food opens a preview and action selection retains its return location', () => {
   const n = new Navigation();
-  assert.equal(n.quickCursor, 0);
+  assert.equal(n.key('b'), null);
+  assert.equal(n.screen, 'food');
   assert.equal(n.key('b'), 'feed');
-  assert.equal(n.screen, 'room');
+  assert.equal(n.screen, 'food');
   n.key('a');
-  assert.equal(n.quickCursor, 1);
-  assert.equal(n.key('b'), 'play');
-  assert.equal(n.quickCursor, 1, 'preserve selection after completing the action');
+  assert.equal(n.key('b'), 'snack');
+  assert.equal(n.cursor, 1);
+  n.key('c');
+  assert.equal(n.screen, 'room');
+  assert.equal(n.quickCursor, 0);
 });
 
 test('A cycles through all six non-touch screen shortcuts and wraps to first', () => {
@@ -39,13 +42,13 @@ test('full menu is controlled by A/B/C only, preserving selection on returning f
   n.enter('main');
   for (let i = 0; i < menus.main.length; i++) n.key('a');
   assert.equal(n.cursor, 0);
-  for (let i = 0; i < 4; i++) n.key('a');
+  n.key('a');
   assert.equal(n.key('b'), null);
   assert.equal(n.screen, 'interact');
   n.key('a');
   assert.equal(n.key('c'), null);
   assert.equal(n.screen, 'main');
-  assert.equal(n.cursor, 4);
+  assert.equal(n.cursor, 1);
   n.key('c');
   assert.equal(n.screen, 'room');
 });
@@ -73,7 +76,7 @@ test('reset requires explicit second selection; default B preserves progress', (
   n.key('b');
   n.key('a');
   assert.equal(n.key('b'), 'reset');
-  assert.equal(n.screen, 'room');
+  assert.equal(n.screen, 'confirm');
 });
 
 test('invalid keys never trigger a care action', () => {

@@ -20,9 +20,8 @@
     <div class="bezel">
       <div class="screen" id="screen">
         <div class="screen-top">
-          <span id="pet-age">第 1 天</span>
-          <span id="clock">--:--</span>
-          <span class="screen-indicator" aria-hidden="true">●</span>
+          <div class="top-line"><span id="pet-age">幼年</span><span id="clock">--:--</span></div>
+          <div class="bond-line"><span>關係</span><span id="bond-hearts" role="img" aria-label="關係度 0 / 100"></span><span id="bond-value">0/100</span></div>
         </div>
         <div class="scene" id="room-scene" data-action="idle" data-phase="idle">
           <img class="room-art" src="/public/assets/momo-room.png" alt="MOMO 的像素房間">
@@ -30,23 +29,15 @@
             <div id="pet-atlas" role="img" aria-label="MOMO 陪著你"></div>
           </div>
         </div>
-        <div class="screen-toast" id="screen-message" role="status" aria-live="polite" hidden></div>
-        <nav class="quick-actions" id="quick-actions" aria-label="三鍵選取功能列">
-          <ul>
-            <li class="quick-item is-selected" data-quick="feed" aria-current="true">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16l-2 7H6l-2-7ZM7 9l3-4m3 4 3-4"/></svg><span>餵食</span></li>
-            <li class="quick-item" data-quick="play">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3Z"/></svg><span>玩耍</span></li>
-            <li class="quick-item" data-quick="clean">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-3 4-6 7.2-6 11a6 6 0 0 0 12 0c0-3.8-3-7-6-11Zm-3 12a3.5 3.5 0 0 0 3 3"/></svg><span>清潔</span></li>
-            <li class="quick-item" data-quick="rest">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.3A8 8 0 0 1 8.7 4 8 8 0 1 0 20 15.3Z"/></svg><span id="rest-label">睡覺</span></li>
-            <li class="quick-item" data-quick="status">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V9m7 10V5m7 14v-7M3 20h18"/></svg><span>狀態</span></li>
-            <li class="quick-item" data-quick="main">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>選單</span></li>
-          </ul>
-        </nav>
+        <div class="screen-status" id="screen-message" role="status" aria-live="polite">A 選擇 · B 確認</div>
+        <nav class="quick-actions" id="quick-actions" aria-label="三鍵選取功能列"><ul>
+          <li class="quick-item is-selected" data-quick="food" aria-current="true"><span class="pixel-icon" data-icon="food" aria-hidden="true"></span><span>食物</span></li>
+          <li class="quick-item" data-quick="care"><span class="pixel-icon" data-icon="care" aria-hidden="true"></span><span>清潔</span></li>
+          <li class="quick-item" data-quick="toys"><span class="pixel-icon" data-icon="play" aria-hidden="true"></span><span>玩耍</span></li>
+          <li class="quick-item" data-quick="pet"><span class="pixel-icon" data-icon="heart" aria-hidden="true"></span><span>陪伴</span></li>
+          <li class="quick-item" data-quick="status"><span class="pixel-icon" data-icon="status" aria-hidden="true"></span><span>狀態</span></li>
+          <li class="quick-item" data-quick="main"><span class="pixel-icon" data-icon="menu" aria-hidden="true"></span><span>選單</span></li>
+        </ul></nav>
         <section id="device-menu" aria-label="完整操作選單" hidden>
           <div class="menu-heading">
             <span class="back-glyph" aria-hidden="true">‹</span>
@@ -55,7 +46,7 @@
           </div>
           <ul id="menu-items" aria-label="選擇功能"></ul>
           <div id="detail-content"></div>
-          <div class="screen-hint">A 選擇　B 確認　C 返回</div>
+          <div class="screen-hint" id="menu-hint">A 選擇　B 確認　C 返回</div>
         </section>
       </div>
     </div>
@@ -68,7 +59,7 @@
     <div class="speaker" aria-hidden="true">•••••</div>
   </section>
   <p class="helper" id="helper">螢幕不支援觸控。A 選功能、B 確認、C 返回。<br>也可以使用鍵盤 A / B / C 或 J / K / L。</p>
-  <footer><span>像素貓咪 · 本機自動存檔</span><span>v0.5</span></footer>
+  <footer><span>像素貓咪 · 本機自動存檔</span><span>v0.6</span></footer>
 </main>
 <script type="module" src="/app.js"></script>
 </body>
