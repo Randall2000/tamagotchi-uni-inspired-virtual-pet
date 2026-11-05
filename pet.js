@@ -6,7 +6,7 @@ export const GROWTH_STAGES = Object.freeze(['kitten', 'growing', 'adult']);
 const BOND_GAINS = Object.freeze({ feed: 1, play: 2, clean: 1, pet: 2, groom: 1 });
 export const BOND_COOLDOWN_MS = 60000;
 export const INITIAL_PET = Object.freeze({
-  name: 'MOMO', age: 1, ageMinutes: 0, bond: 0, hunger: 78, happiness: 72,
+  name: 'didi', age: 1, ageMinutes: 0, bond: 0, hunger: 78, happiness: 72,
   hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0, lastBondAt: null, sleeping: false, stageFloor: 'kitten',
 });
 
@@ -25,7 +25,7 @@ export function actionBlockReason(pet, action) {
   if (pet.sleeping) return '熟睡中 · B / C 喚醒';
   if (action === 'feed' && pet.hunger >= 100) return '已經吃飽了，晚點再吃';
   if (action === 'snack' && (pet.hunger >= 100 || pet.happiness >= 100)) return '現在不需要點心';
-  if (action === 'play' && pet.energy < 8) return '有點累了 · 選單→休息';
+  if (action === 'play' && pet.energy < 8) return '有點累了 · 選單→睡覺';
   if (['clean', 'groom'].includes(action) && pet.hygiene >= 100) return '已經很乾淨了';
   return '';
 }
@@ -129,7 +129,8 @@ export function hydratePet(raw, now = Date.now()) {
   restored.stageFloor = GROWTH_STAGES.includes(raw.stageFloor)
     ? raw.stageFloor
     : stageForBond(restored.bond, LEGACY_GROWTH_BOND);
-  if (typeof raw.name === 'string' && raw.name.length <= 20) restored.name = raw.name;
+  // The pet was renamed from the placeholder MOMO to didi; custom names are kept.
+  if (typeof raw.name === 'string' && raw.name.length <= 20 && raw.name !== 'MOMO') restored.name = raw.name;
   if (Number.isFinite(raw.lastSavedAt) && raw.lastSavedAt >= 0) restored.lastSavedAt = raw.lastSavedAt;
   if (Number.isFinite(raw.lastBondAt) && raw.lastBondAt >= 0) restored.lastBondAt = Math.min(raw.lastBondAt, now);
   restored.sleeping = raw.sleeping === true;
@@ -138,9 +139,9 @@ export function hydratePet(raw, now = Date.now()) {
 
 export function needsNotice(pet) {
   if (pet.sleeping) return '熟睡中 · B / C 喚醒';
-  if (pet.hunger < 25) return '肚子餓了 · 食物→正餐';
-  if (pet.energy < 15) return '想休息了 · 選單→休息';
+  if (pet.hunger < 25) return '肚子餓了 · 餐食';
+  if (pet.energy < 15) return '想睡覺了 · 選單→睡覺';
   if (pet.hygiene < 25) return '想洗乾淨 · 清潔';
-  if (pet.happiness < 25) return '想和你玩 · 玩耍 / 陪伴';
+  if (pet.happiness < 25) return '想和你玩 · 玩耍 / 摸摸';
   return 'A 選擇 · B 確認';
 }

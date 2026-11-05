@@ -1,10 +1,10 @@
-# MOMO · 原創全彩電子寵物 MVP
+# didi · 原創全彩電子寵物 MVP
 
 這是一款原創、可在瀏覽器或 Mac 進行測試的全彩電子寵物。互動節奏參考 Tamagotchi Uni，但不使用 Bandai 角色、商標或產品素材；Catode32 只作開源技術研究參考。
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
-> **現行版本 v0.6**，變更見 [docs/RELEASE_0.6.md](docs/RELEASE_0.6.md)。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+> **現行版本 v0.8**，變更見 [docs/RELEASE_0.8.md](docs/RELEASE_0.8.md)（[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
 
 ## 網頁原型 v0.5：使用 4×4 Sprite Atlas 逐格角色動畫
 

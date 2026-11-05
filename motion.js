@@ -31,6 +31,25 @@ export const sequences = Object.freeze({
   window: row('window',56,550),
 });
 export const kittenSequences = sequences;
+
+// Short idle moments reuse drawn frames; they never change stats and any key interrupts them.
+const idleRow = (name, start, order, ms, caption) => order.map(i => ({ frame: start + i, caption, phase: 'idle', ms }));
+export const idleBehaviors = Object.freeze([
+  { id: 'tail', weight: 4, frames: sequences.blink },
+  { id: 'lick', weight: 3, frames: idleRow('clean', 16, [1, 2, 3, 2, 3, 6, 7], 320, '舔舔爪子') },
+  { id: 'look', weight: 3, frames: idleRow('window', 56, [0, 1, 1, 3, 4, 4, 6, 7], 380, '東張西望') },
+  { id: 'stretch', weight: 1, frames: idleRow('stretch', 48, [0, 1, 2, 3, 4, 5, 6, 7], 420, '伸個懶腰') },
+]);
+export const IDLE_DELAY_MS = Object.freeze({ min: 6000, max: 12000 });
+
+// Picks an idle behavior and the wait before the next one from a random value in [0, 1).
+export function pickIdle(random = Math.random) {
+  const total = idleBehaviors.reduce((sum, b) => sum + b.weight, 0);
+  let roll = random() * total;
+  const behavior = idleBehaviors.find(b => (roll -= b.weight) < 0) || idleBehaviors[0];
+  const delay = IDLE_DELAY_MS.min + Math.floor(random() * (IDLE_DELAY_MS.max - IDLE_DELAY_MS.min + 1));
+  return { behavior, delay };
+}
 export function timelineFor(action, stage = 'adult') {
   return sequences[action === 'snack' ? 'feed' : action] || null;
 }

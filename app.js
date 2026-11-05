@@ -1,6 +1,6 @@
 import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS } from './pet.js';
 import { Navigation, menus, quickActions } from './navigation.js';
-import { timelineFor, framePosition, frameRegistration, atlasFor } from './motion.js';
+import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle } from './motion.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = 'tower-pet-save-v1'; // Existing browser saves remain accessible.
@@ -24,7 +24,7 @@ let lastInputAt = -Infinity;
 let lastTick = Date.now();
 
 // A growth stage owns one complete atlas; actions never swap character sources.
-function showFrame(index, label = 'MOMO') {
+function showFrame(index, label = '陪著你') {
   const stage = growthStage(pet);
   const source = atlasFor(stage);
   const { x, y } = framePosition(index, stage);
@@ -35,9 +35,9 @@ function showFrame(index, label = 'MOMO') {
   atlas.style.backgroundPosition = `calc(${x}% + ${offset.x}px) calc(${y}% + ${offset.y}px)`;
   // Registration must not expose pixels from the neighbouring atlas cell.
   atlas.style.clipPath = `inset(${Math.max(0, offset.y)}px ${Math.max(0, -offset.x)}px ${Math.max(0, -offset.y)}px ${Math.max(0, offset.x)}px)`;
-  $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
+  $('pet-atlas').setAttribute('aria-label', `${pet.name} ${label}`);
   $('screen').dataset.frame = String(index);
-  $('room-scene').setAttribute('aria-label', 'MOMO 的像素房間；' + label);
+  $('room-scene').setAttribute('aria-label', `${pet.name} 的像素房間；${label}`);
   $('room-scene').dataset.growth = growthStage(pet);
 }
 
@@ -76,7 +76,7 @@ function render() {
   const stage = growthStage(pet);
   const stageLabel = stage === 'kitten' ? '幼年' : stage === 'growing' ? '成長中' : '成年';
   const nextBond = stage === 'kitten' ? GROWTH_BOND.growing : stage === 'growing' ? GROWTH_BOND.adult : null;
-  $('pet-age').textContent = `MOMO · ${stageLabel}`;
+  $('pet-age').textContent = `${pet.name} · ${stageLabel}`;
   $('bond-value').textContent = `${pet.bond}/100`;
   $('bond-hearts').setAttribute('aria-label', `關係度 ${pet.bond} / 100`);
   $('bond-hearts').replaceChildren(...Array.from({length: 5}, (_, i) => {
@@ -104,10 +104,9 @@ function render() {
 
 
   const titles = {
-    main: '生活選單', food: '吃點什麼？', care: '清潔照顧', toys: '一起玩耍',
-    interact: '其他互動',
+    main: '選單',
     settings: '設定',
-    status: 'MOMO 的狀態',
+    status: `${pet.name} 的狀態`,
     confirm: '重新開始？',
   };
   $('menu-title').textContent = titles[nav.screen] || '';
@@ -140,9 +139,15 @@ function render() {
     for (const [name, value] of [['飽足', pet.hunger], ['心情', pet.happiness], ['清潔', pet.hygiene], ['精力', pet.energy]]) {
       const dt = document.createElement('dt'); dt.textContent = name;
       const dd = document.createElement('dd');
-      const meter = document.createElement('meter'); meter.min = 0; meter.max = 100; meter.low = 25; meter.high = 65; meter.optimum = 100; meter.value = value; meter.setAttribute('aria-label', name);
+      // Ten hard-edged blocks instead of a smooth meter, coloured by level.
+      const bar = document.createElement('span');
+      bar.className = 'pixel-bar';
+      bar.dataset.level = value < 25 ? 'low' : value < 65 ? 'mid' : 'high';
+      bar.setAttribute('role', 'meter'); bar.setAttribute('aria-label', name);
+      bar.setAttribute('aria-valuemin', '0'); bar.setAttribute('aria-valuemax', '100'); bar.setAttribute('aria-valuenow', String(Math.round(value)));
+      bar.append(...Array.from({ length: 10 }, (_, i) => { const cell = document.createElement('i'); if (value >= (i + 1) * 10 - 5) cell.className = 'on'; return cell; }));
       const number = document.createElement('span'); number.textContent = Math.round(value);
-      dd.append(meter, number); dl.append(dt, dd);
+      dd.append(bar, number); dl.append(dt, dd);
     }
     $('detail-content').append(dl);
     const note = document.createElement('p'); note.className = 'growth-note'; note.id = 'bond-cooldown';
@@ -246,7 +251,7 @@ function completeAction() {
   }
   idle();
   const labels = {feed:'吃飽一點了',snack:'點心吃完了',play:'玩得很開心',clean:'身體乾淨了',groom:'小臉洗好了',pet:'喜歡你的陪伴',stretch:'伸展完成',window:'看完窗外了'};
-  message(grew ? '關係更近了 · MOMO 長大了' : `${labels[transaction.action]}${pet.bond > previousBond ? ` · 關係 +${pet.bond - previousBond}` : ''}`);
+  message(grew ? `關係更近了 · ${pet.name} 長大了` : `${labels[transaction.action]}${pet.bond > previousBond ? ` · 關係 +${pet.bond - previousBond}` : ''}`);
   if (grew) celebrateGrowth(oldStage, newStage);
 }
 
@@ -326,15 +331,21 @@ document.addEventListener('keydown', event => {
   const key = keys[event.key.toLowerCase()];
   if (key) { event.preventDefault(); acceptInput(key); }
 });
-setInterval(() => {
-  if (busy || nav.screen !== 'room' || document.hidden) return;
-  if (sleeping) { runMotion('sleep', sleepSettled); return; }
-  runMotion('blink', () => {
-    $('room-scene').dataset.action = 'idle';
-    $('room-scene').dataset.phase = 'idle';
-    showFrame(0, '陪著你');
-  });
-}, 8000);
+// Every 6–12 seconds an idle pet wags its tail, licks a paw, looks around or stretches.
+function scheduleIdle() {
+  const { behavior, delay } = pickIdle();
+  setTimeout(() => {
+    scheduleIdle();
+    if (busy || nav.screen !== 'room' || document.hidden || !$('growth-celebration').hidden) return;
+    if (sleeping) { runMotion('sleep', sleepSettled); return; }
+    runMotion('idle', () => {
+      $('room-scene').dataset.action = 'idle';
+      $('room-scene').dataset.phase = 'idle';
+      showFrame(0, '陪著你');
+    }, behavior.frames);
+  }, delay);
+}
+scheduleIdle();
 setInterval(() => {
   const now = Date.now();
   const minutes = Math.floor((now - lastTick) / 60000);

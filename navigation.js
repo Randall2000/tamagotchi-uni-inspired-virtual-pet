@@ -1,27 +1,22 @@
+// Bottom-bar shortcuts: the four care actions run on B directly, with no option layer.
 export const quickActions = Object.freeze([
-  { label: '食物', screen: 'food' },
-  { label: '清潔', screen: 'care' },
-  { label: '玩耍', screen: 'toys' },
-  { label: '陪伴', action: 'pet' },
+  { label: '餐食', action: 'feed' },
+  { label: '清潔', action: 'clean' },
+  { label: '玩耍', action: 'play' },
+  { label: '摸摸', action: 'pet' },
   { label: '狀態', screen: 'status' },
   { label: '選單', screen: 'main' },
 ]);
 
+// The menu is a single level of actions; only settings opens a further list.
 export const menus = {
-  food: [{ label: '正餐', action: 'feed', hint: '飽足 +12' }, { label: '小點心', action: 'snack', hint: '心情 +6 · 飽足 +4' }],
-  care: [{ label: '清潔身體', action: 'clean', hint: '清潔 +20' }, { label: '梳洗小臉', action: 'groom', hint: '清潔 +10' }],
-  toys: [{ label: '毛線球', action: 'play', hint: '心情 +14 · 精力 −8' }, { label: '伸懶腰', action: 'stretch', hint: '放鬆一下' }, { label: '看窗外', action: 'window', hint: '一起看看風景' }],
   main: [
-    { label: '休息 / 睡覺', action: 'rest' },
-    { label: '其他互動', menu: 'interact' },
-    { label: '寵物狀態', screen: 'status' },
+    { label: '睡覺', action: 'rest', hint: '精力 +18 · 進入睡眠' },
+    { label: '點心', action: 'snack', hint: '心情 +6 · 飽足 +4' },
+    { label: '洗臉', action: 'groom', hint: '清潔 +10' },
+    { label: '伸懶腰', action: 'stretch', hint: '放鬆一下' },
+    { label: '看窗外', action: 'window', hint: '一起看看風景' },
     { label: '設定', menu: 'settings' },
-  ],
-  interact: [
-    { label: '摸摸', action: 'pet' },
-    { label: '洗臉', action: 'groom' },
-    { label: '伸懶腰', action: 'stretch' },
-    { label: '看窗外', action: 'window' },
   ],
   settings: [
     { label: '儲存進度', action: 'save' },

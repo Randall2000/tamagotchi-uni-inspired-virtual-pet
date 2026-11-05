@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#eee7dc">
-  <title>MOMO · 口袋電子寵物</title>
+  <title>didi · 口袋電子寵物</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 <main class="app-shell">
   <header>
     <span class="eyebrow">POCKET COMPANION</span>
-    <h1>和 MOMO 的小日子</h1>
+    <h1>和 didi 的小日子</h1>
     <p>三顆按鍵，一起慢慢生活。</p>
   </header>
-  <section class="device" aria-label="MOMO 電子寵物">
+  <section class="device" aria-label="didi 電子寵物">
     <img class="device-shell-art" src="/public/assets/pokegotchi-shell.png" alt="" aria-hidden="true">
-    <div class="brand">MOMO</div>
+    <div class="brand">didi</div>
     <div class="bezel">
       <div class="screen" id="screen">
         <div class="screen-top">
@@ -24,22 +24,22 @@
           <div class="bond-line"><span>關係</span><span id="bond-hearts" role="img" aria-label="關係度 0 / 100"></span><span id="bond-value">0/100</span></div>
         </div>
         <div class="scene" id="room-scene" data-action="idle" data-phase="idle">
-          <img class="room-art" src="/public/assets/momo-room.png" alt="MOMO 的像素房間">
+          <img class="room-art" src="/public/assets/momo-room.png" alt="didi 的像素房間">
           <div class="pet-visual" id="pet-visual">
-            <div id="pet-atlas" role="img" aria-label="MOMO 陪著你"></div>
+            <div id="pet-atlas" role="img" aria-label="didi 陪著你"></div>
           </div>
         </div>
         <div class="growth-celebration" id="growth-celebration" role="alert" hidden>
           <span class="growth-sparkle" aria-hidden="true">✦</span><span class="growth-sparkle" aria-hidden="true">✧</span><span class="growth-sparkle" aria-hidden="true">✦</span>
-          <strong>MOMO 長大了！</strong>
+          <strong>didi 長大了！</strong>
           <span id="growth-path">幼年 → 成長中</span>
         </div>
         <div class="screen-status" id="screen-message" role="status" aria-live="polite">A 選擇 · B 確認</div>
         <nav class="quick-actions" id="quick-actions" aria-label="三鍵選取功能列"><ul>
-          <li class="quick-item is-selected" data-quick="food" aria-current="true"><span class="pixel-icon" data-icon="food" aria-hidden="true"></span><span>食物</span></li>
-          <li class="quick-item" data-quick="care"><span class="pixel-icon" data-icon="care" aria-hidden="true"></span><span>清潔</span></li>
-          <li class="quick-item" data-quick="toys"><span class="pixel-icon" data-icon="play" aria-hidden="true"></span><span>玩耍</span></li>
-          <li class="quick-item" data-quick="pet"><span class="pixel-icon" data-icon="heart" aria-hidden="true"></span><span>陪伴</span></li>
+          <li class="quick-item is-selected" data-quick="feed" aria-current="true"><span class="pixel-icon" data-icon="food" aria-hidden="true"></span><span>餐食</span></li>
+          <li class="quick-item" data-quick="clean"><span class="pixel-icon" data-icon="care" aria-hidden="true"></span><span>清潔</span></li>
+          <li class="quick-item" data-quick="play"><span class="pixel-icon" data-icon="play" aria-hidden="true"></span><span>玩耍</span></li>
+          <li class="quick-item" data-quick="pet"><span class="pixel-icon" data-icon="heart" aria-hidden="true"></span><span>摸摸</span></li>
           <li class="quick-item" data-quick="status"><span class="pixel-icon" data-icon="status" aria-hidden="true"></span><span>狀態</span></li>
           <li class="quick-item" data-quick="main"><span class="pixel-icon" data-icon="menu" aria-hidden="true"></span><span>選單</span></li>
         </ul></nav>
@@ -64,7 +64,7 @@
     <div class="speaker" aria-hidden="true">•••••</div>
   </section>
   <p class="helper" id="helper">螢幕不支援觸控。A 選功能、B 確認、C 返回。<br>也可以使用鍵盤 A / B / C 或 J / K / L。</p>
-  <footer><span>像素貓咪 · 本機自動存檔</span><span>v0.7</span></footer>
+  <footer><span>像素貓咪 · 本機自動存檔</span><span>v0.8</span></footer>
 </main>
 <script type="module" src="/app.js"></script>
 </body>
