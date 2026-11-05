@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "serve": "node server.mjs"
+    "serve": "node server.mjs",
+    "ship": "sh scripts/ship.sh"
   }
 }

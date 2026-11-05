@@ -39,7 +39,17 @@ Apple Silicon Mac 可使用 Node 20+，無須外部 Node 套件，於專案目�
     npm test
     npm run serve
 
-開啟 <http://localhost:4173>。目前沒有 Rust 編譯驗證證據；在本機環境中尚未安裝 cargo / rustc。
+開啟 <http://localhost:4173>。本機伺服器只提供網頁本身與 `public/assets/` 圖檔，不會送出 `.env.local`、`.git` 等專案檔案。
+
+## 上雲
+
+Vercel 已連結 GitHub `main`：推上 `main` 就會自動重新部署 Preview。一鍵上傳：
+
+    npm run ship -- "這次改了什麼"
+
+會先跑測試，沒過就不上傳；通過才 commit 並 push。
+
+目前沒有 Rust 編譯驗證證據；在本機環境中尚未安裝 cargo / rustc。
 
 ## 測試證據（v0.5）
 
