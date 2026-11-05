@@ -2,6 +2,8 @@
 
 原創全彩電子寵物 MVP。互動基準參考 Tamagotchi Uni 的照顧節奏與三鍵操作感；Catode32 僅作開源技術研究方向，不複製其品牌、素材或程式碼。
 
+公開 demo：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
+
 ## 已完成
 
 - 240×240 全彩畫面語言：沙色、珊瑚色、薄荷綠與像素玩具感。
