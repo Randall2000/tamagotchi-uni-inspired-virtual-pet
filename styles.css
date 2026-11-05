@@ -50,6 +50,10 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   border-radius: 6px;
   font-size: 12px;
   isolation: isolate;
+  /* The virtual device display is deliberately non-touch. */
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .screen-top {
   height: 24px;
@@ -65,28 +69,20 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   position: relative;
   z-index: 3;
 }
-.top-menu-btn {
-  width: 24px;
-  height: 22px;
-  display: grid;
-  place-items: center;
-  padding: 2px;
-  border: 1px solid transparent;
-  background: transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--ink);
+.screen-indicator {
+  justify-self: center;
+  color: #648657;
+  font-size: 10px;
 }
-.top-menu-btn svg, .quick-actions svg {
-  width: 21px;
-  height: 21px;
+.quick-actions svg {
+  width: 20px;
+  height: 20px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.7px;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.top-menu-btn:active { background: #e3cfa7; }
 .scene {
   position: absolute;
   inset: 24px 0 56px;
@@ -155,13 +151,13 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   height: 100%;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: stretch;
   margin: 0;
   padding: 2px 3px 3px;
 }
 .quick-actions li { min-width: 0; }
-.quick-actions button {
+.quick-actions .quick-item {
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -170,19 +166,30 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   border-radius: 6px;
   background: transparent;
   color: #674f39;
-  font: 600 10px/1.15 "PingFang TC", system-ui, sans-serif;
+  position: relative;
+  font: 600 9px/1.15 "PingFang TC", system-ui, sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 3px;
-  cursor: pointer;
-  touch-action: manipulation;
 }
-.quick-actions button:hover:not(:disabled),
-.quick-actions button.is-selected { background: #efdcac; border-color: #dfb979; }
-.quick-actions button:active:not(:disabled) { background: #e9c98b; transform: translateY(1px); }
-.quick-actions button:disabled:not(.is-selected) { opacity: .42; cursor: default; }
+.quick-actions .quick-item.is-selected {
+  color: #fff7e2;
+  background: #74543b;
+  border-color: #5a3c29;
+  box-shadow: inset 0 0 0 1px #97765c;
+}
+.quick-actions .quick-item.is-selected::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  width: 9px;
+  height: 2px;
+  border-radius: 2px;
+  background: #fff2c7;
+}
+.quick-actions .quick-item.is-locked:not(.is-selected) { opacity: .48; }
 .quick-actions span { white-space: nowrap; }
 .screen-toast {
   position: absolute;
@@ -221,15 +228,16 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
 }
 .menu-heading strong { font-size: 13px; }
 #menu-count { font: 10px monospace; color: #786343; }
-.back-button {
+.back-glyph {
   border: 1px solid #dfc49c;
   border-radius: 5px;
   background: #fffaeb;
+  display: grid;
+  place-items: center;
   width: 24px;
   height: 25px;
   font-size: 24px;
   line-height: 19px;
-  cursor: pointer;
   color: #60492e;
 }
 #menu-items {
@@ -253,9 +261,8 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   color: #604d38;
   text-align: left;
   font: 600 11px "PingFang TC", system-ui, sans-serif;
-  cursor: pointer;
 }
-.menu-option.selected, .menu-option:active { background: #725840; color: #fff7df; border-color: #614934; }
+.menu-option.selected { background: #725840; color: #fff7df; border-color: #614934; }
 .menu-option.selected::before { content: "▸ "; }
 #device-menu[data-screen="main"] #menu-items {
   display: grid;

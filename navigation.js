@@ -1,3 +1,12 @@
+export const quickActions = Object.freeze([
+  { label: '餵食', action: 'feed' },
+  { label: '玩耍', action: 'play' },
+  { label: '清潔', action: 'clean' },
+  { label: '睡覺', action: 'rest' },
+  { label: '狀態', screen: 'status' },
+  { label: '選單', screen: 'main' },
+]);
+
 export const menus = {
   main: [
     { label: '餵食', action: 'feed' },
@@ -25,6 +34,7 @@ export class Navigation {
     this.screen = 'room';
     this.stack = [];
     this.cursor = 0;
+    this.quickCursor = 0;
   }
 
   enter(screen) {
@@ -49,14 +59,14 @@ export class Navigation {
     }
   }
 
-  // Both physical B and touch/click select the same item.
-  choose(index = this.cursor) {
+  // The on-screen list is display-only. Only the device's A/B/C input invokes commands.
+  choose() {
     const items = this.screen === 'confirm'
       ? [{ action: 'cancel' }, { action: 'reset' }]
       : menus[this.screen];
-    if (!items || !Number.isInteger(index) || index < 0 || index >= items.length) return null;
-    this.cursor = index;
-    const item = items[index];
+    if (!items) return null;
+    const item = items[this.cursor];
+    if (!item) return null;
     if (item.menu || item.screen) {
       this.enter(item.menu || item.screen);
       return null;
@@ -65,9 +75,8 @@ export class Navigation {
       this.back();
       return null;
     }
-    const action = item.action;
     this.home();
-    return action;
+    return item.action;
   }
 
   key(key) {
@@ -76,7 +85,16 @@ export class Navigation {
       return null;
     }
     if (this.screen === 'room') {
-      if (key === 'a' || key === 'b') this.enter('main');
+      if (key === 'a') {
+        this.quickCursor = (this.quickCursor + 1) % quickActions.length;
+      } else if (key === 'b') {
+        const item = quickActions[this.quickCursor];
+        if (item.screen) {
+          this.enter(item.screen);
+        } else {
+          return item.action;
+        }
+      }
       return null;
     }
     const items = this.screen === 'confirm'

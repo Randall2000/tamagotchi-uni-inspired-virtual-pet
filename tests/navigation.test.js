@@ -1,44 +1,68 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Navigation, menus } from '../navigation.js';
+import { Navigation, menus, quickActions } from '../navigation.js';
 
-test('A / B opens shallow menu and runs common care in two presses', () => {
+test('home screen uses A to move focus and B to run only the focused command', () => {
   const n = new Navigation();
-  assert.equal(n.key('a'), null);
-  assert.equal(n.screen, 'main');
+  assert.equal(n.quickCursor, 0);
   assert.equal(n.key('b'), 'feed');
   assert.equal(n.screen, 'room');
-  assert.equal(n.key('b'), null);
-  assert.equal(n.screen, 'main');
+  n.key('a');
+  assert.equal(n.quickCursor, 1);
+  assert.equal(n.key('b'), 'play');
+  assert.equal(n.quickCursor, 1, 'preserve selection after completing the action');
 });
 
-test('A moves through menu, wraps, and C returns to same parent cursor', () => {
+test('A cycles through all six non-touch screen shortcuts and wraps to first', () => {
   const n = new Navigation();
-  n.key('a');
+  assert.equal(quickActions.length, 6);
+  for (let i = 0; i < quickActions.length; i++) n.key('a');
+  assert.equal(n.quickCursor, 0);
+  assert.equal(n.key('c'), null);
+  assert.equal(n.screen, 'room');
+});
+
+test('B on selected menu icon enters full menu; C returns with shortcut focus retained', () => {
+  const n = new Navigation();
+  for (let i = 0; i < 5; i++) n.key('a');
+  assert.equal(n.quickCursor, 5);
+  assert.equal(n.key('b'), null);
+  assert.equal(n.screen, 'main');
+  assert.equal(n.cursor, 0);
+  n.key('c');
+  assert.equal(n.screen, 'room');
+  assert.equal(n.quickCursor, 5);
+});
+
+test('full menu is controlled by A/B/C only, preserving selection on returning from submenu', () => {
+  const n = new Navigation();
+  n.enter('main');
   for (let i = 0; i < menus.main.length; i++) n.key('a');
   assert.equal(n.cursor, 0);
-  n.choose(4);
+  for (let i = 0; i < 4; i++) n.key('a');
+  assert.equal(n.key('b'), null);
   assert.equal(n.screen, 'interact');
   n.key('a');
-  n.key('c');
+  assert.equal(n.key('c'), null);
   assert.equal(n.screen, 'main');
   assert.equal(n.cursor, 4);
   n.key('c');
   assert.equal(n.screen, 'room');
 });
 
-test('click and B share exactly one selection / action', () => {
+test('status is view-only: B cannot activate an invisible control, C returns to room', () => {
   const n = new Navigation();
-  n.enter('main');
-  assert.equal(n.choose(2), 'clean');
+  for (let i = 0; i < 4; i++) n.key('a');
+  n.key('b');
+  assert.equal(n.screen, 'status');
+  assert.equal(n.key('b'), null);
+  assert.equal(n.screen, 'status');
+  n.key('c');
   assert.equal(n.screen, 'room');
-  n.enter('main');
-  n.key('a');
-  assert.equal(n.key('b'), 'play');
-  assert.equal(n.screen, 'room');
+  assert.equal(n.quickCursor, 4);
 });
 
-test('reset defaults to preserving progress, requiring explicit second selection', () => {
+test('reset requires explicit second selection; default B preserves progress', () => {
   const n = new Navigation();
   n.enter('settings');
   n.key('a');
@@ -52,11 +76,11 @@ test('reset defaults to preserving progress, requiring explicit second selection
   assert.equal(n.screen, 'room');
 });
 
-test('invalid direct item selection never causes action or navigation', () => {
+test('invalid keys never trigger a care action', () => {
   const n = new Navigation();
-  n.enter('main');
-  assert.equal(n.choose(100), null);
-  assert.equal(n.choose(-1), null);
-  assert.equal(n.choose(NaN), null);
-  assert.equal(n.screen, 'main');
+  assert.equal(n.key('click'), null);
+  assert.equal(n.key('tap'), null);
+  assert.equal(n.key('enter'), null);
+  assert.equal(n.quickCursor, 0);
+  assert.equal(n.screen, 'room');
 });

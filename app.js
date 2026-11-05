@@ -1,5 +1,5 @@
 import { applyAction, createInitialPet, hydratePet, tick } from './pet.js';
-import { Navigation, menus } from './navigation.js';
+import { Navigation, menus, quickActions } from './navigation.js';
 import { timelineFor } from './motion.js';
 
 const $ = id => document.getElementById(id);
@@ -8,6 +8,9 @@ let raw = null;
 try { raw = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch { /* Ignore malformed snapshots. */ }
 let pet = hydratePet(raw);
 const nav = new Navigation();
+if (document.querySelectorAll('[data-quick]').length !== quickActions.length) {
+  throw new Error('Screen shortcut and controller maps are out of sync');
+}
 let busy = false;
 let sleeping = false;
 let actionTimer;
@@ -85,15 +88,16 @@ function render() {
   $('device-menu').hidden = room;
   $('device-menu').dataset.screen = nav.screen;
   $('quick-actions').hidden = !room;
-  $('open-menu').hidden = !room;
-  $('open-menu').disabled = busy || sleeping;
   $('menu-items').replaceChildren();
   $('detail-content').replaceChildren();
 
-  for (const button of document.querySelectorAll('[data-quick]')) {
-    const action = button.dataset.quick;
-    button.disabled = busy || (sleeping && action !== 'rest');
-    button.classList.toggle('is-selected', sleeping && action === 'rest');
+  // Always show which icon the A key selected; screen icons are not interactive.
+  for (const [index, item] of [...document.querySelectorAll('[data-quick]')].entries()) {
+    const selected = index === nav.quickCursor;
+    item.classList.toggle('is-selected', selected);
+    item.classList.toggle('is-locked', busy || sleeping);
+    if (selected) item.setAttribute('aria-current', 'true');
+    else item.removeAttribute('aria-current');
   }
   $('rest-label').textContent = sleeping ? '喚醒' : '睡覺';
 
@@ -114,19 +118,10 @@ function render() {
 
   for (const [index, item] of (items || []).entries()) {
     const li = document.createElement('li');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'menu-option';
-    button.textContent = item.label;
-    button.classList.toggle('selected', index === nav.cursor);
-    if (index === nav.cursor) button.setAttribute('aria-current', 'true');
-    button.addEventListener('click', () => {
-      if (busy || sleeping) return;
-      const action = nav.choose(index);
-      render();
-      if (action) act(action);
-    });
-    li.append(button);
+    li.className = 'menu-option';
+    li.textContent = item.label;
+    li.classList.toggle('selected', index === nav.cursor);
+    if (index === nav.cursor) li.setAttribute('aria-current', 'true');
     $('menu-items').append(li);
   }
 
@@ -242,29 +237,9 @@ function control(key) {
   if (action) act(action);
 }
 
-function quick(action) {
-  if (sleeping && action === 'rest') { wake(); return; }
-  if (busy || sleeping) return;
-  if (action === 'status') {
-    nav.enter('status');
-    render();
-    return;
-  }
-  act(action);
-}
-
+// The three physical-style buttons are the only pointer-input controls.
 document.querySelectorAll('[data-control]').forEach(button =>
   button.addEventListener('click', () => control(button.dataset.control)));
-document.querySelectorAll('[data-quick]').forEach(button =>
-  button.addEventListener('click', () => quick(button.dataset.quick)));
-$('open-menu').addEventListener('click', () => {
-  if (busy || sleeping || nav.screen !== 'room') return;
-  nav.enter('main');
-  render();
-});
-$('menu-back').addEventListener('click', () => {
-  if (!busy && !sleeping) control('c');
-});
 const keys = { a: 'a', b: 'b', c: 'c', j: 'a', k: 'b', l: 'c' };
 document.addEventListener('keydown', event => {
   if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
