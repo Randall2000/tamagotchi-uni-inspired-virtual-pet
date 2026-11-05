@@ -15,4 +15,4 @@ Requirements source: [`../docs/PRD_Uni_Inspired_Virtual_Pet_v1.1.md`](../docs/PR
 
 The web demo remains a separate JavaScript application. These crates establish a portable firmware core; they do not yet synchronize browser saves or implement the Mac simulator, button debouncing, persistence encoding, graphics, or a board target. Hardware remains undecided in PRD v1.1.
 
-Action balance changes in `game-core` are provisional implementation values. Initial need values and the six need dimensions follow PRD v1.1.
+`game-core` keeps bond outside decaying needs. Successful care commands raise bond, and crossing 10/30 points advances Child → Growing → Adult permanently; Rest, status checks, and rejected actions do not raise bond. These thresholds and action gains mirror the current Web MVP and remain balance configuration candidates.

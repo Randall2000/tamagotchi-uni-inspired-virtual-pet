@@ -1,7 +1,8 @@
 export const MAX_STAT = 100;
-export const GROWTH_DAYS = Object.freeze({ kitten: 1, growing: 4, adult: 8 });
+export const GROWTH_BOND = Object.freeze({ kitten: 0, growing: 10, adult: 30 });
+const BOND_GAINS = Object.freeze({ feed: 1, play: 2, clean: 1, pet: 2, groom: 1 });
 export const INITIAL_PET = Object.freeze({
-  name: 'MOMO', age: 1, ageMinutes: 0, hunger: 78, happiness: 72,
+  name: 'MOMO', age: 1, ageMinutes: 0, bond: 0, hunger: 78, happiness: 72,
   hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0,
 });
 
@@ -18,6 +19,7 @@ export function createInitialPet(now = Date.now()) {
 
 export function applyAction(pet, action) {
   const next = { ...pet };
+  next.bond = clamp((next.bond || 0) + (BOND_GAINS[action] || 0));
   if (action === 'feed') {
     next.hunger = clamp(next.hunger + 12);
     next.energy = clamp(next.energy - 2);
@@ -57,8 +59,9 @@ export function tick(pet, minutes = 1) {
 }
 
 export function growthStage(pet) {
-  if (pet.age < GROWTH_DAYS.growing) return 'kitten';
-  if (pet.age < GROWTH_DAYS.adult) return 'growing';
+  const bond = clamp(pet.bond || 0);
+  if (bond < GROWTH_BOND.growing) return 'kitten';
+  if (bond < GROWTH_BOND.adult) return 'growing';
   return 'adult';
 }
 
@@ -83,6 +86,14 @@ export function hydratePet(raw, now = Date.now()) {
     restored.age = Math.max(restored.age, Math.floor(restored.ageMinutes / 1440) + 1);
   } else if (restored.age > 1) {
     restored.ageMinutes = (restored.age - 1) * 1440;
+  }
+  if (Number.isFinite(raw.bond) && raw.bond >= 0) {
+    restored.bond = clamp(raw.bond);
+  } else {
+    // Preserve the one-way growth reached by saves from the old age-based rule.
+    restored.bond = restored.age >= 8
+      ? GROWTH_BOND.adult
+      : restored.age >= 4 ? GROWTH_BOND.growing : 0;
   }
   if (typeof raw.name === 'string' && raw.name.length <= 20) restored.name = raw.name;
   if (Number.isFinite(raw.lastSavedAt) && raw.lastSavedAt >= 0) restored.lastSavedAt = raw.lastSavedAt;

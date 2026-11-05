@@ -56,6 +56,8 @@ test('CSS keeps pet fixed and uses background-position only for frame changes', 
   assert.doesNotMatch(app, /style\.transform|style\.left|style\.top/);
   assert.match(css, /#room-scene\[data-growth="kitten"\]\[data-action="idle"\] #pet-atlas\s*\{\s*transform:\s*translateY\(22px\)/);
   assert.match(css, /#room-scene\[data-growth="kitten"\]:not\(\[data-action="idle"\]\) #pet-atlas\s*\{\s*transform:\s*scale\(\.69\)/);
+  assert.match(css, /#room-scene\[data-growth="growing"\] #pet-atlas\s*\{\s*transform:\s*scale\(\.84\)/);
+  assert.match(css, /#pet-atlas\s*\{[^}]*transition:\s*none !important/s);
 });
 
 test('the source atlas is a real PNG bitmap, not an empty or missing placeholder', () => {

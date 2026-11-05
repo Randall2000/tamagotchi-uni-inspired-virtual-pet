@@ -5,10 +5,11 @@
 use pocket_pet_game_core::{update, GameCommand, GameEvent, PetState};
 use pocket_pet_platform_api::Key;
 
-const MENU: [GameCommand; 5] = [
+const MENU: [GameCommand; 6] = [
     GameCommand::Feed,
     GameCommand::Play,
     GameCommand::Clean,
+    GameCommand::Pet,
     GameCommand::Rest,
     GameCommand::ViewStatus,
 ];

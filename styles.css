@@ -108,6 +108,8 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   inset: 0;
   width: 156px;
   height: 156px;
+  transform-origin: center bottom;
+  transition: none !important;
   background-image: url('/public/assets/momo-16frames.webp');
   background-size: 400% 400%;
   background-repeat: no-repeat;
@@ -251,11 +253,12 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
 #detail-content dl {
   display: grid;
   grid-template-columns: 1fr auto;
-  margin: 6px 0;
-  gap: 6px;
-  font-size: 12px;
+  margin: 4px 0;
+  gap: 2px 6px;
+  font-size: 10px;
+  line-height: 1.2;
 }
-#detail-content dt { padding: 2px 0; }
+#detail-content dt { padding: 0; }
 #detail-content dd { margin: 0; font-variant-numeric: tabular-nums; font-weight: 650; }
 .screen-hint {
   position: absolute;
@@ -459,4 +462,13 @@ h1 { font-family: ui-monospace, "PingFang TC", monospace; font-weight: 900; lett
 .device .controls span { display: none; }
 @media (max-width: 390px) {
   .device { margin-top: 46px; }
+}
+#room-scene[data-growth="kitten"][data-action="idle"] #pet-atlas {
+  transform: translateY(22px);
+}
+#room-scene[data-growth="kitten"]:not([data-action="idle"]) #pet-atlas {
+  transform: scale(.69);
+}
+#room-scene[data-growth="growing"] #pet-atlas {
+  transform: scale(.84);
 }
