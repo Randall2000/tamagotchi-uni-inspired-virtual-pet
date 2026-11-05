@@ -1,6 +1,6 @@
 import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick } from './pet.js';
 import { Navigation, menus, quickActions } from './navigation.js';
-import { timelineFor, framePosition, SPRITE_ATLAS } from './motion.js';
+import { timelineFor, framePosition, frameRegistration, atlasFor } from './motion.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = 'tower-pet-save-v1'; // Existing browser saves remain accessible.
@@ -17,15 +17,16 @@ let actionTimer;
 let idleTimer;
 let lastTick = Date.now();
 
-// Frames change inside one fixed 4x4 atlas cell; never move the whole character.
+// A growth stage owns one complete atlas; actions never swap character sources.
 function showFrame(index, label = 'MOMO') {
-  const { x, y } = framePosition(index);
+  const stage = growthStage(pet);
+  const source = atlasFor(stage);
+  const { x, y } = framePosition(index, stage);
+  const offset = frameRegistration(index, stage);
   const atlas = $('pet-atlas');
-  // One character source for idle, blinking and every action at every age.
-  // Only the growth stage controls scale; actions select an atlas cell.
-  atlas.style.backgroundImage = `url('${SPRITE_ATLAS}')`;
-  atlas.style.backgroundSize = '400% 400%';
-  atlas.style.backgroundPosition = `${x}% ${y}%`;
+  atlas.style.backgroundImage = `url('${source.src}')`;
+  atlas.style.backgroundSize = `${source.columns * 100}% ${source.rows * 100}%`;
+  atlas.style.backgroundPosition = `calc(${x}% + ${offset.x}px) calc(${y}% + ${offset.y}px)`;
   $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
   $('screen').dataset.frame = String(index);
   $('room-scene').setAttribute('aria-label', 'MOMO 的像素房間；' + label);
@@ -130,7 +131,7 @@ function idle() {
 }
 
 function runMotion(action, onDone = idle) {
-  const frames = timelineFor(action);
+  const frames = timelineFor(action, growthStage(pet));
   if (!frames) { onDone(); return; }
   clearTimeout(actionTimer);
   let index = 0;
@@ -150,7 +151,7 @@ function sleepSettled() {
   sleeping = true;
   $('room-scene').dataset.action = 'rest';
   $('room-scene').dataset.phase = 'sleep';
-  showFrame(2, '睡著了');
+  showFrame(timelineFor('rest', growthStage(pet)).at(-1).frame, '睡著了');
   render();
   message('熟睡中 · B / C 喚醒');
 }

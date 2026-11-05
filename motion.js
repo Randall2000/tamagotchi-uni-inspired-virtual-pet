@@ -3,6 +3,13 @@
 // Do NOT animate the entire pet element with transforms or CSS wobble.
 export const FRAME_COUNT = 16;
 export const SPRITE_ATLAS = '/public/assets/momo-16frames.png';
+export const KITTEN_ATLAS = '/public/assets/momo-kitten-actions-v1.png';
+
+export function atlasFor(stage = 'adult') {
+  return stage === 'kitten'
+    ? { src: KITTEN_ATLAS, columns: 4, rows: 8, frames: 32 }
+    : { src: SPRITE_ATLAS, columns: 4, rows: 4, frames: FRAME_COUNT };
+}
 
 // All action animation is done by replacing frames while keeping the pet anchored.
 export const sequences = Object.freeze({
@@ -73,17 +80,45 @@ export const sequences = Object.freeze({
   ],
 });
 
-export function timelineFor(action) {
-  return sequences[action] || null;
+const kittenRow = (start, captions, phases, ms = 300) => captions.map((caption, i) => ({
+  frame: start + i, caption, phase: phases[i], ms,
+}));
+export const kittenSequences = Object.freeze({
+  ...sequences,
+  rest: kittenRow(16, ['想睡了', '閉上眼睛', '放鬆休息', '熟睡中'], ['notice', 'drowsy', 'settle', 'sleep'], 380),
+  wake: [19, 18, 17, 16, 0].map(frame => ({ frame, caption: '慢慢醒來', phase: 'wake', ms: 240 })),
+  pet: kittenRow(20, ['看著你', '喜歡摸摸', '好舒服', '陪著你'], ['notice', 'nuzzle', 'relax', 'reward']),
+  stretch: kittenRow(24, ['準備伸懶腰', '抬起雙爪', '伸展小爪', '放下小爪'], ['notice', 'reach', 'stretch', 'return'], 360),
+  window: kittenRow(28, ['看向窗外', '看看左邊', '看看右邊', '回頭看你'], ['notice', 'watch', 'watch', 'return'], 380),
+});
+
+export function timelineFor(action, stage = 'adult') {
+  return (stage === 'kitten' ? kittenSequences : sequences)[action] || null;
 }
-export function framePosition(frame) {
-  if (!Number.isInteger(frame) || frame < 0 || frame >= FRAME_COUNT) {
-    throw new RangeError('Invalid 4x4 sprite frame: ' + frame);
+export function framePosition(frame, stage = 'adult') {
+  const atlas = atlasFor(stage);
+  if (!Number.isInteger(frame) || frame < 0 || frame >= atlas.frames) {
+    throw new RangeError('Invalid sprite frame: ' + frame);
   }
   return {
     column: frame % 4,
     row: Math.floor(frame / 4),
     x: (frame % 4) * (100 / 3),
-    y: Math.floor(frame / 4) * (100 / 3),
+    y: Math.floor(frame / 4) * (100 / (atlas.rows - 1)),
+  };
+}
+
+// Source-pixel registration, measured on the opaque feet (excluding props).
+// Correct cell placement without rescaling individual poses or the pet container.
+export function frameRegistration(frame, stage = 'adult') {
+  framePosition(frame, stage);
+  if (stage !== 'kitten') return { x: 0, y: 0 };
+  const ground = [204,203,203,204,203,203,203,203,202,202,202,202,204,204,204,203,
+    202,202,202,202,202,202,202,202,202,202,202,202,202,202,202,202];
+  const cell = 887 / 4;
+  const rowStart = Math.floor(frame / 4) * cell;
+  return {
+    x: [0, -.25, -.5, -1][frame % 4] * 156 / cell,
+    y: (204 - ground[frame] - (Math.round(rowStart) - rowStart)) * 156 / cell,
   };
 }
