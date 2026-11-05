@@ -71,12 +71,12 @@
 |---|---|---|---|---|---|---|
 | WEB-GROW-01 | 🔴 | 好感 0 | 陪伴 1 次，60 秒內再陪伴 1 次 | 第 1 次 +2；第 2 次心情照加，但好感 +0；狀態頁顯示「關係加分冷卻 N 秒」（B-BOND-02） | 自動：`relationship cooldown is shared…`＋手動 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-GROW-02 | 🔴 | 冷卻中 | 重新整理頁面，再照顧 | 冷卻沒有被重置，好感仍 +0 | 自動：同上 | PASS（`4498b03`） |
-| WEB-GROW-03 | 🔴 | — | 好感累積跨過 30、80 | 29→30 變成長中，79→80 變成年；28 以下做一次照顧不會長大（B-BOND-03、B-BOND-04） | 自動：`growth follows permanent bond…`＋手動看畫面 | NOT RUN（v0.7 重測） |
+| WEB-GROW-03 | 🔴 | — | 好感累積跨過 30、80 | 29→30 變成長中，79→80 變成年；28 以下做一次照顧不會長大（B-BOND-03、B-BOND-04） | 自動：`growth follows permanent bond…`＋手動看畫面 | PASS（`80db55a` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-GROW-04 | 🔴 | 成年 | 放著讓需求下降、時間經過很多天 | 永遠不會變回較小的階段；好感不會下降 | 自動：同上 | PASS（`4498b03`） |
 | WEB-GROW-05 | 🔴 | 沒有好感欄位的舊存檔 | 載入 | 依 B-BOND-06 換算好感，不會縮小 | 自動：同上 | PASS（`4498b03`） |
-| WEB-GROW-06 | 🟡 | 好感 0、30、55、100 | 看房間上方愛心 | 分別為 0 顆、1.5 顆、2.75 顆、5 顆，旁邊數字一致（B-BOND-05） |
-| WEB-GROW-07 | 🔴 | 好感 29，在食物選單 | 正餐 → 等動畫結束 | 回到房間；角色約 1.2 秒放大到成長中尺寸；慶祝畫面顯示「MOMO 長大了！」「幼年 → 成長中」，4 秒後自動消失；期間按任一鍵提早關閉且不觸發其他動作（B-ANIM-11） | 手動 | NOT RUN |
-| WEB-GROW-08 | 🔴 | v0.6 存檔：好感 12、沒有 `stageFloor` | 載入 | 仍是成長中，不縮回幼年（B-BOND-06） | 自動：`saves from the old 10/30 rule…`＋手動 | NOT RUN | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-GROW-06 | 🟡 | 好感 0、30、55、100 | 看房間上方愛心 | 分別為 0 顆、1.5 顆、2.75 顆、5 顆，旁邊數字一致（B-BOND-05） | 手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-GROW-07 | 🔴 | 好感 29，在食物選單 | 正餐 → 等動畫結束 | 回到房間；角色約 1.2 秒放大到成長中尺寸；慶祝畫面顯示「MOMO 長大了！」「幼年 → 成長中」，4 秒後自動消失；期間按任一鍵提早關閉且不觸發其他動作（B-ANIM-11） | 手動 | PASS（`80db55a` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-GROW-08 | 🔴 | v0.6 存檔：好感 12、沒有 `stageFloor` | 載入 | 仍是成長中，不縮回幼年（B-BOND-06） | 自動：`saves from the old 10/30 rule…`＋手動 | PASS（`80db55a` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
 ### 2.5 時間與存檔
 
@@ -95,7 +95,7 @@
 |---|---|---|---|---|---|---|
 | WEB-ANIM-01 | 🔴 | — | 檢查圖集 | 幼年、成年各 64 格透明 PNG（B-ANIM-09） | 自動：`both ages have a complete…` | PASS（`4498b03`） |
 | WEB-ANIM-02 | 🔴 | — | 檢查每個主要動作 | 8 個不同姿勢，總長 4–6 秒 | 自動：`every main action has eight distinct poses…` | PASS（`4498b03`） |
-| WEB-ANIM-04 | 🔴 | — | 量測每個動作相鄰兩格整隻貓的位移（`node scripts/sprite-align.mjs`） | 幼年、成年所有動作的相鄰影格位移都 ≤1px；程式對每格套用同一個定位，不逐格推動角色（B-ANIM-12） | 自動：`the whole cat moves at most 1px…`、`registration is one fixed offset…` | NOT RUN（v0.7 重測） |
+| WEB-ANIM-04 | 🔴 | — | 量測每個動作相鄰兩格整隻貓的位移（`node scripts/sprite-align.mjs`） | 幼年、成年所有動作的相鄰影格位移都 ≤1px；程式對每格套用同一個定位，不逐格推動角色（B-ANIM-12） | 自動：`the whole cat moves at most 1px…`、`registration is one fixed offset…` | PASS（`80db55a`，`npm test` 31 項通過；所有動作相鄰影格 ≤1px） |
 | WEB-ANIM-05 | 🔴 | 幼年、成年各一次 | 依序播放正餐、清潔、毛線球、休息、陪伴、伸懶腰、看窗外，盯著腳底與身體 | 腳底不上下跳、身體不左右滑；只有頭、爪子、尾巴在動 | 手動（錄影） | NOT RUN |
 | WEB-ANIM-03 | 🔴 | 同一成長階段 | 播放任一動作，比對動作前後角色外框 | 位置與尺寸誤差 ≤1px；不旋轉、不縮放；尺寸只在長大時改變（B-ANIM-10） | 自動：`character scale depends only on growth…`＋手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
@@ -119,9 +119,9 @@
 
 | 項目 | 數量 |
 |---|---|
-| 總數 | 35 |
-| PASS | 35 |
-| NOT RUN | 0 |
+| 總數 | 39 |
+| PASS | 38 |
+| NOT RUN | 1（WEB-ANIM-05 需人眼觀看） |
 | FAIL | 0 |
 
-**Web v0.6 驗收通過**（2026-11-05 17:23，commit `6e14e86`）：35 項全 PASS，0 件 FAIL。觀察到的低優先問題列在證據檔最後一節。
+**Web v0.7**（2026-11-05，commit `80db55a`）：39 項中 38 項 PASS、0 件 FAIL；WEB-ANIM-05 需要人眼看動畫，請驗收者補做。v0.6 曾於 `6e14e86` 35 項全 PASS。觀察到的低優先問題列在證據檔最後一節。
