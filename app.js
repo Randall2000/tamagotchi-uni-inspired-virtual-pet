@@ -1,4 +1,4 @@
-import { applyAction, createInitialPet, hydratePet, tick } from './pet.js';
+import { applyAction, createInitialPet, growthStage, hydratePet, tick } from './pet.js';
 import { Navigation, menus, quickActions } from './navigation.js';
 import { timelineFor, framePosition } from './motion.js';
 
@@ -23,7 +23,8 @@ function showFrame(index, label = 'MOMO') {
   $('pet-atlas').style.backgroundPosition = x + '% ' + y + '%';
   $('pet-atlas').setAttribute('aria-label', 'MOMO ' + label);
   $('screen').dataset.frame = String(index);
-  $('pose-caption').textContent = label;
+  $('room-scene').setAttribute('aria-label', 'MOMO 的像素房間；' + label);
+  $('room-scene').dataset.growth = growthStage(pet);
 }
 
 function message(text = '') {
@@ -45,7 +46,8 @@ function save() {
 }
 
 function render() {
-  $('pet-age').textContent = '第 ' + pet.age + ' 天';
+  const stage = growthStage(pet);
+  $('pet-age').textContent = `${stage === 'kitten' ? '幼年' : stage === 'growing' ? '成長中' : '成年'} · 第 ${pet.age} 天`;
   const room = nav.screen === 'room';
   $('device-menu').hidden = room;
   $('device-menu').dataset.screen = nav.screen;

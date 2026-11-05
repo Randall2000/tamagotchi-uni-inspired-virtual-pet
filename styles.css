@@ -113,21 +113,8 @@ header p { font-size: 13px; color: var(--muted); margin: 0; }
   background-repeat: no-repeat;
   image-rendering: pixelated;
 }
-.pose-caption {
-  position: absolute;
-  top: 6px;
-  left: 7px;
-  padding: 3px 6px;
-  background: #fff3d9;
-  color: #6d5239;
-  font-size: 10px;
-  border: 1px solid #e7d4ad;
-  border-radius: 5px;
-  max-width: 158px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+#room-scene[data-growth="kitten"] #pet-atlas { background-image: url('/public/assets/momo-kitten.png'); background-size: contain; background-position: center bottom !important; }
+#room-scene[data-growth="growing"] #pet-atlas { background-size: 360% 360%; }
 .quick-actions {
   position: absolute;
   bottom: 0;

@@ -1,6 +1,7 @@
 export const MAX_STAT = 100;
+export const GROWTH_DAYS = Object.freeze({ kitten: 1, growing: 4, adult: 8 });
 export const INITIAL_PET = Object.freeze({
-  name: 'MOMO', age: 1, hunger: 78, happiness: 72,
+  name: 'MOMO', age: 1, ageMinutes: 0, hunger: 78, happiness: 72,
   hygiene: 80, energy: 88, coins: 12, lastSavedAt: 0,
 });
 
@@ -43,13 +44,22 @@ export function applyAction(pet, action) {
 
 export function tick(pet, minutes = 1) {
   const elapsed = Math.max(0, Math.floor(minutes));
+  const ageMinutes = (Number.isFinite(pet.ageMinutes) ? pet.ageMinutes : 0) + elapsed;
   return {
     ...pet,
+    ageMinutes,
+    age: Math.max(pet.age, Math.floor(ageMinutes / 1440) + 1),
     hunger: clamp(pet.hunger - elapsed * 0.4),
     happiness: clamp(pet.happiness - elapsed * 0.15),
     hygiene: clamp(pet.hygiene - elapsed * 0.12),
     energy: clamp(pet.energy - elapsed * 0.1),
   };
+}
+
+export function growthStage(pet) {
+  if (pet.age < GROWTH_DAYS.growing) return 'kitten';
+  if (pet.age < GROWTH_DAYS.adult) return 'growing';
+  return 'adult';
 }
 
 export function moodFor(pet) {
@@ -68,6 +78,12 @@ export function hydratePet(raw, now = Date.now()) {
   }
   restored.coins = Math.max(0, Math.floor(Number(raw.coins) || 0));
   if (Number.isFinite(raw.age) && raw.age >= 1) restored.age = Math.floor(raw.age);
+  if (Number.isFinite(raw.ageMinutes) && raw.ageMinutes >= 0) {
+    restored.ageMinutes = Math.floor(raw.ageMinutes);
+    restored.age = Math.max(restored.age, Math.floor(restored.ageMinutes / 1440) + 1);
+  } else if (restored.age > 1) {
+    restored.ageMinutes = (restored.age - 1) * 1440;
+  }
   if (typeof raw.name === 'string' && raw.name.length <= 20) restored.name = raw.name;
   if (Number.isFinite(raw.lastSavedAt) && raw.lastSavedAt >= 0) restored.lastSavedAt = raw.lastSavedAt;
   return restored;
