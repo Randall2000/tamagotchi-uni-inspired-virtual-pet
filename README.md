@@ -20,6 +20,10 @@
 - 角色仍是 CSS 佔位圖形，尚未替換為最終原創美術資產。
 - 尚未加入聲音、進化分支、商店、通知與原生 macOS 打包。
 
+## ESP32 韌體基礎
+
+`firmware/` 已建立 Rust 共用遊戲核心與硬體介面骨架，對照 PRD v1.1 的 Core/Ports 分層。這是韌體開發起點，尚非可燒錄映像；板卡、螢幕、GPIO、存檔格式、Mac 模擬器與實機適配仍待完成。細節見 [`firmware/README.md`](firmware/README.md)。
+
 ## 本機測試
 
 ```bash

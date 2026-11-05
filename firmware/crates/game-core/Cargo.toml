@@ -1,0 +1,9 @@
+[package]
+name = "pocket-pet-game-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[features]
+default = ["std"]
+std = []

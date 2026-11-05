@@ -1,0 +1,8 @@
+[package]
+name = "pocket-pet-platform-api"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+pocket-pet-game-core = { path = "../game-core", default-features = false }
