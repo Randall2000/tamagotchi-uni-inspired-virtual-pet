@@ -9,7 +9,8 @@ const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=
 
 createServer(async (req, res) => {
   const requested = req.url === '/' ? '/index.html' : req.url.split('?')[0];
-  const file = normalize(join(root, requested));
+  const localPath = requested.startsWith('/assets/') ? `/public${requested}` : requested;
+  const file = normalize(join(root, localPath));
   if (!file.startsWith(root)) { res.writeHead(403); return res.end('Forbidden'); }
   try {
     const body = await readFile(file);
