@@ -2,6 +2,34 @@
 export const FRAME_COUNT = 64;
 export const SPRITE_ATLAS = '/public/assets/momo-adult-64-v4.png';
 export const KITTEN_ATLAS = '/public/assets/momo-kitten-64-v3.png';
+// Character art is 64 logical pixels per cell. These are the design sizes in screen pixels;
+// petPixelSizes() nudges them so every art pixel covers a whole number of device pixels.
+export const PET_ART_PX = 64;
+export const PET_BASE_SIZE = Object.freeze({ kitten: 108, adult: 138 });
+const PET_CENTER = 78; // centre of the 156px pet box
+const SCENE_HEIGHT = 144;
+const DRAWN_ROWS = 58; // every pose leaves >= 6 transparent rows above the ears
+
+// Integer device pixels per art pixel (no uneven 2px/3px columns). The kitten is drawn smaller
+// than the adult when that is possible without shrinking it below 80% of its design size;
+// otherwise both use the same size and growth shows through the new artwork only.
+export function petPixelSizes(screenScale, dpr = 1) {
+  const unit = screenScale * dpr; // device pixels per screen pixel
+  const max = Math.max(1, Math.floor(SCENE_HEIGHT * unit / DRAWN_ROWS));
+  const pick = base => Math.min(max, Math.max(1, Math.round(base / PET_ART_PX * unit)));
+  let kitten = pick(PET_BASE_SIZE.kitten), adult = pick(PET_BASE_SIZE.adult);
+  if (adult <= kitten) {
+    if (kitten + 1 <= max) adult = kitten + 1;
+    else if ((adult - 1) * PET_ART_PX / unit >= 0.8 * PET_BASE_SIZE.kitten) kitten = adult - 1;
+    else kitten = adult;
+  }
+  const box = k => {
+    const size = PET_ART_PX * k / unit;
+    return { devicePxPerArtPx: k, size, left: PET_CENTER - size / 2 };
+  };
+  return { kitten: box(kitten), adult: box(adult) };
+}
+
 export function atlasFor(stage = 'adult') {
   return { src: stage === 'adult' ? SPRITE_ATLAS : KITTEN_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
 }

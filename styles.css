@@ -22,10 +22,11 @@ body { margin:0; background:var(--paper); color:var(--ink); font-family:ui-monos
 .room-art { position:absolute; width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
 .pet-visual { position:absolute; left:42px; bottom:0; width:156px; height:156px; }
 .pet-facing { position:absolute; inset:0; width:156px; height:156px; }
-#pet-atlas { position:absolute; bottom:0; width:108px; height:108px; left:24px; transition:none !important; background-size:400% 400%; background-repeat:no-repeat; image-rendering:pixelated; }
+#pet-atlas { position:absolute; bottom:0; width:var(--pet-kitten-size,108px); height:var(--pet-kitten-size,108px); left:var(--pet-kitten-left,24px); transition:none !important; background-size:400% 400%; background-repeat:no-repeat; image-rendering:pixelated; }
 #room-scene[data-growth="kitten"] #pet-atlas,
-#room-scene[data-growth="growing"] #pet-atlas { width:108px; height:108px; left:24px; }
-#room-scene[data-growth="adult"] #pet-atlas { width:138px; height:138px; left:9px; }
+#room-scene[data-growth="growing"] #pet-atlas { width:var(--pet-kitten-size,108px); height:var(--pet-kitten-size,108px); left:var(--pet-kitten-left,24px); }
+#room-scene[data-growth="adult"] #pet-atlas { width:var(--pet-adult-size,138px); height:var(--pet-adult-size,138px); left:var(--pet-adult-left,9px); }
+/* app.js sets these variables so one art pixel = a whole number of device pixels (petPixelSizes). */
 /* Growing keeps the exact kitten art; adulthood swaps the full stage-specific atlas.
    No shape morph or interpolated scaling is used for the growth event. */
 #room-scene.is-growing-up #pet-atlas { transition:none !important; }

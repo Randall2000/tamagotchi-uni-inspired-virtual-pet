@@ -1,6 +1,6 @@
 import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS, WAKE_RULES } from './pet.js';
 import { Navigation, menus, quickActions, makeDebouncer } from './navigation.js';
-import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle } from './motion.js';
+import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle, petPixelSizes } from './motion.js';
 import { motionAsset, motionFramePosition, motionTimeline } from './motion-pack.js';
 import { planWalk, walkSample } from './roaming.js';
 
@@ -549,11 +549,29 @@ save();
 
 // Register live display and hit areas to the actual 1127 x 1396 shell bitmap.
 const bezel = document.querySelector('.bezel');
+let screenScale = 1;
+// Size the character so each art pixel lands on a whole number of device pixels.
+function applyPetPixelSizes() {
+  const sizes = petPixelSizes(screenScale, window.devicePixelRatio || 1);
+  for (const stage of ['kitten', 'adult']) {
+    $('room-scene').style.setProperty(`--pet-${stage}-size`, `${sizes[stage].size}px`);
+    $('room-scene').style.setProperty(`--pet-${stage}-left`, `${sizes[stage].left}px`);
+  }
+  $('room-scene').dataset.devicePxPerArtPx = `${sizes.kitten.devicePxPerArtPx},${sizes.adult.devicePxPerArtPx}`;
+}
+function watchPixelRatio() {
+  matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`).addEventListener('change', () => {
+    applyPetPixelSizes();
+    watchPixelRatio();
+  }, { once: true });
+}
+watchPixelRatio();
 new ResizeObserver(() => {
   const { width, height } = bezel.getBoundingClientRect();
-  const scale = Math.min(width, height) / 240;
-  $('screen').style.transform = `scale(${scale})`;
-  $('screen').style.left = `${(width - 240 * scale) / 2}px`;
+  screenScale = Math.min(width, height) / 240;
+  $('screen').style.transform = `scale(${screenScale})`;
+  $('screen').style.left = `${(width - 240 * screenScale) / 2}px`;
+  applyPetPixelSizes();
 }).observe(bezel);
 const icons = {
   food:['0000000','0101010','0000000','1111111','1000001','0111110','0011100'],

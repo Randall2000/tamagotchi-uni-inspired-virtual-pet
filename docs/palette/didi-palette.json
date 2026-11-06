@@ -1,0 +1,45 @@
+{
+  "name": "didi pixel palette",
+  "version": 1,
+  "date": "2026-11-06",
+  "rules": {
+    "min_delta_e": 10,
+    "outline": "#1a0e17"
+  },
+  "colors": [
+    { "hex": "#1a0e17", "family": "dark",  "role": "描邊、瞳孔" },
+    { "hex": "#383139", "family": "dark",  "role": "黑毛" },
+    { "hex": "#554e5b", "family": "dark",  "role": "黑毛亮部" },
+    { "hex": "#6e6974", "family": "dark",  "role": "深灰（後腳、陰影）" },
+    { "hex": "#a19ea5", "family": "light", "role": "中灰（白毛陰影）" },
+    { "hex": "#cac9cb", "family": "light", "role": "淺灰（白毛暗部）" },
+    { "hex": "#fbf6f3", "family": "light", "role": "白毛、眼睛反光" },
+    { "hex": "#e98796", "family": "pink",  "role": "耳朵內側" },
+    { "hex": "#c96478", "family": "pink",  "role": "耳朵暗部" },
+    { "hex": "#f7aeb6", "family": "pink",  "role": "鼻子、淺粉" },
+    { "hex": "#c33f63", "family": "pink",  "role": "嘴巴、碗身" },
+    { "hex": "#a24555", "family": "pink",  "role": "嘴巴暗部" },
+    { "hex": "#852a4b", "family": "pink",  "role": "最深粉紅" },
+    { "hex": "#f7788e", "family": "pink",  "role": "毛線亮部" },
+    { "hex": "#ef77a1", "family": "pink",  "role": "毛線" },
+    { "hex": "#dcf84a", "family": "eye",   "role": "眼睛黃綠（鎖定原色）" },
+    { "hex": "#f1fd6e", "family": "eye",   "role": "眼睛亮部" },
+    { "hex": "#9bc330", "family": "eye",   "role": "眼睛中綠" },
+    { "hex": "#699626", "family": "eye",   "role": "眼睛深綠" },
+    { "hex": "#764426", "family": "prop",  "role": "飼料深褐" },
+    { "hex": "#a5652c", "family": "prop",  "role": "飼料褐" },
+    { "hex": "#d2983f", "family": "prop",  "role": "飼料亮部" },
+    { "hex": "#4b8ca6", "family": "prop",  "role": "水深藍" },
+    { "hex": "#99d0e3", "family": "prop",  "role": "水淺藍" }
+  ],
+  "merged": {
+    "#241821": "#1a0e17",
+    "#1a191c": "#1a0e17",
+    "#2e272f": "#383139",
+    "#463f49": "#383139",
+    "#ffffff": "#fbf6f3",
+    "#e4e1e1": "#fbf6f3",
+    "#e6fb5a": "#dcf84a",
+    "#fcaac5": "#f7aeb6"
+  }
+}

@@ -29,6 +29,7 @@ The game deliberately serves this build from `momo-motions-preview` so a certifi
 
 ```bash
 python3 scripts/build-momo-action-preview.py
+python3 scripts/pixel-polish.py   # required: palette, speckles, outline (docs/PALETTE.md)
 npm test
 PORT=4199 node server.mjs
 python3 scripts/qa-momo-motions.py

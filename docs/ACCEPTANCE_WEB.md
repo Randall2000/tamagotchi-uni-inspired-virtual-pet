@@ -109,10 +109,23 @@
 | WEB-ANIM-01 | 🔴 | — | 檢查圖集 | 幼年、成年各 64 格透明 PNG（B-ANIM-09） | 自動：`both ages have a complete…` | PASS（`4498b03`） |
 | WEB-ANIM-02 | 🔴 | — | 檢查每個主要動作 | 8 個不同姿勢，總長 4–6 秒 | 自動：`every main action has eight distinct poses…` | PASS（`4498b03`） |
 | WEB-ANIM-04 | 🔴 | — | 量測每個動作相鄰兩格整隻貓的位移（`node scripts/sprite-align.mjs`） | 幼年、成年所有動作的相鄰影格位移都 ≤1px；程式對每格套用同一個定位，不逐格推動角色（B-ANIM-12） | 自動：`the whole cat moves at most 1px…`、`registration is one fixed offset…` | PASS（`80db55a`，`npm test` 31 項通過；所有動作相鄰影格 ≤1px） |
-| WEB-ANIM-06 | 🔴 | — | 檢查三張角色圖集；在房間裡看幼貓、成貓、走路 | 透明度只有 0 或 255，沒有灰霧、光暈、半透明邊或散落碎點；放在房間上輪廓是乾淨的硬邊（B-UI-04） | 自動：`background fully removed…`＋手動截圖 | PASS（v0.9.1 本機實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
-| WEB-ANIM-07 | 🔴 | 成年 | 玩耍，逐格看毛線球與身體之間 | 沒有紫灰色影子；伸出的前腳是黑毛；毛線球與線尾外框完整（B-UI-05） | 自動：`adult yarn frames have no muddy purple shadow…`＋手動截圖 | PASS（v0.9.2 本機實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+| WEB-ANIM-06 | 🔴 | — | 檢查三張角色圖集；在房間裡看幼貓、成貓、走路 | 透明度只有 0 或 255，沒有灰霧、光暈、半透明邊或散落碎點；放在房間上輪廓是乾淨的硬邊（B-UI-04） | 自動：`background fully removed…`＋手動截圖 | 取代：改看 WEB-PX-01～05（v0.10 起用新圖） |
+| WEB-ANIM-07 | 🔴 | 成年 | 玩耍，逐格看毛線球與身體之間 | 沒有紫灰色影子；伸出的前腳是黑毛；毛線球與線尾外框完整（B-UI-05） | 自動：`adult yarn frames have no muddy purple shadow…`＋手動截圖 | 取代：改看 WEB-PX-03～05（成貓已換 v4 圖） |
 | WEB-ANIM-05 | 🔴 | 幼年、成年各一次 | 依序播放餐食、清潔、玩耍、摸摸、睡覺、點心、洗臉、伸懶腰、看窗外，以及閒置小動作，盯著腳底與身體 | 腳底不上下跳、身體不左右滑；只有頭、爪子、尾巴在動 | 手動（錄影） | NOT RUN |
 | WEB-ANIM-03 | 🔴 | 同一成長階段 | 播放任一動作，比對動作前後角色外框 | 位置與尺寸誤差 ≤1px；不旋轉、不縮放；尺寸只在長大時改變（B-ANIM-10） | 自動：`character scale depends only on growth…`＋手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
+
+### 2.7 像素與色票（v0.10.5 起，規則見 [PALETTE.md](PALETTE.md)）
+
+| ID | 等級 | 前置 | 步驟 | 預期結果 | 方式 | 狀態 |
+|---|---|---|---|---|---|---|
+| WEB-PX-01 | 🔴 | — | 檢查幼貓、成貓母圖與 38 張動作圖 | 每個像素都是色票 24 色之一；透明度只有 0／255（PX-01、PX-02） | 自動：`only palette colours…` | PASS（v0.10.5） |
+| WEB-PX-02 | 🔴 | — | 檢查色票檔 | 24 色、任兩色色差 ΔE ≥ 10、每色都有用途說明 | 自動：`palette: 24 named colours…` | PASS（v0.10.5） |
+| WEB-PX-03 | 🔴 | — | 檢查 40 張圖 | 黑毛、白毛、粉色區內沒有孤立雜點（眼睛與反光點除外）（PX-03） | 自動 | PASS（v0.10.5） |
+| WEB-PX-04 | 🔴 | — | 檢查 40 張圖 | 輪廓沒有 1 格缺口；實心區塊外框都是描邊色 `#1a0e17`（PX-04、PX-05） | 自動 | PASS（v0.10.5） |
+| WEB-PX-05 | 🔴 | — | 檢查 40 張圖 | 貓身上沒有零星的水藍、飼料褐色（PX-06） | 自動 | PASS（v0.10.5） |
+| WEB-PX-06 | 🔴 | — | 計算 5 種螢幕縮放 × 5 種螢幕密度 | 每個像素格都是整數個實體像素；畫到的貓不超出房間；幼貓不比成貓大；2 倍以上螢幕幼貓不小於原設計 80%（PX-07） | 自動：`every art pixel covers a whole number…` | PASS（v0.10.5） |
+| WEB-PX-07 | 🔴 | 手機 375×812（2 倍）、桌機 | 看 `#room-scene` 的 `data-device-px-per-art-px`；角色寬 × 螢幕密度 ÷ 64 | 為整數；1:1 放大截圖每格同寬、輪廓乾淨 | 手動 | 見 §5 |
+| WEB-PX-08 | 🔴 | 手機 | 看幼貓、成貓待機與吃飯、玩耍、睡覺 | 邊緣不毛躁、黑毛白毛不花、顏色不混（主觀驗收） | 手動（驗收者） | NOT RUN |
 
 ## 3. 不在 Web 驗收範圍
 

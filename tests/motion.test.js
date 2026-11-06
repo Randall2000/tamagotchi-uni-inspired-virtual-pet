@@ -50,8 +50,8 @@ test('character scale depends only on growth and action code cannot move its con
   assert.doesNotMatch(petBlock,/animation:|transform:|transition:/);
   assert.doesNotMatch(app,/atlas\.style\.(transform|left|top)/);
   assert.doesNotMatch(css,/#room-scene[^{}]*data-action[^{}]*#pet-atlas/);
-  assert.match(css,/#room-scene\[data-growth="growing"\] #pet-atlas\s*\{\s*width:108px; height:108px; left:24px/);
-  assert.match(css,/#room-scene\[data-growth="adult"\] #pet-atlas\s*\{\s*width:138px; height:138px; left:9px/);
+  assert.match(css,/#room-scene\[data-growth="growing"\] #pet-atlas\s*\{\s*width:var\(--pet-kitten-size,108px\); height:var\(--pet-kitten-size,108px\); left:var\(--pet-kitten-left,24px\)/);
+  assert.match(css,/#room-scene\[data-growth="adult"\] #pet-atlas\s*\{\s*width:var\(--pet-adult-size,138px\); height:var\(--pet-adult-size,138px\); left:var\(--pet-adult-left,9px\)/);
   assert.doesNotMatch(css,/#room-scene\[data-growth="(?:kitten|growing|adult)"\] #pet-atlas[^{}]*\{[^}]*transform:/);
   // Size may animate only while a growth event is running.
   for (const rule of css.match(/[^{}]*\{[^{}]*transition:\s*transform[^{}]*\}/g) || []) assert.match(rule, /\.is-growing-up/);
@@ -76,5 +76,24 @@ test('idle moments pick tail, lick, look or stretch every 3.5–6.5 seconds with
   for (const behavior of idleBehaviors) {
     assert.ok(behavior.frames.length >= 7, behavior.id);
     for (const step of behavior.frames) assert.doesNotThrow(() => framePosition(step.frame), behavior.id);
+  }
+});
+
+test('every art pixel covers a whole number of device pixels on phones, tablets and desktops', async () => {
+  const { petPixelSizes, PET_ART_PX } = await import('../motion.js');
+  // screen scale = bezel width / 240 for 320, 375, 390, 412, 768, 1440 px viewports, at DPR 1–3
+  for (const scale of [0.676, 0.7886, 0.8115, 0.875, 1.204]) for (const dpr of [1, 1.5, 2, 2.625, 3]) {
+    const sizes = petPixelSizes(scale, dpr);
+    for (const stage of ['kitten', 'adult']) {
+      const { size, devicePxPerArtPx, left } = sizes[stage];
+      const device = size * scale * dpr;
+      assert.ok(Math.abs(device - PET_ART_PX * devicePxPerArtPx) < 1e-6, `${stage} ${scale}@${dpr}`);
+      assert.ok(Number.isInteger(devicePxPerArtPx) && devicePxPerArtPx >= 1);
+      assert.ok(size * 58 / 64 <= 144 + 1e-9, `${stage} drawn cat fits the room at ${scale}@${dpr}`);
+      // Phones and tablets are 2x or denser; a 1x screen only fits whole pixels coarsely.
+      if (stage === 'kitten' && scale >= 0.78 && dpr >= 2) assert.ok(size >= 0.8 * 108 - 1e-9, `kitten not shrunk below 80% at ${scale}@${dpr}`);
+      assert.ok(Math.abs(left + size / 2 - 78) < 1e-9, 'stays centred');
+    }
+    assert.ok(sizes.kitten.size <= sizes.adult.size, `kitten never larger than adult at ${scale}@${dpr}`);
   }
 });
