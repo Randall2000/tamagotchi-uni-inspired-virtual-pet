@@ -5,6 +5,7 @@ Never overwrites the approved source art. Replace with hand-reviewed sprite shee
 from pathlib import Path
 from PIL import Image, ImageDraw
 from remaster_kitten_pixels import quantize, LOGICAL
+from remaster_adult_pixels import quantize_adult
 import json, math
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "public" / "assets"
@@ -25,7 +26,7 @@ ROWS = {"idle":0, "feed":1,"groom":2,"play":3,"rest":4,"pet":5,"stretch":6,"look
 # This atlas has 8 different hand-authored base poses per action, not 16/24/32 unique poses.
 # Repeated holds follow the original timing; metadata distinguishes preview quality.
 PATHS = {
- "adult": ASSETS / "momo-adult-64-v3.png",
+ "adult": ASSETS / "momo-adult-64-v4.png",
  "kitten": ASSETS / "momo-kitten-64-v3.png"
 }
 CELL = 128
@@ -108,8 +109,7 @@ def main():
                     # Fixed pixel palette/grid even for props and walking assets.
                     tile=quantize(tile.resize((LOGICAL,LOGICAL),Image.Resampling.NEAREST)).resize((CELL,CELL),Image.Resampling.NEAREST)
                 else:
-                    alpha=tile.getchannel("A").point(lambda v:255 if v>=128 else 0)
-                    tile.putalpha(alpha)
+                    tile=quantize_adult(tile).resize((CELL,CELL),Image.Resampling.NEAREST)
                 sheet.alpha_composite(tile,(n%COLS*CELL,n//COLS*CELL))
             file_name=f"{action}.png"
             sheet.save(age_dir/file_name,optimize=True)

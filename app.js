@@ -448,7 +448,7 @@ function walkAround() {
     const sample = walkSample(plan, now - started);
     const frame = Math.floor(Math.max(0,now-started)/(1000/walking.fps))%walking.frames;
     const pos = motionFramePosition(frame,walking);
-    roomX = sample.x;
+    roomX = Math.round(sample.x);
     $('pet-visual').style.translate = `${roomX}px 0px`;
     atlas.style.backgroundPosition = `${pos.x}% ${pos.y}%`;
     $('screen').dataset.frame = `walk-${frame}`;

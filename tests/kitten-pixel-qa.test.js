@@ -20,6 +20,7 @@ function colorsAndPixels(im,label){
     }
   }
   assert.ok(palette.size<=32,label+' palette='+palette.size);
+  return palette;
 }
 test('kitten 64-frame master is crisp and uses fixed palette',()=>{
   assert.deepEqual([base.width,base.height],[1024,1024]);
@@ -33,6 +34,16 @@ test('19 kitten daily motion sheets have hard 2x logical pixels',()=>{
     assert.deepEqual([im.width,im.height],[1024,a.rows*128]);
     colorsAndPixels(im,name);
   }
+});
+test('adult master and all 19 motions use the approved low-color hard pixel grid',()=>{
+  const shared=new Set(colorsAndPixels(load('/public/assets/momo-adult-64-v4.png'),'adult master'));
+  for(const name of MOTION_ACTIONS) {
+    const a=motionAsset(name,'adult');
+    const im=load(a.src);
+    assert.deepEqual([im.width,im.height],[1024,a.rows*128]);
+    for(const color of colorsAndPixels(im,'adult '+name)) shared.add(color);
+  }
+  assert.ok(shared.size<=32,'adult motions do not share one palette: '+shared.size);
 });
 
 function eyeBounds(frame){
