@@ -16,7 +16,7 @@ with sync_playwright() as p:
     page.goto(url,wait_until="networkidle")
     page.wait_for_timeout(250)
     print("initial",page.locator("#screen").get_attribute("data-frame"),page.locator("#room-scene").get_attribute("data-growth"))
-    assert page.locator("#screen").get_attribute("data-frame") == "idle-0"
+    assert page.locator("#screen").get_attribute("data-frame").startswith("idle-")
     assert not errors,errors
     page.keyboard.press("b")
     page.wait_for_timeout(400)

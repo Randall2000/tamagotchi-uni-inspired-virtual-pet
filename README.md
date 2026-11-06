@@ -4,7 +4,16 @@
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
-> **現行版本 v0.10.0**，變更見 [docs/RELEASE_0.10.0.md](docs/RELEASE_0.10.0.md)（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+> **現行版本 v0.10.1**，變更見 [docs/RELEASE_0.10.1.md](docs/RELEASE_0.10.1.md)（[v0.10.0](docs/RELEASE_0.10.0.md)）（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+
+## v0.10.1：自主日常行為與連續待機動畫
+
+- 不按任何按鈕時，貓咪仍以 12 FPS 循環播放 `idle` 的 24 格畫面，而非 6–12 秒靜止等待。
+- 每 3.5–6.5 秒穿插一次自主行為，包括實際散步、搖尾巴、舔毛、觀察及打呵欠等；連續兩次不重複同一類隨機行為。
+- 行為播放時顯示對應提示，結束後回到持續待機；按下 A/B/C、進入選單、休眠、隱藏網頁時正確停止或恢復計時器。
+- 日常行為是純視覺呈現，不會自動修改好感度、飽足、心情、清潔或精力。
+- 遵守「只切換角色圖集影格」限制；散步的整體位移僅在角色真正走路時發生，沒有用整張圖晃動假裝有肢體動畫。
+- 新增 Chrome 自主行為端對端測試：`python3 scripts/qa-momo-autonomous.py`。
 
 ## v0.10.0：19 組動作 × 幼貓與成貓
 

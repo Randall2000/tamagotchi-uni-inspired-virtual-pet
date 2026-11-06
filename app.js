@@ -27,6 +27,8 @@ let lastTick = Date.now();
 let roomX = 0;
 let walkRequest = 0;
 let idleTimer;
+let idleFrameTimer;
+let lastAmbientId = null;
 let walkNext = true;
 const walkReady = { adult: false, kitten: false };
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -74,7 +76,11 @@ function message(text = '') {
 
 function refreshStatus() {
   const current = Date.now() < feedbackUntil ? feedback : '';
-  $('screen-message').textContent = busy ? `${activeCaption} · C 取消` : current || needsNotice(pet);
+  $('screen-message').textContent = busy
+    ? `${activeCaption} · C 取消`
+    : $('room-scene').dataset.ambient === 'true'
+      ? activeCaption
+      : current || needsNotice(pet);
   $('screen-message').hidden = nav.screen !== 'room';
   $('menu-hint').textContent = current || 'A 選擇　B 確認　C 返回';
   const cooldown = $('bond-cooldown');
@@ -189,18 +195,47 @@ function render() {
   refreshStatus();
 }
 
+// While the pet is awake and left alone, cycle through actual idle sprite
+// frames at the atlas FPS. This only changes background-position: no wobble,
+// rotation, scale or translate of the character container is permitted.
+function stopIdleFrames() {
+  clearTimeout(idleFrameTimer);
+  idleFrameTimer = undefined;
+}
+
+function playIdleFrames() {
+  stopIdleFrames();
+  const atlas = motionAsset('idle', growthStage(pet));
+  if (!atlas || sleeping || busy || nav.screen !== 'room' || document.hidden ||
+      reducedMotion.matches || walkRequest) return;
+  let frame = 0;
+  const nextFrame = () => {
+    if (sleeping || busy || nav.screen !== 'room' || document.hidden ||
+        reducedMotion.matches || walkRequest || $('room-scene').dataset.action !== 'idle') return;
+    showFrame(frame, '陪著你', 'idle');
+    frame = (frame + 1) % atlas.frames;
+    idleFrameTimer = setTimeout(nextFrame, 1000 / atlas.fps);
+  };
+  nextFrame();
+}
+
 function idle() {
   clearTimeout(actionTimer);
   busy = false;
   sleeping = false;
   $('room-scene').dataset.action = 'idle';
   $('room-scene').dataset.phase = 'idle';
+  $('room-scene').dataset.ambient = 'false';
+  activeCaption = '';
   showFrame(0, '陪著你', 'idle');
   render();
+  playIdleFrames();
   scheduleIdle();
 }
 
-function runMotion(action, onDone = idle, recoveryFrames = null) {
+function runMotion(action, onDone = idle, recoveryFrames = null, ambient = false) {
+  stopIdleFrames();
+  $('room-scene').dataset.ambient = ambient ? 'true' : 'false';
   const frames = recoveryFrames || motionTimeline(action, growthStage(pet)) || timelineFor(action, growthStage(pet));
   if (!frames) { onDone(); return; }
   clearTimeout(actionTimer);
@@ -220,6 +255,7 @@ function runMotion(action, onDone = idle, recoveryFrames = null) {
 
 function sleepSettled() {
   clearTimeout(idleTimer);
+  stopIdleFrames();
   busy = false;
   sleeping = true;
   $('room-scene').dataset.action = 'rest';
@@ -311,6 +347,10 @@ function endCelebration() {
   clearTimeout(celebrationTimer);
   $('growth-celebration').hidden = true;
   $('room-scene').classList.remove('is-growing-up');
+  if (!busy && !sleeping && nav.screen === 'room') {
+    playIdleFrames();
+    scheduleIdle();
+  }
 }
 
 function cancelAction() {
@@ -346,12 +386,17 @@ function control(key) {
   stopAmbient();
   $('room-scene').dataset.action = 'idle';
   $('room-scene').dataset.phase = 'idle';
+  $('room-scene').dataset.ambient = 'false';
+  activeCaption = '';
   showFrame(0, '陪著你', 'idle');
   feedback = '';
   const action = nav.key(key);
   render();
   if (action) act(action);
-  scheduleIdle();
+  else if (nav.screen === 'room') {
+    playIdleFrames();
+    scheduleIdle();
+  }
 }
 
 function acceptInput(key) {
@@ -374,6 +419,7 @@ document.addEventListener('keydown', event => {
 // One ambient task at a time. Walking and small idle poses alternate; care,
 // menus, sleep and hidden tabs cannot leave a movement callback running.
 function stopAmbient() {
+  stopIdleFrames();
   cancelAnimationFrame(walkRequest);
   walkRequest = 0;
   clearTimeout(actionTimer);
@@ -381,11 +427,15 @@ function stopAmbient() {
 }
 
 function walkAround() {
+  stopIdleFrames();
   const plan = planWalk(roomX);
   const started = performance.now();
   const atlas = $('pet-atlas');
   $('room-scene').dataset.action = 'walk';
-  $('room-scene').dataset.phase = 'idle';
+  $('room-scene').dataset.phase = 'action';
+  $('room-scene').dataset.ambient = 'true';
+  activeCaption = '散步中';
+  refreshStatus();
   $('pet-facing').style.transform = `scaleX(${plan.direction})`;
   atlas.dataset.kind = 'walk';
   const walking = motionAsset('walk',growthStage(pet));
@@ -405,7 +455,11 @@ function walkAround() {
     if (sample.done) {
       walkRequest = 0;
       $('room-scene').dataset.action = 'idle';
+      $('room-scene').dataset.ambient = 'false';
+      activeCaption = '';
       showFrame(0, '陪著你', 'idle');
+      refreshStatus();
+      playIdleFrames();
       scheduleIdle();
     } else walkRequest = requestAnimationFrame(step);
   };
@@ -414,39 +468,59 @@ function walkAround() {
 
 function scheduleIdle() {
   clearTimeout(idleTimer);
-  const { behavior, delay } = pickIdle();
+  if (sleeping || busy || nav.screen !== 'room' || document.hidden) return;
+  const { behavior, delay } = pickIdle(Math.random, lastAmbientId);
   idleTimer = setTimeout(() => {
-    if (busy || nav.screen !== 'room' || document.hidden || !$('growth-celebration').hidden) { scheduleIdle(); return; }
-    if (sleeping) { if (!reducedMotion.matches) runMotion('sleep', sleepSettled); return; }
-    if (walkNext && walkReady[growthStage(pet) === 'adult' ? 'adult' : 'kitten'] && !reducedMotion.matches) {
+    if (busy || sleeping || nav.screen !== 'room' || document.hidden ||
+        !$('growth-celebration').hidden) return;
+    if (walkNext && walkReady[growthStage(pet) === 'adult' ? 'adult' : 'kitten'] &&
+        !reducedMotion.matches) {
       walkNext = false;
       walkAround();
       return;
     }
     walkNext = true;
-    const ambient = {tail:'tail_wag', lick:'groom', look:'curious', stretch:'stretch'}[behavior.id] || 'idle';
-    const mood = pet.hygiene < 20 ? 'sick' : pet.hunger < 15 && pet.happiness < 40 ? 'angry' : pet.happiness < 20 ? 'sad' : pet.energy < 25 ? 'yawn' : pet.happiness >= 90 && behavior.id === 'tail' ? 'happy' : ambient;
+    lastAmbientId = behavior.id;
+    const ambientAction = {
+      tail: 'tail_wag', lick: 'groom', look: 'curious', stretch: 'yawn',
+    }[behavior.id] || 'tail_wag';
+    const mood = pet.hygiene < 20 ? 'sick'
+      : pet.hunger < 15 && pet.happiness < 40 ? 'angry'
+      : pet.happiness < 20 ? 'sad'
+      : pet.energy < 25 ? 'yawn'
+      : pet.happiness >= 90 && behavior.id === 'tail' ? 'happy'
+      : ambientAction;
     runMotion(mood, () => {
       $('room-scene').dataset.action = 'idle';
       $('room-scene').dataset.phase = 'idle';
+      $('room-scene').dataset.ambient = 'false';
+      activeCaption = '';
       showFrame(0, '陪著你', 'idle');
+      refreshStatus();
+      playIdleFrames();
       scheduleIdle();
-    });
+    }, null, true);
   }, delay);
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && !busy && !sleeping) {
     stopAmbient();
     $('room-scene').dataset.action = 'idle';
+    $('room-scene').dataset.ambient = 'false';
     showFrame(0, '陪著你', 'idle');
   }
-  if (!document.hidden) scheduleIdle();
+  if (!document.hidden && !sleeping && !busy && nav.screen === 'room') {
+    playIdleFrames();
+    scheduleIdle();
+  }
 });
 reducedMotion.addEventListener('change', () => {
   if (reducedMotion.matches && walkRequest) {
     stopAmbient();
     $('room-scene').dataset.action = 'idle';
+    $('room-scene').dataset.ambient = 'false';
     showFrame(0, '陪著你', 'idle');
+    playIdleFrames();
     scheduleIdle();
   }
 });

@@ -57,17 +57,22 @@ test('character scale depends only on growth and action code cannot move its con
   for (const rule of css.match(/[^{}]*\{[^{}]*transition:\s*transform[^{}]*\}/g) || []) assert.match(rule, /\.is-growing-up/);
 });
 
-test('idle moments pick tail, lick, look or stretch every 6–12 seconds without leaving the atlas', async () => {
+test('idle moments pick tail, lick, look or stretch every 3.5–6.5 seconds without leaving the atlas', async () => {
   const { idleBehaviors, pickIdle, IDLE_DELAY_MS } = await import('../motion.js');
   assert.deepEqual(idleBehaviors.map(b => b.id), ['tail', 'lick', 'look', 'stretch']);
-  assert.deepEqual({ ...IDLE_DELAY_MS }, { min: 6000, max: 12000 });
+  assert.deepEqual({ ...IDLE_DELAY_MS }, { min: 3500, max: 6500 });
   assert.equal(pickIdle(() => 0).behavior.id, 'tail');
-  assert.equal(pickIdle(() => 0).delay, 6000);
+  assert.equal(pickIdle(() => 0).delay, 3500);
   assert.equal(pickIdle(() => 0.9999).behavior.id, 'stretch');
-  assert.equal(pickIdle(() => 0.9999).delay, 12000);
+  assert.equal(pickIdle(() => 0.9999).delay, 6500);
   const counts = {};
   for (let i = 0; i < 1100; i++) counts[pickIdle(() => (i % 11) / 11 + 0.0001).behavior.id] = (counts[pickIdle(() => (i % 11) / 11 + 0.0001).behavior.id] || 0) + 1;
   assert.ok(counts.tail && counts.lick && counts.look && counts.stretch, JSON.stringify(counts));
+  for (const previous of idleBehaviors) {
+    for (const choice of [0, 0.2, 0.5, 0.9, 0.9999]) {
+      assert.notEqual(pickIdle(() => choice, previous.id).behavior.id, previous.id);
+    }
+  }
   for (const behavior of idleBehaviors) {
     assert.ok(behavior.frames.length >= 7, behavior.id);
     for (const step of behavior.frames) assert.doesNotThrow(() => framePosition(step.frame), behavior.id);

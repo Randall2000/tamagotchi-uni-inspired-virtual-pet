@@ -40,13 +40,17 @@ export const idleBehaviors = Object.freeze([
   { id: 'look', weight: 3, frames: idleRow('window', 56, [0, 1, 1, 3, 4, 4, 6, 7], 380, '東張西望') },
   { id: 'stretch', weight: 1, frames: idleRow('stretch', 48, [0, 1, 2, 3, 4, 5, 6, 7], 420, '伸個懶腰') },
 ]);
-export const IDLE_DELAY_MS = Object.freeze({ min: 6000, max: 12000 });
+export const IDLE_DELAY_MS = Object.freeze({ min: 3500, max: 6500 });
 
 // Picks an idle behavior and the wait before the next one from a random value in [0, 1).
-export function pickIdle(random = Math.random) {
-  const total = idleBehaviors.reduce((sum, b) => sum + b.weight, 0);
+export function pickIdle(random = Math.random, previousId = null) {
+  // Avoid two successive identical moments; keep weighted variation and don't
+  // change the virtual pet's stats during these autonomous animations.
+  const choices = idleBehaviors.filter(b => b.id !== previousId);
+  const available = choices.length ? choices : idleBehaviors;
+  const total = available.reduce((sum, b) => sum + b.weight, 0);
   let roll = random() * total;
-  const behavior = idleBehaviors.find(b => (roll -= b.weight) < 0) || idleBehaviors[0];
+  const behavior = available.find(b => (roll -= b.weight) < 0) || available[0];
   const delay = IDLE_DELAY_MS.min + Math.floor(random() * (IDLE_DELAY_MS.max - IDLE_DELAY_MS.min + 1));
   return { behavior, delay };
 }
