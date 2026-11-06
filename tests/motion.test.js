@@ -97,3 +97,19 @@ test('every art pixel covers a whole number of device pixels on phones, tablets 
     assert.ok(sizes.kitten.size <= sizes.adult.size, `kitten never larger than adult at ${scale}@${dpr}`);
   }
 });
+
+test('room background: 120x72 pixel art at a whole number of device pixels, floor-anchored', async () => {
+  const { roomPixelSize, ROOM } = await import('../motion.js');
+  const { decodePng } = await import('../scripts/sprite-align.mjs');
+  const room = decodePng(readFileSync(new URL('..' + ROOM.src, import.meta.url)));
+  assert.deepEqual([room.width, room.height], [ROOM.width, ROOM.height]);
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, new RegExp(`class="room-art" src="${ROOM.src}"`));
+  for (const scale of [0.676, 0.7886, 0.8115, 0.875, 1.204]) for (const dpr of [1, 1.5, 2, 2.625, 3]) {
+    const r = roomPixelSize(scale, dpr);
+    assert.ok(Number.isInteger(r.devicePxPerRoomPx) && r.devicePxPerRoomPx >= 1);
+    assert.ok(Math.abs(r.width * scale * dpr - ROOM.width * r.devicePxPerRoomPx) < 1e-6);
+    assert.ok(Math.abs(r.left + r.width / 2 - 120) < 1e-9, 'centred');
+    if (dpr >= 2) assert.ok(r.width >= 240 * 0.85 && r.width <= 240 * 1.15, `room within 15% of the scene at ${scale}@${dpr}`);
+  }
+});

@@ -86,6 +86,7 @@
 | B-UI-05 | 成貓玩毛線 | 第 24–31 格毛線球與身體之間不得有紫灰色塊：伸出的前腳為黑毛色，毛線球後方地面透明，毛線與毛線球保有完整深色外框（`scripts/fix-yarn-shadow.mjs` 已套用，重跑不會再改圖） |
 | B-UI-06 | 角色色票 | 24 色，任兩色 ΔE ≥ 10；描邊 `#1a0e17`；詳見 [PALETTE.md](PALETTE.md) 與 `palette/didi-palette.json` |
 | B-UI-07 | 整數像素顯示 | 每個角色像素格 = 整數個實體像素（`petPixelSizes`）；設計尺寸幼貓 108、成貓 138 螢幕 px，實際依裝置取最接近的整數倍 |
+| B-UI-08 | 房間背景 | 120×72 像素圖 `momo-room-px-v1.png`，色票共用（材質 room）；每個房間像素 = 整數個實體像素（`roomPixelSize`，約 2 螢幕 px），貼齊地面 |
 | B-UI-02 | 名字 | 寵物名 didi；舊存檔名字 MOMO 載入時改為 didi，自訂名字保留 |
 
 ## B-ANIM｜動畫時間

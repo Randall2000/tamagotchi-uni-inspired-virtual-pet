@@ -30,6 +30,21 @@ export function petPixelSizes(screenScale, dpr = 1) {
   return { kitten: box(kitten), adult: box(adult) };
 }
 
+// Pixel-art room (scripts/room-pixelate.py): one room pixel is about two screen pixels.
+export const ROOM = Object.freeze({
+  src: '/public/assets/momo-room-px-v1.png', width: 120, height: 72, floorRow: 39,
+  wall: '#f4ba93', floor: '#ce7c47',
+});
+
+// Whole device pixels per room pixel, anchored to the floor and centred; any sliver the
+// integer size leaves uncovered is filled with the wall and floor colours.
+export function roomPixelSize(screenScale, dpr = 1) {
+  const unit = screenScale * dpr;
+  const k = Math.max(1, Math.round(2 * unit));
+  const width = ROOM.width * k / unit, height = ROOM.height * k / unit;
+  return { devicePxPerRoomPx: k, width, height, left: (240 - width) / 2, floorHeight: (ROOM.height - ROOM.floorRow) * k / unit };
+}
+
 export function atlasFor(stage = 'adult') {
   return { src: stage === 'adult' ? SPRITE_ATLAS : KITTEN_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
 }

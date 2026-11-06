@@ -7,30 +7,221 @@
     "outline": "#1a0e17"
   },
   "colors": [
-    { "hex": "#1a0e17", "family": "dark",  "role": "描邊、瞳孔" },
-    { "hex": "#383139", "family": "dark",  "role": "黑毛" },
-    { "hex": "#554e5b", "family": "dark",  "role": "黑毛亮部" },
-    { "hex": "#6e6974", "family": "dark",  "role": "深灰（後腳、陰影）" },
-    { "hex": "#a19ea5", "family": "light", "role": "中灰（白毛陰影）" },
-    { "hex": "#cac9cb", "family": "light", "role": "淺灰（白毛暗部）" },
-    { "hex": "#fbf6f3", "family": "light", "role": "白毛、眼睛反光" },
-    { "hex": "#e98796", "family": "pink",  "role": "耳朵內側" },
-    { "hex": "#c96478", "family": "pink",  "role": "耳朵暗部" },
-    { "hex": "#f7aeb6", "family": "pink",  "role": "鼻子、淺粉" },
-    { "hex": "#c33f63", "family": "pink",  "role": "嘴巴、碗身" },
-    { "hex": "#a24555", "family": "pink",  "role": "嘴巴暗部" },
-    { "hex": "#852a4b", "family": "pink",  "role": "最深粉紅" },
-    { "hex": "#f7788e", "family": "pink",  "role": "毛線亮部" },
-    { "hex": "#ef77a1", "family": "pink",  "role": "毛線" },
-    { "hex": "#dcf84a", "family": "eye",   "role": "眼睛黃綠（鎖定原色）" },
-    { "hex": "#f1fd6e", "family": "eye",   "role": "眼睛亮部" },
-    { "hex": "#9bc330", "family": "eye",   "role": "眼睛中綠" },
-    { "hex": "#699626", "family": "eye",   "role": "眼睛深綠" },
-    { "hex": "#764426", "family": "prop",  "role": "飼料深褐" },
-    { "hex": "#a5652c", "family": "prop",  "role": "飼料褐" },
-    { "hex": "#d2983f", "family": "prop",  "role": "飼料亮部" },
-    { "hex": "#4b8ca6", "family": "prop",  "role": "水深藍" },
-    { "hex": "#99d0e3", "family": "prop",  "role": "水淺藍" }
+    {
+      "hex": "#1a0e17",
+      "family": "dark",
+      "role": "描邊、瞳孔"
+    },
+    {
+      "hex": "#383139",
+      "family": "dark",
+      "role": "黑毛"
+    },
+    {
+      "hex": "#554e5b",
+      "family": "dark",
+      "role": "黑毛亮部"
+    },
+    {
+      "hex": "#6e6974",
+      "family": "dark",
+      "role": "深灰（後腳、陰影）"
+    },
+    {
+      "hex": "#a19ea5",
+      "family": "light",
+      "role": "中灰（白毛陰影）"
+    },
+    {
+      "hex": "#cac9cb",
+      "family": "light",
+      "role": "淺灰（白毛暗部）"
+    },
+    {
+      "hex": "#fbf6f3",
+      "family": "light",
+      "role": "白毛、眼睛反光"
+    },
+    {
+      "hex": "#e98796",
+      "family": "pink",
+      "role": "耳朵內側"
+    },
+    {
+      "hex": "#c96478",
+      "family": "pink",
+      "role": "耳朵暗部"
+    },
+    {
+      "hex": "#f7aeb6",
+      "family": "pink",
+      "role": "鼻子、淺粉"
+    },
+    {
+      "hex": "#c33f63",
+      "family": "pink",
+      "role": "嘴巴、碗身"
+    },
+    {
+      "hex": "#a24555",
+      "family": "pink",
+      "role": "嘴巴暗部"
+    },
+    {
+      "hex": "#852a4b",
+      "family": "pink",
+      "role": "最深粉紅"
+    },
+    {
+      "hex": "#f7788e",
+      "family": "pink",
+      "role": "毛線亮部"
+    },
+    {
+      "hex": "#ef77a1",
+      "family": "pink",
+      "role": "毛線"
+    },
+    {
+      "hex": "#dcf84a",
+      "family": "eye",
+      "role": "眼睛黃綠（鎖定原色）"
+    },
+    {
+      "hex": "#f1fd6e",
+      "family": "eye",
+      "role": "眼睛亮部"
+    },
+    {
+      "hex": "#9bc330",
+      "family": "eye",
+      "role": "眼睛中綠"
+    },
+    {
+      "hex": "#699626",
+      "family": "eye",
+      "role": "眼睛深綠"
+    },
+    {
+      "hex": "#764426",
+      "family": "prop",
+      "role": "飼料深褐"
+    },
+    {
+      "hex": "#a5652c",
+      "family": "prop",
+      "role": "飼料褐"
+    },
+    {
+      "hex": "#d2983f",
+      "family": "prop",
+      "role": "飼料亮部"
+    },
+    {
+      "hex": "#4b8ca6",
+      "family": "prop",
+      "role": "水深藍"
+    },
+    {
+      "hex": "#99d0e3",
+      "family": "prop",
+      "role": "水淺藍"
+    },
+    {
+      "hex": "#ce7c47",
+      "family": "room",
+      "role": "房間：木地板"
+    },
+    {
+      "hex": "#f4ba93",
+      "family": "room",
+      "role": "房間：牆面"
+    },
+    {
+      "hex": "#8b473b",
+      "family": "room",
+      "role": "房間：家具深木"
+    },
+    {
+      "hex": "#673535",
+      "family": "room",
+      "role": "房間：家具最深木、描邊"
+    },
+    {
+      "hex": "#a4583c",
+      "family": "room",
+      "role": "房間：踢腳板、櫃子"
+    },
+    {
+      "hex": "#e07269",
+      "family": "room",
+      "role": "房間：被單／窗簾紅格"
+    },
+    {
+      "hex": "#fad7a5",
+      "family": "room",
+      "role": "房間：枕頭、淺米黃"
+    },
+    {
+      "hex": "#f49a7f",
+      "family": "room",
+      "role": "房間：被單／窗簾淺格"
+    },
+    {
+      "hex": "#b08168",
+      "family": "room",
+      "role": "房間：木框亮部"
+    },
+    {
+      "hex": "#ba5354",
+      "family": "room",
+      "role": "房間：窗簾暗紅"
+    },
+    {
+      "hex": "#8c5e4f",
+      "family": "room",
+      "role": "房間：層架、畫框木色"
+    },
+    {
+      "hex": "#83b2c3",
+      "family": "room",
+      "role": "房間：窗外天空"
+    },
+    {
+      "hex": "#979730",
+      "family": "room",
+      "role": "房間：植物亮綠"
+    },
+    {
+      "hex": "#6c6a2f",
+      "family": "room",
+      "role": "房間：植物中綠"
+    },
+    {
+      "hex": "#595433",
+      "family": "room",
+      "role": "房間：植物深綠"
+    },
+    {
+      "hex": "#ba6d5f",
+      "family": "room",
+      "role": "房間：碗、毛線暗部"
+    },
+    {
+      "hex": "#56754a",
+      "family": "room",
+      "role": "房間：窗外山丘"
+    },
+    {
+      "hex": "#f5b451",
+      "family": "room",
+      "role": "房間：太陽、金黃"
+    },
+    {
+      "hex": "#c9cebd",
+      "family": "room",
+      "role": "房間：雲、桌巾"
+    }
   ],
   "merged": {
     "#241821": "#1a0e17",
@@ -41,5 +232,14 @@
     "#e4e1e1": "#fbf6f3",
     "#e6fb5a": "#dcf84a",
     "#fcaac5": "#f7aeb6"
+  },
+  "room": {
+    "file": "public/assets/momo-room-px-v1.png",
+    "width": 120,
+    "height": 72,
+    "shared_with_characters": [
+      "#4b8ca6",
+      "#6e6974"
+    ]
   }
 }

@@ -8,8 +8,10 @@ import { motionAsset, MOTION_ACTIONS } from '../motion-pack.js';
 // Rules from docs/PALETTE.md; scripts/pixel-polish.py makes the sheets satisfy them.
 const palette = JSON.parse(readFileSync(new URL('../docs/palette/didi-palette.json', import.meta.url), 'utf8'));
 const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
-const COLORS = palette.colors.map(c => c.hex);
-const FAMILY = new Map(palette.colors.map(c => [c.hex, c.family]));
+const ALL = palette.colors.map(c => c.hex);
+const CHARACTER = palette.colors.filter(c => c.family !== 'room');
+const COLORS = CHARACTER.map(c => c.hex);
+const FAMILY = new Map(CHARACTER.map(c => [c.hex, c.family]));
 const OUTLINE = palette.rules.outline;
 const WHITE = '#fbf6f3';
 const MID_GREYS = new Set(['#554e5b', '#6e6974', '#a19ea5', '#cac9cb']);
@@ -42,15 +44,38 @@ function logical(src) {
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]];
 const N4 = [[0, -1], [0, 1], [-1, 0], [1, 0]];
 
-test('palette: 24 named colours, every pair at least ΔE 10 apart, outline included', () => {
+test('palette: 24 character colours plus room colours, every pair at least ΔE 10 apart, all named', () => {
   assert.equal(COLORS.length, 24);
   assert.ok(COLORS.includes(OUTLINE));
-  const L = COLORS.map(h => lab(hexRgb(h)));
+  assert.equal(new Set(ALL).size, ALL.length, 'no duplicates');
+  const L = ALL.map(h => lab(hexRgb(h)));
   for (let i = 0; i < L.length; i++) for (let j = i + 1; j < L.length; j++) {
     const d = Math.hypot(L[i][0] - L[j][0], L[i][1] - L[j][1], L[i][2] - L[j][2]);
-    assert.ok(d >= palette.rules.min_delta_e, `${COLORS[i]} vs ${COLORS[j]} only ΔE ${d.toFixed(1)}`);
+    assert.ok(d >= palette.rules.min_delta_e, `${ALL[i]} vs ${ALL[j]} only ΔE ${d.toFixed(1)}`);
   }
   for (const c of palette.colors) assert.ok(c.role && c.family, c.hex);
+});
+
+test('room background uses only palette colours and has no speckles', () => {
+  const room = palette.room;
+  const { width, height, pixels } = decodePng(readFileSync(new URL('../' + room.file, import.meta.url)));
+  assert.deepEqual([width, height], [room.width, room.height]);
+  const hexAt = (x, y) => x < 0 || y < 0 || x >= width || y >= height ? null
+    : '#' + [0, 1, 2].map(k => pixels[(y * width + x) * 4 + k].toString(16).padStart(2, '0')).join('');
+  const labOf = new Map(ALL.map(h => [h, lab(hexRgb(h))]));
+  let offPalette = 0, speckle = 0, transparent = 0;
+  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+    if (pixels[(y * width + x) * 4 + 3] !== 255) transparent++;
+    const c = hexAt(x, y);
+    if (!labOf.has(c)) { offPalette++; continue; }
+    const n8 = N8.map(([dx, dy]) => hexAt(x + dx, y + dy)).filter(Boolean);
+    if (n8.includes(c)) continue;
+    const counts = new Map(); for (const v of n8) counts.set(v, (counts.get(v) || 0) + 1);
+    const [m, votes] = [...counts].sort((a, b) => b[1] - a[1])[0];
+    const [a, b] = [labOf.get(c), labOf.get(m)];
+    if (votes >= 5 && b && Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) < 25) speckle++;
+  }
+  assert.deepEqual({ offPalette, speckle, transparent }, { offPalette: 0, speckle: 0, transparent: 0 });
 });
 
 test('the master atlases and all 38 motion sheets are checked', () => {

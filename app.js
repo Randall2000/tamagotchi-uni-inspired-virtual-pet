@@ -1,6 +1,6 @@
 import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS, WAKE_RULES } from './pet.js';
 import { Navigation, menus, quickActions, makeDebouncer } from './navigation.js';
-import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle, petPixelSizes } from './motion.js';
+import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle, petPixelSizes, roomPixelSize } from './motion.js';
 import { motionAsset, motionFramePosition, motionTimeline } from './motion-pack.js';
 import { planWalk, walkSample } from './roaming.js';
 
@@ -558,6 +558,11 @@ function applyPetPixelSizes() {
     $('room-scene').style.setProperty(`--pet-${stage}-left`, `${sizes[stage].left}px`);
   }
   $('room-scene').dataset.devicePxPerArtPx = `${sizes.kitten.devicePxPerArtPx},${sizes.adult.devicePxPerArtPx}`;
+  const room = roomPixelSize(screenScale, window.devicePixelRatio || 1);
+  for (const [name, value] of [['w', room.width], ['h', room.height], ['left', room.left], ['floor-h', room.floorHeight]]) {
+    $('room-scene').style.setProperty(`--room-${name}`, `${value}px`);
+  }
+  $('room-scene').dataset.devicePxPerRoomPx = String(room.devicePxPerRoomPx);
 }
 function watchPixelRatio() {
   matchMedia(`(resolution: ${window.devicePixelRatio || 1}dppx)`).addEventListener('change', () => {
