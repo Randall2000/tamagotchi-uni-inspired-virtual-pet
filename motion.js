@@ -1,6 +1,6 @@
 // 8 action rows x 8 original poses, with drawn tail variations in both age atlases.
 export const FRAME_COUNT = 64;
-export const SPRITE_ATLAS = '/public/assets/momo-adult-64-v2.png';
+export const SPRITE_ATLAS = '/public/assets/momo-adult-64-v3.png';
 export const KITTEN_ATLAS = '/public/assets/momo-kitten-64-v2.png';
 export function atlasFor(stage = 'adult') {
   return { src: stage === 'kitten' ? KITTEN_ATLAS : SPRITE_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
