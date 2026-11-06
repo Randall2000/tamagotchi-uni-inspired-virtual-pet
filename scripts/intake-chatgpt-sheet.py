@@ -312,13 +312,16 @@ def main():
         dark.append(float((fam == "dark").mean()) if len(fam) else 0.0)
         light.append(float((fam == "light").mean()) if len(fam) else 0.0)
         ears.append(int((f == PINK_EAR).sum()))
-    lying = args.action in LYING_ACTIONS
+    # Size, feet and position stay steady only in calm actions; lively actions are expected to
+    # crouch, leap and travel (their liveliness is checked by ART-MOVE, their size by ART-ID-07).
+    lively = args.action not in CALM_ACTIONS
+    lying = args.action in LYING_ACTIONS or lively
     med = float(np.median(heights))
     check(r, "ART-ID-01", lying or max(abs(x - med) for x in heights) <= 2,
           {"heights": heights, "median": med, "exempt": lying})
     check(r, "ART-ID-02", lying or max(feet_rows) - min(feet_rows) <= 1, {"feet_rows": feet_rows, "exempt": lying})
     jumps = [round(abs(b - a), 1) for a, b in zip(centres, centres[1:])]
-    exempt3 = args.action in ("walk", "identity")
+    exempt3 = args.action in ("walk", "identity") or lively
     check(r, "ART-ID-03", exempt3 or not jumps or max(jumps) <= 1, {"centre_moves": jumps, "exempt": exempt3})
     eye_ok = args.action in EYES_CLOSED_ACTIONS or np.mean([e >= 2 for e in eyes]) >= 0.5
     face_white = [v for v, e in zip(light, eyes) if e >= 2] or light

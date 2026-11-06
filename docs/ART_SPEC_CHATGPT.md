@@ -84,7 +84,8 @@ Make it lively, like a hand-animated game character:
 - ears and tail move in EVERY frame; the head turns and tilts; paws lift and land;
 - eyes act too (squint, blink, widen, close happily);
 - never make a frame that differs from the previous one only in the mouth;
-- mouth open only where the action needs it (biting, lapping, gobbling, yawning, hissing, laughing, coughing).
+- mouth open only where the action needs it (biting, lapping, gobbling, yawning, hissing, laughing, coughing);
+- no motion lines, sparkles, sweat drops, 'z' letters or other effect marks: the cat and its prop only.
 No collar or neck line.
 ```
 
@@ -139,9 +140,9 @@ No collar or neck line.
 
 | ID | 條件 |
 |---|---|
-| ART-ID-01 | 每張的角色高度與該動作中位數差 ≤ 2 像素（躺、睡、生病、上廁所蹲下、設定圖除外） |
-| ART-ID-02 | 腳底所在列：各張差 ≤ 1 像素（躺下類姿勢除外） |
-| ART-ID-03 | 相鄰兩張身體中心水平移動 ≤ 1 像素（走路、設定圖除外） |
+| ART-ID-01 | **安靜動作**（idle、walk、tail_wag、curious、sad、sick、yawn、sleep）每張高度與中位數差 ≤ 2 像素；大動作不檢查（會蹲、跳、伸展），躺臥類與設定圖也不檢查 |
+| ART-ID-02 | 安靜動作的腳底所在列：各張差 ≤ 1 像素（大動作、躺臥類除外） |
+| ART-ID-03 | 安靜動作的相鄰兩張身體中心水平移動 ≤ 1 像素（走路、大動作、設定圖除外） |
 | ART-ID-04 | 材質比例：黑毛 ≥ 25%；看得到臉的張數白毛 5–40%（背面不要求）；至少一半張數有黃綠眼睛 ≥ 2 像素（睡覺類除外）；耳朵粉紅 ≥ 1 像素 |
 | ART-ID-05 | 相鄰兩張至少 1.5% 像素不同（真的有動），且沒有完全相同的兩張（除非表中寫重複） |
 | ART-ID-06 | 年齡差：成貓最高姿勢比幼貓高 ≥ 3 像素（兩個年齡的設定圖或 idle 都收圖後自動比對） |
@@ -195,3 +196,4 @@ ChatGPT 原始輸出約 1254×1254，工具直接以「格子寬 ÷ 32」切格�
 |---|---|---|---|
 | 1 | 2026-11-06 | `public/assets/ChatGPT 圖像 2026年11月6日 下午05_33_14.png`（幼貓）、`…05_33_26.png`（成貓） | 退件。幼貓：像素格整齊度 69–76%（< 75%），高 26 格（上限 24）。成貓：高 31 格（上限 28）、貼格子邊緣、整齊度 62–70%。兩者：全姿勢張嘴、頸部灰線、前 3 格角度太像。量測：ChatGPT 自然畫成約 32×32（每格約 9.8px），因此規格改為 32×32。 |
 | 回饋 | 2026-11-06 | — | Randall：「不要只有張嘴，動作不生動」→ 設定圖加表情排（9–16 格）、動作提示詞加生動原則、19 個動作姿勢改寫、新增 ART-MOVE-01～03 與 ART-VIS-07 |
+| 2 | 2026-11-06 | `public/assets/didi-generated/raw/` 38 張動作圖（幼貓 idle 用 v4，其餘 v1） | 退件，原圖直接檢查 0／38。**全部**：像素格不整齊（ART-RAW-06，整齊度幼貓 54–68%、成貓 47–66%，門檻 75%）。**幼貓**：15 張太高（多數 26 格、最高 28，上限 24）；只差格子＋高度的有 angry、drink、happy、sleep、snack、wake、walk；idle 8 格幾乎一樣（ART-MOVE-01）。**成貓**：17 張貼到格子邊（ART-RAW-05）；8 張多畫了動作線等記號或排版不對（ART-RAW-03／04）；只差格子的是 eat。**生動度**：play、petting 等大動作明顯進步。另一個工具先把原圖轉成標準格再檢查，得 3／38（幼貓 idle、sleep，成貓 idle）。**規則修正**：大動作本來就會蹲、跳、移動，ART-ID-01～03 改成只檢查安靜動作；提示詞加「不要畫動作線、閃光、汗滴、z 字」。 |
