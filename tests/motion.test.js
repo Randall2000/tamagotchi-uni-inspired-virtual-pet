@@ -11,7 +11,7 @@ test('both ages have a complete independent 64-frame transparent PNG atlas',()=>
     assert.equal(atlas.columns,8);assert.equal(atlas.rows,8);
     const bytes=readFileSync(new URL('..'+atlas.src,import.meta.url));
     assert.equal(bytes.toString('hex',0,8),'89504e470d0a1a0a');
-    assert.equal(bytes.readUInt32BE(16),1254);assert.equal(bytes.readUInt32BE(20),1254);
+    const dimension=stage==='adult'?1254:1024;assert.equal(bytes.readUInt32BE(16),dimension);assert.equal(bytes.readUInt32BE(20),dimension);
     assert.equal(bytes[25],6,'PNG stores RGBA channels');
     for(let frame=0;frame<64;frame++) {
       const position=framePosition(frame,stage),offset=frameRegistration(frame,stage);

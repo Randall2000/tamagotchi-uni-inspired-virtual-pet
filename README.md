@@ -4,7 +4,15 @@
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
-> **現行版本 v0.10.1**，變更見 [docs/RELEASE_0.10.1.md](docs/RELEASE_0.10.1.md)（[v0.10.0](docs/RELEASE_0.10.0.md)）（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+> **現行版本 v0.10.2**，變更見 [docs/RELEASE_0.10.2.md](docs/RELEASE_0.10.2.md)（[v0.10.1](docs/RELEASE_0.10.1.md)）（[v0.10.0](docs/RELEASE_0.10.0.md)）（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+
+## v0.10.2：幼貓眼睛鎖定與硬邊 Pixel Art
+
+- 使用原本的幼貓外形重建 1024×1024 新母圖 `momo-kitten-64-v3.png`（每格 128×128）；原始角色資產完全保留。
+- 固定 32 色上限、2×2 硬邊像素、無半透明雜訊，修正睜眼眼框漂移（保留視線方向與眨眼）。
+- 重建幼貓全部 19 組日常動作 PNG，成年貓原始資產及 19 組圖片不修改。
+- 詳細圖片驗收標準、量化結果及執行方式見 [v0.10.2 圖片驗收](docs/RELEASE_0.10.2.md)。
+- 新素材仍是預覽版，精細肢體動作尚需人工逐格美術審查。
 
 ## v0.10.1：自主日常行為與連續待機動畫
 

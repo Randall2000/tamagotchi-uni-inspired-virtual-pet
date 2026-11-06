@@ -4,6 +4,7 @@ Never overwrites the approved source art. Replace with hand-reviewed sprite shee
 """
 from pathlib import Path
 from PIL import Image, ImageDraw
+from remaster_kitten_pixels import quantize, LOGICAL
 import json, math
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "public" / "assets"
@@ -25,7 +26,7 @@ ROWS = {"idle":0, "feed":1,"groom":2,"play":3,"rest":4,"pet":5,"stretch":6,"look
 # Repeated holds follow the original timing; metadata distinguishes preview quality.
 PATHS = {
  "adult": ASSETS / "momo-adult-64-v3.png",
- "kitten": ASSETS / "momo-kitten-64-v2.png"
+ "kitten": ASSETS / "momo-kitten-64-v3.png"
 }
 CELL = 128
 COLS = 8
@@ -78,11 +79,16 @@ def main():
     import argparse
     ap=argparse.ArgumentParser()
     ap.add_argument('--build',action='store_true')
+    ap.add_argument('--stage',choices=['all','kitten','adult'],default='all')
     args=ap.parse_args()
     DEST.mkdir(parents=True,exist_ok=True)
     manifest=[]
+    if args.stage!='all' and (DEST/'manifest.json').exists():
+        manifest=[record for record in json.loads((DEST/'manifest.json').read_text())
+                  if record['stage'] != args.stage]
     walk_image=Image.open(ASSETS/"didi-walk-v1.png").convert("RGBA")
     for age, file in PATHS.items():
+        if args.stage!='all' and age!=args.stage: continue
         image=Image.open(file).convert("RGBA")
         age_dir=DEST/age
         age_dir.mkdir(exist_ok=True)
@@ -98,15 +104,19 @@ def main():
                     tile=crop_grid(image,pose,ROWS[row],8,8).resize((CELL,CELL),Image.Resampling.NEAREST)
                     if action in ("drink","snack","toilet"):
                         draw_pixel_prop(tile,action,n,count)
-                # Binary alpha to remove semi-transparent halo; does not change RGB paint.
-                alpha=tile.getchannel("A").point(lambda v:255 if v>=128 else 0)
-                tile.putalpha(alpha)
+                if age=='kitten':
+                    # Fixed pixel palette/grid even for props and walking assets.
+                    tile=quantize(tile.resize((LOGICAL,LOGICAL),Image.Resampling.NEAREST)).resize((CELL,CELL),Image.Resampling.NEAREST)
+                else:
+                    alpha=tile.getchannel("A").point(lambda v:255 if v>=128 else 0)
+                    tile.putalpha(alpha)
                 sheet.alpha_composite(tile,(n%COLS*CELL,n//COLS*CELL))
             file_name=f"{action}.png"
             sheet.save(age_dir/file_name,optimize=True)
             manifest.append(dict(stage=age,action=action,frames=count,fps=fps,playback=playback,
                 cell_px=CELL,columns=COLS,rows=math.ceil(count/COLS),
                 sheet=f"{age}/{file_name}",quality="preview-recomposed-from-existing-atlas"))
+    manifest.sort(key=lambda item:(0 if item['stage']=='kitten' else 1, next(i for i,v in enumerate(SPEC) if v[0]==item['action'])))
     (DEST/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print(f"Wrote {len(manifest)} action sheets to {DEST}")
 if __name__=="__main__": main()

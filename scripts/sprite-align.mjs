@@ -7,7 +7,7 @@ import { inflateSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 export const ATLASES = {
-  kitten: new URL('../public/assets/momo-kitten-64-v2.png', import.meta.url),
+  kitten: new URL('../public/assets/momo-kitten-64-v3.png', import.meta.url),
   adult: new URL('../public/assets/momo-adult-64-v3.png', import.meta.url),
 };
 export const GRID = 8;

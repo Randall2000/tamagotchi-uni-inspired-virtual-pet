@@ -1,7 +1,7 @@
 // 8 action rows x 8 original poses, with drawn tail variations in both age atlases.
 export const FRAME_COUNT = 64;
 export const SPRITE_ATLAS = '/public/assets/momo-adult-64-v3.png';
-export const KITTEN_ATLAS = '/public/assets/momo-kitten-64-v2.png';
+export const KITTEN_ATLAS = '/public/assets/momo-kitten-64-v3.png';
 export function atlasFor(stage = 'adult') {
   return { src: stage === 'adult' ? SPRITE_ATLAS : KITTEN_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
 }
@@ -67,7 +67,13 @@ export function framePosition(frame, stage = 'adult') {
 const IDLE_ANCHOR = { kitten: [86.0, 147.0], adult: [94.0, 147.0] };
 export function frameRegistration(frame, stage = 'adult') {
   framePosition(frame, stage);
-  const [anchorX, anchorY] = IDLE_ANCHOR[stage === 'adult' ? 'adult' : 'kitten'];
-  const cell = 1254 / 8;
-  return { x: (cell / 2 - anchorX) * 156 / cell, y: (147 - anchorY) * 156 / cell };
+  const originalCell = 1254 / 8;
+  const cell = stage === 'adult' ? originalCell : 128;
+  // Remastered kitten uses 128px exact-grid cells. Normalize anchor from the
+  // original 1254/8 atlas; never invent per-frame offsets or body transforms.
+  const factor = cell / originalCell;
+  const anchorX = IDLE_ANCHOR[stage === 'adult' ? 'adult' : 'kitten'][0] * factor;
+  const anchorY = IDLE_ANCHOR[stage === 'adult' ? 'adult' : 'kitten'][1] * factor;
+  const groundY = 147 * factor;
+  return { x: (cell / 2 - anchorX) * 156 / cell, y: (groundY - anchorY) * 156 / cell };
 }

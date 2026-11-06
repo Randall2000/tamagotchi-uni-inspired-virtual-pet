@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { decodePng } from './sprite-align.mjs';
 
 export const SPRITE_SHEETS = [
-  { file: new URL('../public/assets/momo-kitten-64-v2.png', import.meta.url), grid: 8 },
+  { file: new URL('../public/assets/momo-kitten-64-v3.png', import.meta.url), grid: 8 },
   { file: new URL('../public/assets/momo-adult-64-v3.png', import.meta.url), grid: 8 },
   { file: new URL('../public/assets/didi-walk-v1.png', import.meta.url), grid: 4 },
 ];

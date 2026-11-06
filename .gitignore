@@ -6,3 +6,6 @@ output/playwright/
 .DS_Store
 .claude/
 output/
+
+__pycache__/
+*.pyc
