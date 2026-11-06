@@ -126,7 +126,7 @@
 | WEB-PX-06 | 🔴 | — | 計算 5 種螢幕縮放 × 5 種螢幕密度 | 每個像素格都是整數個實體像素；畫到的貓不超出房間；幼貓不比成貓大；2 倍以上螢幕幼貓不小於原設計 80%（PX-07） | 自動：`every art pixel covers a whole number…` | PASS（v0.10.5） |
 | WEB-PX-07 | 🔴 | 手機 375×812（2 倍）、桌機 | 看 `#room-scene` 的 `data-device-px-per-art-px`；角色寬 × 螢幕密度 ÷ 64 | 為整數；1:1 放大截圖每格同寬、輪廓乾淨 | 手動 | PASS（`61cdcb3` 線上：375×812@2 幼／成 3,3 倍、每格 3.000px；1440×900@2 幼／成 4,5 倍、每格 4.000px） |
 | WEB-PX-09 | 🔴 | — | 檢查房間圖與色票 | 房間 120×72、全部顏色都在色票內、無孤立雜點；色票全部顏色任兩色 ΔE ≥ 10（PX-08） | 自動：`room background uses only palette colours…`、`palette: 24 character colours plus room…` | PASS（v0.10.6） |
-| WEB-PX-10 | 🔴 | 手機 375×812（2 倍）、桌機 | 看 `#room-scene` 的 `data-device-px-per-room-px`；房間寬 × 螢幕密度 ÷ 120 | 為整數；房間貼齊地面置中，留邊處是牆色／地板色、沒有空白（PX-09） | 自動：`room background: 120x72 pixel art…`＋手動 | 見 §5 |
+| WEB-PX-10 | 🔴 | 手機 375×812（2 倍）、桌機 | 看 `#room-scene` 的 `data-device-px-per-room-px`；房間寬 × 螢幕密度 ÷ 120 | 為整數；房間貼齊地面置中，留邊處是牆色／地板色、沒有空白（PX-09） | 自動：`room background: 120x72 pixel art…`＋手動 | PASS（`93acf6f` 線上 375×812@2：房間每格 3.000 實體 px、與貓相同；貼地 0px；本機 1440×900@2：房間 5、幼／成 4,5） |
 | WEB-PX-08 | 🔴 | 手機 | 看幼貓、成貓待機與吃飯、玩耍、睡覺，以及房間 | 邊緣不毛躁、黑毛白毛不花、顏色不混；房間與貓像素大小一致（主觀驗收） | 手動（驗收者） | NOT RUN |
 
 ## 3. 不在 Web 驗收範圍
@@ -149,9 +149,9 @@
 
 | 項目 | 數量 |
 |---|---|
-| 總數（不含被取代的 2 項） | 56 |
-| PASS | 54 |
+| 總數（不含被取代的 2 項） | 58 |
+| PASS | 56 |
 | NOT RUN | 2（WEB-ANIM-05、WEB-PX-08 需人眼觀看） |
 | FAIL | 0 |
 
-**Web v0.10.5**（2026-11-06，commit `61cdcb3`）：56 項中 54 項 PASS、0 件 FAIL；WEB-ANIM-05、WEB-PX-08 需要驗收者用眼睛看。v0.10.0～0.10.4 的動作包、自主行為、幼貓眼睛驗收見各版 RELEASE 文件。
+**Web v0.10.6**（2026-11-06，commit `93acf6f`）：58 項中 56 項 PASS、0 件 FAIL；WEB-ANIM-05、WEB-PX-08 需要驗收者用眼睛看。v0.10.0～0.10.4 的動作包、自主行為、幼貓眼睛驗收見各版 RELEASE 文件。
