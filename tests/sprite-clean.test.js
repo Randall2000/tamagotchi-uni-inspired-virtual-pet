@@ -23,3 +23,9 @@ for (const { file, grid } of SPRITE_SHEETS) {
     assert.ok(Buffer.from(again.pixels).equals(Buffer.from(image.pixels)), 'stray specks or haze remain (run node scripts/clean-sprites.mjs)');
   });
 }
+
+test('adult yarn frames have no muddy purple shadow between the ball and the cat', async () => {
+  const { ADULT_ATLAS, YARN_FRAMES, findShadowBlob } = await import('../scripts/fix-yarn-shadow.mjs');
+  const image = decodePng(readFileSync(ADULT_ATLAS));
+  for (const frame of YARN_FRAMES) assert.equal(findShadowBlob(image, frame).length, 0, `frame ${frame}`);
+});
