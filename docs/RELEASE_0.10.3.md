@@ -46,6 +46,12 @@
 - python3 scripts/qa-kitten-browser.py
 - python3 scripts/qa-momo-motions.py
 
+## 正式網站 CDN 與實際操作驗收
+
+- 使用真正的 Mac Chrome 在正式網址開啟 v0.10.3，驗證幼貓待機、餵食以及 C 返回；JS/HTTP 錯誤為 0。
+- 使用 Chrome 的網路請求下載正式部署的幼貓母圖、待機圖集、餵食圖集與放大對照圖，逐一比較 SHA-256 與本地產出完全一致，4／4 PASS。
+- 可重複執行：python3 scripts/qa-kitten-production.py。
+
 ## 驗收界線
 
 上述為可重現的圖片與程式技術驗收，不代表使用者已對眼神、表情或整套動畫給予人工美術簽核。19 組動作仍是從既有姿勢重組的預覽素材，部分影格會重複。正式動畫仍須人工逐格審核。
