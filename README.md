@@ -4,7 +4,7 @@
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
-> **現行版本 v0.8.2**，變更見 [docs/RELEASE_0.8.2.md](docs/RELEASE_0.8.2.md)（[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+> **現行版本 v0.9.1**，變更見 [docs/RELEASE_0.9.1.md](docs/RELEASE_0.9.1.md)（[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
 
 ## 網頁原型 v0.5：使用 4×4 Sprite Atlas 逐格角色動畫
 

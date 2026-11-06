@@ -109,6 +109,7 @@
 | WEB-ANIM-01 | 🔴 | — | 檢查圖集 | 幼年、成年各 64 格透明 PNG（B-ANIM-09） | 自動：`both ages have a complete…` | PASS（`4498b03`） |
 | WEB-ANIM-02 | 🔴 | — | 檢查每個主要動作 | 8 個不同姿勢，總長 4–6 秒 | 自動：`every main action has eight distinct poses…` | PASS（`4498b03`） |
 | WEB-ANIM-04 | 🔴 | — | 量測每個動作相鄰兩格整隻貓的位移（`node scripts/sprite-align.mjs`） | 幼年、成年所有動作的相鄰影格位移都 ≤1px；程式對每格套用同一個定位，不逐格推動角色（B-ANIM-12） | 自動：`the whole cat moves at most 1px…`、`registration is one fixed offset…` | PASS（`80db55a`，`npm test` 31 項通過；所有動作相鄰影格 ≤1px） |
+| WEB-ANIM-06 | 🔴 | — | 檢查三張角色圖集；在房間裡看幼貓、成貓、走路 | 透明度只有 0 或 255，沒有灰霧、光暈、半透明邊或散落碎點；放在房間上輪廓是乾淨的硬邊（B-UI-04） | 自動：`background fully removed…`＋手動截圖 | PASS（v0.9.1 本機實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 | WEB-ANIM-05 | 🔴 | 幼年、成年各一次 | 依序播放餐食、清潔、玩耍、摸摸、睡覺、點心、洗臉、伸懶腰、看窗外，以及閒置小動作，盯著腳底與身體 | 腳底不上下跳、身體不左右滑；只有頭、爪子、尾巴在動 | 手動（錄影） | NOT RUN |
 | WEB-ANIM-03 | 🔴 | 同一成長階段 | 播放任一動作，比對動作前後角色外框 | 位置與尺寸誤差 ≤1px；不旋轉、不縮放；尺寸只在長大時改變（B-ANIM-10） | 自動：`character scale depends only on growth…`＋手動截圖 | PASS（`6e14e86` 線上實測，見 [證據](evidence/WEB_v0.6_2026-11-05.md)） |
 
@@ -132,9 +133,9 @@
 
 | 項目 | 數量 |
 |---|---|
-| 總數 | 48 |
-| PASS | 47 |
+| 總數 | 49 |
+| PASS | 48 |
 | NOT RUN | 1（WEB-ANIM-05 需人眼觀看） |
 | FAIL | 0 |
 
-**Web v0.8.2**（2026-11-05，commit `39e35da`）：48 項中 47 項 PASS、0 件 FAIL；WEB-ANIM-05 需要人眼看動畫，請驗收者補做。
+**Web v0.9.1**（2026-11-06）：49 項中 48 項 PASS、0 件 FAIL；WEB-ANIM-05 需要人眼看動畫，請驗收者補做。v0.9.0 散步功能的驗收見 RELEASE_0.9.0.md。
