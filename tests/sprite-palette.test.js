@@ -27,12 +27,25 @@ function palette(stage) {
   }
   return result;
 }
-test('grown cat follows the selected kitten palette without warm brown fur or dull gold eyes',()=>{
+test('adult and kitten preserve yellow-green eye hue while retaining source-specific brightness',()=>{
   const kitten=palette('kitten'),adult=palette('adult');
+  // Kitten's original authorized lime iris is brighter than adult's.
+  // Compare stage eye hue, not exact RGB luminance. Eye brightness and
+  // eye-region material purity are separately source-locked in Python QA.
   for(const material of Object.keys(bands)) {
-    const tolerance=material==='eyes'?24:10;
-    for(let c=0;c<3;c++) assert.ok(Math.abs(adult[material][c]-kitten[material][c])<=tolerance,`${material}: ${adult[material]} vs ${kitten[material]}`);
+    if(material==='eyes')continue;
+    for(let c=0;c<3;c++) assert.ok(
+      Math.abs(adult[material][c]-kitten[material][c])<=10,
+      material+': '+adult[material]+' vs '+kitten[material]);
   }
+  const hue=([r,g,b])=>{
+    const max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min;
+    if(!d)return 0;
+    const h=max===r?((g-b)/d)%6:max===g?(b-r)/d+2:(r-g)/d+4;
+    return (h*60+360)%360;
+  };
+  const delta=Math.abs(hue(adult.eyes)-hue(kitten.eyes));
+  assert.ok(Math.min(delta,360-delta)<=12,'adult and kitten hue difference exceeds 12 degrees');
   assert.ok(adult.fur[2]>adult.fur[1],'fur retains cool charcoal undertone');
   assert.ok(adult.eyes[1]>adult.eyes[0],'eyes remain yellow-green rather than gold');
   assert.ok(Math.min(...adult.white)>=235,'white markings remain bright');

@@ -25,8 +25,8 @@ PALETTE = np.array([
     [70, 63, 73], [85, 78, 91], [110, 105, 116],
     [161, 158, 165], [202, 201, 203], [228, 225, 225],
     [251, 246, 243], [255, 255, 255],
-    [26, 25, 28], [110, 126, 36], [155, 179, 50],
-    [205, 222, 70], [223, 238, 92], [237, 248, 124],
+    [26, 25, 28], [105, 150, 38], [155, 195, 48],
+    [220, 248, 74], [230, 251, 90], [241, 253, 110],
     [162, 69, 85], [201, 100, 120], [233, 135, 150],
     [247, 174, 182], [247, 120, 142],
     [118, 68, 38], [165, 101, 44], [210, 152, 63],
@@ -56,16 +56,30 @@ def quantize(tile: Image.Image) -> Image.Image:
         samples = rgb[visible]
         lab = to_lab(samples)
         distances = ((lab[:, None, :] - PALETTE_LAB[None, :, :])**2).sum(axis=2)
+        rows, cols = np.where(visible)
+        # RGB on the face may not be assigned food-bowl brown, blue water or
+        # yarn-pink palettes. Old global nearest-palette selection produced
+        # brown eye borders and sporadic cyan cheek pixels.
+        face=(rows>=17)&(rows<43)&(cols>=17)&(cols<54)
+        distances[face, 23:30] = np.inf
+        distances[face, 30:32] = np.inf
         closest = np.argmin(distances, axis=1)
-        # Enforce green-yellow iris materials only from the eye shades. This
-        # keeps mixed/blurred near-green shades from contaminating dark fur.
-        is_iris = ((samples[:,1].astype(int)>135)
-                   & (samples[:,1].astype(int)>=samples[:,0].astype(int)-10)
-                   & (samples[:,1].astype(int)>samples[:,2].astype(int)*1.35)
-                   & (samples[:,2]<195))
+        # Preserve the source kitten's yellow-green eye pigments. Older v3
+        # classified dark olive boundary pixels as brown (e.g. #64530A).
+        # Only classify such ambiguous pigments within the actual eye sockets,
+        # never the surrounding charcoal fur or food/yarn props.
+        eye_roi = (rows>=23)&(rows<34)&(
+            ((cols>=22)&(cols<35))|((cols>=36)&(cols<49)))
+        r=samples[:,0].astype(np.int16)
+        g=samples[:,1].astype(np.int16)
+        b=samples[:,2].astype(np.int16)
+        green=(g>135)&(g>=r-10)&(g>b*1.35)&(b<195)
+        dark_olive=eye_roi & (g>=49)&(r>=45)&(b<100)&(
+            g>=r*0.56)&(g>b*1.4)&(r>b*1.25)
+        is_iris=green|dark_olive
         if is_iris.any():
-            sub = distances[is_iris][:, IRIS_INDICES]
-            closest[is_iris] = IRIS_INDICES[np.argmin(sub, axis=1)]
+            sub=distances[is_iris][:,IRIS_INDICES]
+            closest[is_iris]=IRIS_INDICES[np.argmin(sub,axis=1)]
         out[visible, :3] = PALETTE[closest]
         out[visible, 3] = 255
     return Image.fromarray(out, 'RGBA')
@@ -88,7 +102,7 @@ def move_pupil(eye, delta):
     pixels=np.array(eye,copy=True)
     h,w=pixels.shape[:2]
     # Recolor the dark pupil interior with the local lime tone, not the rim.
-    iris_color=np.array([223,238,92,255],dtype=np.uint8)
+    iris_color=np.array([220,248,74,255],dtype=np.uint8)
     pupil=np.zeros((h,w),bool)
     for y in range(3,min(h,10)):
         for x in range(3,min(w-2,10)):
@@ -105,14 +119,14 @@ def move_pupil(eye, delta):
             pixels[y,nx]=np.array([26,25,28,255],dtype=np.uint8)
     return pixels
 
-def normalize_eyes(tiles):
+def normalize_eyes(tiles, raw_tiles):
     original=tiles[CANONICAL_OPEN_FRAME]
     template=np.array(original,copy=True)
     normalized=[]
     open_frames=[]
     for frame,tile in enumerate(tiles):
         a=np.array(tile,copy=True)
-        if iris_count_source(tile)>OPEN_THRESHOLD or (frame in GAZE_RIGHT and iris_count_source(tile)>35):
+        if iris_count_source(raw_tiles[frame])>OPEN_THRESHOLD:
             gaze=-1 if frame in GAZE_LEFT else 1 if frame in GAZE_RIGHT else 0
             for x0,y0,x1,y1 in EYE_BOXES:
                 patch=template[y0:y1,x0:x1].copy()
@@ -125,6 +139,7 @@ def normalize_eyes(tiles):
 def main():
     source=Image.open(SOURCE).convert('RGBA')
     tiles=[]
+    raw_tiles=[]
     for i in range(64):
         col,row=i%GRID,i//GRID
         bounds=tuple(round(v) for v in (
@@ -133,8 +148,9 @@ def main():
         # Crop to an exact cell first (old v2 has 1254/8 nonintegral cells).
         # Never use linear/cubic interpolation on pixel art.
         tile=source.crop(bounds).resize((LOGICAL,LOGICAL),Image.Resampling.NEAREST)
+        raw_tiles.append(tile)
         tiles.append(quantize(tile))
-    tiles,open_frames=normalize_eyes(tiles)
+    tiles,open_frames=normalize_eyes(tiles,raw_tiles)
     atlas=Image.new('RGBA',(GRID*CELL,GRID*CELL))
     for i,tile in enumerate(tiles):
         atlas.alpha_composite(tile.resize((CELL,CELL),Image.Resampling.NEAREST),

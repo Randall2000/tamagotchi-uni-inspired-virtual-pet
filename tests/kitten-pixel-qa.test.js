@@ -66,3 +66,56 @@ test('feet share ground anchor within one logical pixel; no whole-body bob',()=>
   }
   assert.ok(Math.max(...feet)-Math.min(...feet)<=2);
 });
+
+test('all 40 open-eye poses retain the original kitten iris RGB within 2 RGB points per channel',()=>{
+  // Original user-approved momo-kitten.png sampled at 64 logical pixels.
+  // Green/yellow iris median is (219,247,73), independent of the remaster.
+  const sourceRgb=[219,247,73];
+  const openFrames=[0,1,5,6,7,8,9,10,14,15,16,17,22,23,24,25,26,27,28,29,30,31,
+    40,41,42,45,46,47,48,49,50,54,55,56,57,58,59,60,61,63];
+  for(const frame of openFrames) {
+    const col=frame%8,row=Math.floor(frame/8),found=[[],[],[]];
+    for(let y=46;y<68;y+=2) for(let x=44;x<98;x+=2) {
+      const off=((row*128+y)*base.width+col*128+x)*4;
+      const [r,g,b,a]=base.pixels.subarray(off,off+4);
+      if(a===255&&g>135&&g>=r-10&&g>b*1.35&&b<195) {
+        found[0].push(r);found[1].push(g);found[2].push(b);
+      }
+    }
+    assert.ok(found[0].length>=50,'missing green iris in open frame '+frame);
+    for(let k=0;k<3;k++){
+      found[k].sort((a,b)=>a-b);
+      const median=found[k][Math.floor(found[k].length/2)];
+      assert.ok(Math.abs(median-sourceRgb[k])<=2,
+        'original iris color changed in frame '+frame+', RGB channel '+k+
+        ': expected '+sourceRgb[k]+' got '+median);
+    }
+  }
+});
+
+test('64-frame master and every kitten motion atlas have zero brown/teal/purple eye pixels',()=>{
+  const forbidden=new Set([
+    '118,68,38','165,101,44','210,152,63',
+    '75,140,166','153,208,227',
+    '133,42,75','195,63,99','239,119,161',
+  ]);
+  const images=[['master',base]];
+  for(const action of MOTION_ACTIONS)
+    images.push([action,load(motionAsset(action,'kitten').src)]);
+  let total=0;
+  for(const [name,im] of images) {
+    const frames=(im.width/128)*(im.height/128);
+    for(let f=0;f<frames;f++) {
+      const col=f%8,row=Math.floor(f/8);
+      for(const [x0,y0,x1,y1] of [[22,23,35,34],[36,23,49,34]])
+        for(let y=y0*2;y<y1*2;y+=2)for(let x=x0*2;x<x1*2;x+=2) {
+          const i=((row*128+y)*im.width+col*128+x)*4;
+          const key=im.pixels[i]+','+im.pixels[i+1]+','+im.pixels[i+2];
+          assert.ok(!forbidden.has(key),
+            'eye material changed color in '+name+' frame '+f+' pixel '+x+','+y+' RGB '+key);
+        }
+      total++;
+    }
+  }
+  assert.ok(total>=480,'expected full action coverage');
+});
