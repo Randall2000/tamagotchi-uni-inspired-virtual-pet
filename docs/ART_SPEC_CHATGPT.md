@@ -16,6 +16,8 @@
 
 ## 2. 交件格式（每一張圖）
 
+> **請交 ChatGPT 的原始下載檔**：在 ChatGPT 圖片上按下載，存成 PNG 放到一個資料夾（例如 `~/Downloads/didi-art/`），再把資料夾路徑告訴 Claude。不要截圖或貼上聊天預覽：預覽會被縮放、轉成 webp，像素格會跑掉（2026-11-06 第一輪就是這樣，尺寸變成 1254×1254 與 1261×1247）。
+
 | 項目 | 規格 |
 |---|---|
 | 檔案 | PNG，1024×1024 |
@@ -50,6 +52,9 @@ Feet of every pose on the same baseline 12 px above the bottom of its cell, cent
 Kitten proportions: big round head about half of the body height, small body, standing height about 44 pixels of the 64.
 Colours only: outline #1a0e17 (1 pixel dark outline around the whole silhouette), black fur #383139, fur highlight #554e5b, white muzzle chest and paws #fbf6f3, white shadow #cac9cb, yellow-green eyes #dcf84a with #1a0e17 pupils and one white highlight, inner ears #e98796, nose #f7aeb6, mouth #c33f63.
 Exactly four legs, one tail with a white tip, two ears, two eyes.
+Mouth closed with a small calm smile (no open mouth in any of these poses). No collar, no line or band around the neck.
+Size limit: the whole cat fits inside the middle of its cell with at least 24 px empty above the ears; the kitten is at most 176 px tall in its 256 px cell.
+Cells 2 and 3 must be real three-quarter views (face turned, one eye partly hidden), not the front view with the tail moved.
 ```
 
 ### B. 成貓角色設定圖
@@ -57,7 +62,7 @@ Exactly four legs, one tail with a white tip, two ears, two eyes.
 把 A 的「Kitten proportions …」那一句換成：
 
 ```
-Adult cat proportions: same individual as the attached kitten reference grown up, head about 35-40% of body height, longer body and legs, standing height about 54 pixels of the 64.
+Adult cat proportions: same individual as the attached kitten reference grown up, head about 35-40% of body height, longer body and legs, standing height about 54 pixels of the 64 — at most 216 px tall in its 256 px cell, never touching the cell edges.
 ```
 
 並上傳已簽核的幼貓設定圖，加一句 `Keep the exact same markings, colours and face as the attached kitten reference.`
@@ -73,6 +78,7 @@ Cells 1-<N>: consecutive animation frames: <POSES>. Remaining cells empty.
 Each frame is ONE 64x64-pixel sprite scaled up 4x with nearest neighbour (crisp 4x4 squares). No anti-aliasing, no gradients, no blur, no ground shadow, no text.
 Feet on the same baseline 12 px above the bottom of every cell; the body must not slide or change size between frames, only the moving parts change.
 Use only the reference colours. Props allowed: <PROPS or "none">.
+Mouth closed unless this action needs it open (eat, drink, yawn, angry hiss). No collar or neck line.
 ```
 
 | 動作 `<ACTION>` | 格數 `<N>` | 姿勢 `<POSES>`（依序） | 道具 |
@@ -129,7 +135,7 @@ Use only the reference colours. Props allowed: <PROPS or "none">.
 | ART-ID-01 | 每張的角色高度與該動作中位數差 ≤ 3 像素（躺、睡、生病、上廁所蹲下除外） |
 | ART-ID-02 | 腳底所在列：各張差 ≤ 1 像素（躺下類姿勢除外） |
 | ART-ID-03 | 相鄰兩張身體中心水平移動 ≤ 2 像素（走路除外） |
-| ART-ID-04 | 材質比例：黑毛 ≥ 25%、白毛 5–40%；睜眼張數中每張黃綠眼睛 ≥ 6 像素；耳朵粉紅 ≥ 2 像素 |
+| ART-ID-04 | 材質比例：黑毛 ≥ 25%；看得到臉的張數白毛 5–40%（背面不要求）；睜眼張數中每張黃綠眼睛 ≥ 6 像素；耳朵粉紅 ≥ 2 像素 |
 | ART-ID-05 | 相鄰兩張至少 1.5% 像素不同（真的有動），且沒有完全相同的兩張（除非表中寫重複） |
 | ART-ID-06 | 年齡差：成貓坐姿高度比幼貓高 ≥ 4 像素（兩個年齡的 idle 都收圖後檢查） |
 
@@ -151,7 +157,10 @@ Use only the reference colours. Props allowed: <PROPS or "none">.
 
 ```bash
 python3 scripts/intake-chatgpt-sheet.py ~/Downloads/kitten-eat.png --stage kitten --action eat
+python3 scripts/intake-chatgpt-sheet.py ~/Downloads/kitten-identity.png --stage kitten --action identity   # 角色設定圖
 ```
+
+`--lenient`：尺寸不對時仍判 ART-RAW-01 不通過，但先縮成 1024 把其餘項目檢查完，一次列出所有問題。
 
 輸出到 `output/art-intake/<stage>/`：
 

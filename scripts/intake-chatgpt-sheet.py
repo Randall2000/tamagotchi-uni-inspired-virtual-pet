@@ -6,7 +6,10 @@ format (64px logical sprites, 2x cells of 128px, 8 columns, didi palette, pixel 
 writes a report, the converted sheet and a review image to output/art-intake/<stage>/.
 Never touches the game's own assets. Exit code 0 only when every automated check passes.
 
-Usage: python3 scripts/intake-chatgpt-sheet.py <png> --stage kitten|adult --action <name> [--frames N]
+Usage: python3 scripts/intake-chatgpt-sheet.py <png> --stage kitten|adult --action <name|identity> [--frames N] [--lenient]
+  --action identity  checks a character sheet (8 different poses): no size/feet/centre consistency checks
+  --lenient          a wrong canvas size still fails ART-RAW-01, but the sheet is resized to 1024 and
+                     the remaining checks run, so one pass reports every problem
 """
 import argparse
 import importlib.util
@@ -28,9 +31,9 @@ SIZE, GRID, CELL, LOGICAL, BLOCK = 1024, 4, 256, 64, 4
 FEET_ROW, CENTER_COL = 61, 32
 ACTIONS = {name: 8 for name in [
     "idle", "walk", "eat", "drink", "snack", "play", "groom", "petting", "sleep_prep", "sleep",
-    "wake", "yawn", "tail_wag", "curious", "happy", "sad", "angry", "sick", "toilet"]}
+    "wake", "yawn", "tail_wag", "curious", "happy", "sad", "angry", "sick", "toilet", "identity"]}
 PROP_ACTIONS = {"eat", "drink", "snack", "play", "toilet"}
-LYING_ACTIONS = {"sleep", "sleep_prep", "sick", "toilet", "wake"}
+LYING_ACTIONS = {"sleep", "sleep_prep", "sick", "toilet", "wake", "identity"}
 EYES_CLOSED_ACTIONS = {"sleep", "sleep_prep", "sick"}
 OUTLINE, PINK_EAR = pp.COLORS.index("#1a0e17"), pp.COLORS.index("#e98796")
 
@@ -156,13 +159,19 @@ def main():
     ap.add_argument("--stage", required=True, choices=["kitten", "adult"])
     ap.add_argument("--action", required=True, choices=sorted(ACTIONS))
     ap.add_argument("--frames", type=int)
+    ap.add_argument("--lenient", action="store_true")
     args = ap.parse_args()
     frames_needed = args.frames or ACTIONS[args.action]
     r = {}
-    raw = np.asarray(Image.open(args.png).convert("RGBA"))
+    image = Image.open(args.png).convert("RGBA")
+    raw = np.asarray(image)
     check(r, "ART-RAW-01", raw.shape[:2] == (SIZE, SIZE), f"{raw.shape[1]}x{raw.shape[0]}")
     if raw.shape[:2] != (SIZE, SIZE):
-        return finish(args, r, None, None)
+        square = abs(raw.shape[0] / raw.shape[1] - 1) <= 0.02
+        if not (args.lenient and square):
+            return finish(args, r, None, None)
+        raw = np.asarray(image.resize((SIZE, SIZE), Image.NEAREST))
+        r["ART-RAW-01"]["detail"] += " (resized to 1024 for --lenient evaluation; still a failed delivery)"
 
     mask, bg = remove_background(raw)
     bg_ok = bg["mode"] == "transparent" or bg["corner_spread"] < 10
@@ -242,10 +251,12 @@ def main():
           {"heights": heights, "median": med, "exempt": lying})
     check(r, "ART-ID-02", lying or max(feet_rows) - min(feet_rows) <= 1, {"feet_rows": feet_rows, "exempt": lying})
     jumps = [round(abs(b - a), 1) for a, b in zip(centres, centres[1:])]
-    check(r, "ART-ID-03", args.action == "walk" or not jumps or max(jumps) <= 2,
-          {"centre_moves": jumps, "exempt": args.action == "walk"})
+    check(r, "ART-ID-03", args.action in ("walk", "identity") or not jumps or max(jumps) <= 2,
+          {"centre_moves": jumps, "exempt": args.action in ("walk", "identity")})
     eye_ok = args.action in EYES_CLOSED_ACTIONS or np.mean([e >= 6 for e in eyes]) >= 0.5
-    materials_ok = min(dark) >= 0.25 and all(0.05 <= v <= 0.40 for v in light) and eye_ok and max(ears) >= 2
+    # White chest/muzzle is only required where the face is visible (a back view shows almost none).
+    face_white = [v for v, e in zip(light, eyes) if e >= 6] or light
+    materials_ok = min(dark) >= 0.25 and all(0.05 <= v <= 0.40 for v in face_white) and max(light) <= 0.40 and eye_ok and max(ears) >= 2
     check(r, "ART-ID-04", materials_ok, {"dark_fur": [round(v, 2) for v in dark], "white": [round(v, 2) for v in light],
                                           "eye_pixels": eyes, "ear_pink_pixels": ears})
     diffs = [float(((a >= 0) | (b >= 0))[a != b].sum() / max(1, ((a >= 0) | (b >= 0)).sum()))
