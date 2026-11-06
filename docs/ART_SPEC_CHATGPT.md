@@ -7,7 +7,7 @@
 
 | 步驟 | 誰 | 做什麼 | 通過才進下一步 |
 |---|---|---|---|
-| 1. 定角色 | Randall 用 ChatGPT | 依 §4 提示詞 A、B 生**幼貓**與**成貓**的角色設定圖 | Randall 簽核外觀（ART-VIS-01） |
+| 1. 定角色 | Randall 用 ChatGPT | 依 §4 提示詞 A、B 生**幼貓**與**成貓**的角色設定圖，用工具 `--action identity` 檢查 | 自動檢查全 PASS＋Randall 簽核外觀（ART-VIS-01） |
 | 2. 生動作 | Randall 用 ChatGPT | 在同一個對話裡上傳已簽核的設定圖，依提示詞 C 一個動作生一張 | — |
 | 3. 收圖檢查 | 工具 | `intake-chatgpt-sheet.py` 去背、對齊格子、套色票、跑 ART-RAW／PX／ID 全部自動檢查，產生報告與對照圖 | 自動檢查全 PASS |
 | 4. 目視驗收 | Randall | 看對照圖與手機實機（ART-VIS） | 全部簽核才換進遊戲 |
@@ -20,12 +20,12 @@
 
 | 項目 | 規格 |
 |---|---|
-| 檔案 | PNG，1024×1024 |
-| 格子 | 4×4 = 16 格，每格 256×256；由左到右、由上到下放姿勢；用不到的格子留空 |
+| 檔案 | ChatGPT 下載的原始 PNG，正方形（約 1024～1600px，長寬差 ≤ 2%） |
+| 格子 | 4×4 = 16 格；由左到右、由上到下放姿勢；用不到的格子留空 |
 | 背景 | 完全透明。做不到時，用**純色 `#FF00FF` 洋紅**平塗（不能有漸層、陰影、地板） |
-| 像素 | 每格是一隻 **64×64 像素**的角色，放大 4 倍（每個像素是 4×4 方塊）；不能有反鋸齒、模糊、漸層 |
-| 位置 | 腳底在每格 **y = 244**（同一條線），左右置中；耳朵頂端離格子上緣 ≥ 24px，左右離邊 ≥ 16px；不能超出格子 |
-| 描邊 | 輪廓外圈 1 個像素（4×4）的深色描邊 `#1a0e17` |
+| 像素 | 每格是一隻 **32×32 像素**的角色（2026-11-06 定，見 PRD D-15），每個像素是同樣大小的正方形色塊；不能有反鋸齒、模糊、漸層 |
+| 位置 | 腳底踩在每格倒數第 2 個像素列（同一條線），左右置中；耳朵上方至少空 3 個像素、左右至少空 1 個像素；不能超出格子 |
+| 描邊 | 輪廓外圈 1 個像素的深色描邊 `#1a0e17` |
 | 禁止 | 文字、浮水印、格線、地板陰影、多餘道具、第二隻貓 |
 | 檔名 | `<幼貓 kitten／成貓 adult>-<動作>.png`，例：`kitten-eat.png` |
 
@@ -35,8 +35,8 @@
 - **眼睛**：黃綠色 `#dcf84a`、深色瞳孔 `#1a0e17`、一個白色反光點
 - **耳朵內側**粉紅 `#e98796`；**鼻子**淺粉 `#f7aeb6`；嘴巴 `#c33f63`
 - **一條尾巴**，尾尖白色；**四條腿**；兩隻耳朵、兩隻眼睛
-- **幼貓**：頭大身體小（頭約占身高 50%），站高約 40–46 像素
-- **成貓**：頭身比例較長（頭約占身高 35–40%），站高約 50–56 像素，比幼貓高至少 4 像素
+- **幼貓**：頭大身體小（頭約占身高 50%），高度 ≤ 24 像素（32 格中）
+- **成貓**：頭身比例較長（頭約占身高 35–40%），高度 ≤ 28 像素，比幼貓高至少 3 像素
 - 只用 [PALETTE.md](PALETTE.md) 的 24 個角色色；道具只能用色票中的道具色（碗、飼料、水、毛線）
 
 ## 4. ChatGPT 提示詞（直接複製）
@@ -45,15 +45,14 @@
 
 ```
 Pixel art character sheet of an original cute tuxedo kitten named "didi".
-Canvas 1024x1024, transparent background, a 4x4 grid of 256x256 cells, no grid lines.
-Each cell holds ONE 64x64-pixel sprite scaled up 4x with nearest neighbour (every pixel is a crisp 4x4 square). No anti-aliasing, no gradients, no blur, no ground shadow, no text.
+Square canvas, transparent background, a 4x4 grid of equal cells, no grid lines.
+Each cell holds ONE 32x32-pixel sprite scaled up with nearest neighbour: every pixel is a crisp square of exactly the same size, all pixels aligned to one regular 32x32 grid per cell. No anti-aliasing, no gradients, no blur, no ground shadow, no text.
 Cells 1-8: front sitting, 3/4 left sitting, 3/4 right sitting, side standing facing right, side walking facing right, lying down, sleeping curled, back view sitting. Cells 9-16 empty.
-Feet of every pose on the same baseline 12 px above the bottom of its cell, centred horizontally, at least 24 px of empty space above the ears and 16 px on the sides.
-Kitten proportions: big round head about half of the body height, small body, standing height about 44 pixels of the 64.
+Feet of every pose on the same baseline, one pixel row above the bottom of its cell, centred horizontally, at least 3 empty pixels above the ears and 1 on each side.
+Kitten proportions: big round head about half of the body height, small body, at most 24 pixels tall of the 32.
 Colours only: outline #1a0e17 (1 pixel dark outline around the whole silhouette), black fur #383139, fur highlight #554e5b, white muzzle chest and paws #fbf6f3, white shadow #cac9cb, yellow-green eyes #dcf84a with #1a0e17 pupils and one white highlight, inner ears #e98796, nose #f7aeb6, mouth #c33f63.
 Exactly four legs, one tail with a white tip, two ears, two eyes.
 Mouth closed with a small calm smile (no open mouth in any of these poses). No collar, no line or band around the neck.
-Size limit: the whole cat fits inside the middle of its cell with at least 24 px empty above the ears; the kitten is at most 176 px tall in its 256 px cell.
 Cells 2 and 3 must be real three-quarter views (face turned, one eye partly hidden), not the front view with the tail moved.
 ```
 
@@ -62,7 +61,7 @@ Cells 2 and 3 must be real three-quarter views (face turned, one eye partly hidd
 把 A 的「Kitten proportions …」那一句換成：
 
 ```
-Adult cat proportions: same individual as the attached kitten reference grown up, head about 35-40% of body height, longer body and legs, standing height about 54 pixels of the 64 — at most 216 px tall in its 256 px cell, never touching the cell edges.
+Adult cat proportions: same individual as the attached kitten reference grown up, head about 35-40% of body height, longer body and legs, at most 28 pixels tall of the 32, never touching the cell edges.
 ```
 
 並上傳已簽核的幼貓設定圖，加一句 `Keep the exact same markings, colours and face as the attached kitten reference.`
@@ -73,10 +72,10 @@ Adult cat proportions: same individual as the attached kitten reference grown up
 
 ```
 Using the attached didi <kitten|adult> character sheet as the exact reference (same markings, colours, proportions, outline), draw a pixel art animation sprite sheet for the action "<ACTION>".
-Canvas 1024x1024, transparent background, 4x4 grid of 256x256 cells, no grid lines.
+Square canvas, transparent background, 4x4 grid of equal cells, no grid lines.
 Cells 1-<N>: consecutive animation frames: <POSES>. Remaining cells empty.
-Each frame is ONE 64x64-pixel sprite scaled up 4x with nearest neighbour (crisp 4x4 squares). No anti-aliasing, no gradients, no blur, no ground shadow, no text.
-Feet on the same baseline 12 px above the bottom of every cell; the body must not slide or change size between frames, only the moving parts change.
+Each frame is ONE 32x32-pixel sprite scaled up with nearest neighbour: crisp equal-size square pixels on one regular 32x32 grid per cell. No anti-aliasing, no gradients, no blur, no ground shadow, no text.
+Feet on the same baseline one pixel row above the bottom of every cell; the body must not slide or change size between frames, only the moving parts change.
 Use only the reference colours. Props allowed: <PROPS or "none">.
 Mouth closed unless this action needs it open (eat, drink, yawn, angry hiss). No collar or neck line.
 ```
@@ -111,16 +110,16 @@ Mouth closed unless this action needs it open (eat, drink, yawn, angry hiss). No
 
 | ID | 條件 | 不通過時 |
 |---|---|---|
-| ART-RAW-01 | PNG、1024×1024 | 退件重生 |
+| ART-RAW-01 | PNG、正方形（長寬差 ≤ 2%）、1000～2048px | 退件重生 |
 | ART-RAW-02 | 背景可去除：透明，或四角是同一個純色（洋紅或白），去背後不留色塊 | 退件重生 |
 | ART-RAW-03 | 有姿勢的格數 = 該動作規定格數（§4 表） | 退件重生 |
 | ART-RAW-04 | 每格只有一個主體（最大連通區塊 ≥ 90% 不透明像素；道具動作可有 1 個道具塊） | 退件重生 |
-| ART-RAW-05 | 角色不碰格子邊緣：上 ≥ 16px、左右 ≥ 8px、下 ≥ 4px | 退件重生 |
-| ART-RAW-06 | 像素格對齊度（4×4 方塊內同色的比例）≥ 60%；低於代表畫成一般插畫、不是像素圖 | 退件重生 |
+| ART-RAW-05 | 角色不碰格子邊緣（以 32 格計）：上 ≥ 3 格、左右 ≥ 1 格、下 ≥ 1 格 | 退件重生 |
+| ART-RAW-06 | 像素格整齊度：以「格子寬 ÷ 32」切格（自動找最佳起點），每格中心是單一顏色的比例 ≥ 75%；低於代表像素大小不固定，眼睛等細節轉換後會變形 | 退件重生 |
 
 ### ART-PX｜轉成遊戲格式後（工具自動檢查，沿用 PALETTE.md 規則）
 
-工具會把每格縮成 64×64（每 4×4 取最多的顏色，並自動找最佳對齊位置）、套色票、清雜點、統一描邊，再檢查：
+工具會把每格取樣成 32×32（每格取中心區最多的顏色）、套色票、清雜點、統一描邊，輸出成遊戲格式（每格 128px，每個像素 4×4），再檢查：
 
 | ID | 條件 |
 |---|---|
@@ -132,12 +131,13 @@ Mouth closed unless this action needs it open (eat, drink, yawn, angry hiss). No
 
 | ID | 條件 |
 |---|---|
-| ART-ID-01 | 每張的角色高度與該動作中位數差 ≤ 3 像素（躺、睡、生病、上廁所蹲下除外） |
+| ART-ID-01 | 每張的角色高度與該動作中位數差 ≤ 2 像素（躺、睡、生病、上廁所蹲下、設定圖除外） |
 | ART-ID-02 | 腳底所在列：各張差 ≤ 1 像素（躺下類姿勢除外） |
-| ART-ID-03 | 相鄰兩張身體中心水平移動 ≤ 2 像素（走路除外） |
-| ART-ID-04 | 材質比例：黑毛 ≥ 25%；看得到臉的張數白毛 5–40%（背面不要求）；睜眼張數中每張黃綠眼睛 ≥ 6 像素；耳朵粉紅 ≥ 2 像素 |
+| ART-ID-03 | 相鄰兩張身體中心水平移動 ≤ 1 像素（走路、設定圖除外） |
+| ART-ID-04 | 材質比例：黑毛 ≥ 25%；看得到臉的張數白毛 5–40%（背面不要求）；至少一半張數有黃綠眼睛 ≥ 2 像素（睡覺類除外）；耳朵粉紅 ≥ 1 像素 |
 | ART-ID-05 | 相鄰兩張至少 1.5% 像素不同（真的有動），且沒有完全相同的兩張（除非表中寫重複） |
-| ART-ID-06 | 年齡差：成貓坐姿高度比幼貓高 ≥ 4 像素（兩個年齡的 idle 都收圖後檢查） |
+| ART-ID-06 | 年齡差：成貓最高姿勢比幼貓高 ≥ 3 像素（兩個年齡的設定圖或 idle 都收圖後自動比對） |
+| ART-ID-07 | 尺寸上限：幼貓 ≤ 24 像素高、成貓 ≤ 28 像素高 |
 
 ### ART-VIS｜目視驗收（Randall 簽核）
 
@@ -160,12 +160,18 @@ python3 scripts/intake-chatgpt-sheet.py ~/Downloads/kitten-eat.png --stage kitte
 python3 scripts/intake-chatgpt-sheet.py ~/Downloads/kitten-identity.png --stage kitten --action identity   # 角色設定圖
 ```
 
-`--lenient`：尺寸不對時仍判 ART-RAW-01 不通過，但先縮成 1024 把其餘項目檢查完，一次列出所有問題。
+ChatGPT 原始輸出約 1254×1254，工具直接以「格子寬 ÷ 32」切格，不需先縮放。
 
 輸出到 `output/art-intake/<stage>/`：
 
-- `<action>.png`：遊戲格式（每格 128px、8 欄），尚未接進遊戲；
+- `<action>.png`：遊戲格式（32×32 像素放大成每格 128px、8 欄），尚未接進遊戲；
 - `<action>-review.png`：對照圖（左：原圖縮小；右：轉換後放大 3 倍，房間底色），給 ART-VIS 目視；
 - `<action>-report.json`：每項 ART 檢查的結果與數值。
 
 全部自動檢查通過時結束代碼為 0，否則為 1，並在畫面列出沒過的項目。
+
+## 7. 紀錄
+
+| 輪次 | 日期 | 檔案 | 結果 |
+|---|---|---|---|
+| 1 | 2026-11-06 | `public/assets/ChatGPT 圖像 2026年11月6日 下午05_33_14.png`（幼貓）、`…05_33_26.png`（成貓） | 退件。幼貓：像素格整齊度 69–76%（< 75%），高 26 格（上限 24）。成貓：高 31 格（上限 28）、貼格子邊緣、整齊度 62–70%。兩者：全姿勢張嘴、頸部灰線、前 3 格角度太像。量測：ChatGPT 自然畫成約 32×32（每格約 9.8px），因此規格改為 32×32。 |
