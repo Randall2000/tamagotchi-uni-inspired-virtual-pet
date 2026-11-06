@@ -1,0 +1,409 @@
+{
+  "kitten": {
+    "idle": {
+      "status": "PASS",
+      "source": "public/assets/didi-generated/raw/kitten-idle-v4.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-idle-v4.png",
+      "failed": [],
+      "review": "public/assets/didi-generated/review/kitten/idle.png"
+    },
+    "walk": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-walk-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-walk-v1.png",
+      "failed": [
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/walk.png"
+    },
+    "eat": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-eat-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-eat-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/eat.png"
+    },
+    "drink": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-drink-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-drink-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/drink.png"
+    },
+    "snack": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-snack-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-snack-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/snack.png"
+    },
+    "play": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-play-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-play-v1.png",
+      "failed": [
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/play.png"
+    },
+    "groom": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-groom-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-groom-v1.png",
+      "failed": [
+        "ART-ID-03",
+        "ART-ID-04",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/groom.png"
+    },
+    "petting": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-petting-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-petting-v1.png",
+      "failed": [
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-04",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/petting.png"
+    },
+    "sleep_prep": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-sleep_prep-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-sleep_prep-v1.png",
+      "failed": [
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/sleep_prep.png"
+    },
+    "sleep": {
+      "status": "PASS",
+      "source": "public/assets/didi-generated/raw/kitten-sleep-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-sleep-v1.png",
+      "failed": [],
+      "review": "public/assets/didi-generated/review/kitten/sleep.png"
+    },
+    "wake": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-wake-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-wake-v1.png",
+      "failed": [
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/wake.png"
+    },
+    "yawn": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-yawn-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-yawn-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-04",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/yawn.png"
+    },
+    "tail_wag": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-tail_wag-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-tail_wag-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/tail_wag.png"
+    },
+    "curious": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-curious-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-curious-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/curious.png"
+    },
+    "happy": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-happy-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-happy-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/happy.png"
+    },
+    "sad": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-sad-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-sad-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/sad.png"
+    },
+    "angry": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-angry-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-angry-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/angry.png"
+    },
+    "sick": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-sick-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-sick-v1.png",
+      "failed": [
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/sick.png"
+    },
+    "toilet": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/kitten-toilet-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/kitten-toilet-v1.png",
+      "failed": [
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/kitten/toilet.png"
+    }
+  },
+  "adult": {
+    "idle": {
+      "status": "PASS",
+      "source": "public/assets/didi-generated/raw/adult-idle-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-idle-v1.png",
+      "failed": [],
+      "review": "public/assets/didi-generated/review/adult/idle.png"
+    },
+    "walk": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-walk-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-walk-v1.png",
+      "failed": [
+        "ART-ID-01"
+      ],
+      "review": "public/assets/didi-generated/review/adult/walk.png"
+    },
+    "eat": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-eat-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-eat-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-01",
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/eat.png"
+    },
+    "drink": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-drink-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-drink-v1.png",
+      "failed": [
+        "ART-ID-01",
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/drink.png"
+    },
+    "snack": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-snack-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-snack-v1.png",
+      "failed": [
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/snack.png"
+    },
+    "play": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-play-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-play-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/play.png"
+    },
+    "groom": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-groom-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-groom-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-04",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/groom.png"
+    },
+    "petting": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-petting-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-petting-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-04",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/petting.png"
+    },
+    "sleep_prep": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-sleep_prep-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-sleep_prep-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/sleep_prep.png"
+    },
+    "sleep": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-sleep-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-sleep-v1.png",
+      "failed": [
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/sleep.png"
+    },
+    "wake": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-wake-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-wake-v1.png",
+      "failed": [
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/wake.png"
+    },
+    "yawn": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-yawn-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-yawn-v1.png",
+      "failed": [
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-04"
+      ],
+      "review": "public/assets/didi-generated/review/adult/yawn.png"
+    },
+    "tail_wag": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-tail_wag-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-tail_wag-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-PX-03",
+        "ART-ID-04",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/tail_wag.png"
+    },
+    "curious": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-curious-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-curious-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-PX-03",
+        "ART-ID-01",
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/curious.png"
+    },
+    "happy": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-happy-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-happy-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/happy.png"
+    },
+    "sad": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-sad-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-sad-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/sad.png"
+    },
+    "angry": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-angry-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-angry-v1.png",
+      "failed": [
+        "ART-RAW-05",
+        "ART-ID-01",
+        "ART-ID-03",
+        "ART-ID-07"
+      ],
+      "review": "public/assets/didi-generated/review/adult/angry.png"
+    },
+    "sick": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-sick-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-sick-v1.png",
+      "failed": [
+        "ART-RAW-05"
+      ],
+      "review": "public/assets/didi-generated/review/adult/sick.png"
+    },
+    "toilet": {
+      "status": "FAIL",
+      "source": "public/assets/didi-generated/raw/adult-toilet-v1.png",
+      "normalized": "public/assets/didi-generated/normalized/adult-toilet-v1.png",
+      "failed": [
+        "ART-ID-03"
+      ],
+      "review": "public/assets/didi-generated/review/adult/toilet.png"
+    }
+  }
+}
