@@ -1,6 +1,7 @@
 import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS, WAKE_RULES } from './pet.js';
 import { Navigation, menus, quickActions, makeDebouncer } from './navigation.js';
 import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle } from './motion.js';
+import { WALK_ATLAS, planWalk, walkSample, walkFramePosition, walkRegistration } from './roaming.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = 'tower-pet-save-v1'; // Existing browser saves remain accessible.
@@ -22,6 +23,15 @@ let feedbackUntil = 0;
 let activeCaption = '';
 const debounced = makeDebouncer();
 let lastTick = Date.now();
+let roomX = 0;
+let walkRequest = 0;
+let idleTimer;
+let walkNext = true;
+let walkReady = false;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const walkImage = new Image();
+walkImage.src = WALK_ATLAS;
+walkImage.decode().then(() => { walkReady = true; }).catch(() => { /* Keep existing idle poses if the new asset cannot load. */ });
 
 // A growth stage owns one complete atlas; actions never swap character sources.
 function showFrame(index, label = '陪著你') {
@@ -30,6 +40,8 @@ function showFrame(index, label = '陪著你') {
   const { x, y } = framePosition(index, stage);
   const offset = frameRegistration(index, stage);
   const atlas = $('pet-atlas');
+  atlas.dataset.kind = 'care';
+  $('pet-facing').style.transform = 'none';
   atlas.style.backgroundImage = `url('${source.src}')`;
   atlas.style.backgroundSize = `${source.columns * 100}% ${source.rows * 100}%`;
   atlas.style.backgroundPosition = `calc(${x}% + ${offset.x}px) calc(${y}% + ${offset.y}px)`;
@@ -172,6 +184,7 @@ function idle() {
   $('room-scene').dataset.phase = 'idle';
   showFrame(0, '陪著你');
   render();
+  scheduleIdle();
 }
 
 function runMotion(action, onDone = idle, recoveryFrames = null) {
@@ -200,6 +213,7 @@ function sleepSettled() {
   showFrame(timelineFor('rest', growthStage(pet)).at(-1).frame, '睡著了');
   render();
   message('熟睡中 · B / C 喚醒');
+  scheduleIdle();
 }
 
 function wake(note = '') {
@@ -226,6 +240,8 @@ function act(action) {
     return;
   }
   if (action === 'reset') {
+    roomX = 0;
+    $('pet-visual').style.translate = '0px 0px';
     pet = createInitialPet();
     nav.home();
     idle();
@@ -313,7 +329,7 @@ function control(key) {
     return;
   }
   // A/B/C input interrupts an idle blink without leaving a timer running.
-  clearTimeout(actionTimer);
+  stopAmbient();
   $('room-scene').dataset.action = 'idle';
   $('room-scene').dataset.phase = 'idle';
   showFrame(0, '陪著你');
@@ -321,6 +337,7 @@ function control(key) {
   const action = nav.key(key);
   render();
   if (action) act(action);
+  scheduleIdle();
 }
 
 function acceptInput(key) {
@@ -340,21 +357,82 @@ document.addEventListener('keydown', event => {
   const key = keys[event.key.toLowerCase()];
   if (key) { event.preventDefault(); acceptInput(key); }
 });
-// Every 6–12 seconds an idle pet wags its tail, licks a paw, looks around or stretches.
+// One ambient task at a time. Walking and small idle poses alternate; care,
+// menus, sleep and hidden tabs cannot leave a movement callback running.
+function stopAmbient() {
+  cancelAnimationFrame(walkRequest);
+  walkRequest = 0;
+  clearTimeout(actionTimer);
+  clearTimeout(idleTimer);
+}
+
+function walkAround() {
+  const plan = planWalk(roomX);
+  const started = performance.now();
+  const atlas = $('pet-atlas');
+  $('room-scene').dataset.action = 'walk';
+  $('room-scene').dataset.phase = 'idle';
+  $('pet-facing').style.transform = `scaleX(${plan.direction})`;
+  atlas.dataset.kind = 'walk';
+  atlas.style.backgroundImage = `url('${WALK_ATLAS}')`;
+  atlas.style.backgroundSize = '400% 400%';
+  const offset = walkRegistration(growthStage(pet));
+  atlas.style.clipPath = `inset(${offset.y}px 5px 0px 0px)`;
+  atlas.setAttribute('aria-label', `${pet.name} 散步中`);
+  $('room-scene').setAttribute('aria-label', `${pet.name} 的像素房間；散步中`);
+  const step = now => {
+    const sample = walkSample(plan, now - started);
+    const pos = walkFramePosition(sample.frame, growthStage(pet));
+    roomX = sample.x;
+    $('pet-visual').style.translate = `${roomX}px 0px`;
+    atlas.style.backgroundPosition = `calc(${pos.x}% + ${offset.x}px) calc(${pos.y}% + ${offset.y}px)`;
+    $('screen').dataset.frame = `walk-${sample.frame}`;
+    if (sample.done) {
+      walkRequest = 0;
+      $('room-scene').dataset.action = 'idle';
+      showFrame(0);
+      scheduleIdle();
+    } else walkRequest = requestAnimationFrame(step);
+  };
+  step(started);
+}
+
 function scheduleIdle() {
+  clearTimeout(idleTimer);
   const { behavior, delay } = pickIdle();
-  setTimeout(() => {
-    scheduleIdle();
-    if (busy || nav.screen !== 'room' || document.hidden || !$('growth-celebration').hidden) return;
+  idleTimer = setTimeout(() => {
+    if (busy || nav.screen !== 'room' || document.hidden || !$('growth-celebration').hidden) { scheduleIdle(); return; }
     if (sleeping) { runMotion('sleep', sleepSettled); return; }
+    if (walkNext && walkReady && !reducedMotion.matches) {
+      walkNext = false;
+      walkAround();
+      return;
+    }
+    walkNext = true;
     runMotion('idle', () => {
       $('room-scene').dataset.action = 'idle';
       $('room-scene').dataset.phase = 'idle';
       showFrame(0, '陪著你');
+      scheduleIdle();
     }, behavior.frames);
   }, delay);
 }
-scheduleIdle();
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !busy && !sleeping) {
+    stopAmbient();
+    $('room-scene').dataset.action = 'idle';
+    showFrame(0);
+  }
+  if (!document.hidden) scheduleIdle();
+});
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches && walkRequest) {
+    stopAmbient();
+    $('room-scene').dataset.action = 'idle';
+    showFrame(0);
+    scheduleIdle();
+  }
+});
 setInterval(() => {
   const now = Date.now();
   const minutes = Math.floor((now - lastTick) / 60000);

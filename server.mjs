@@ -10,7 +10,7 @@ const types = {
   '.json': 'application/json', '.png': 'image/png', '.webp': 'image/webp',
 };
 // Only the web app itself is public; .env.local, .git and other project files are never served.
-const publicFiles = new Set(['/index.html', '/styles.css', '/app.js', '/motion.js', '/navigation.js', '/pet.js']);
+const publicFiles = new Set(['/index.html', '/styles.css', '/app.js', '/motion.js', '/roaming.js', '/navigation.js', '/pet.js']);
 const assetDir = join(root, 'public', 'assets') + sep;
 
 export function resolvePublicPath(url = '/') {

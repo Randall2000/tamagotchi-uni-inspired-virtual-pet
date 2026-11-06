@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { resolvePublicPath } from '../server.mjs';
 
 test('local server serves the web app and assets', () => {
-  for (const url of ['/', '/index.html', '/app.js', '/styles.css', '/assets/momo-room.png', '/public/assets/momo-room.png?v=1']) {
+  for (const url of ['/', '/index.html', '/app.js', '/roaming.js', '/styles.css', '/assets/momo-room.png', '/public/assets/momo-room.png?v=1']) {
     assert.ok(resolvePublicPath(url), url);
   }
 });
