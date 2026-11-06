@@ -1,7 +1,8 @@
 import { applyAction, createInitialPet, GROWTH_BOND, growthStage, hydratePet, tick, actionBlockReason, needsNotice, BOND_COOLDOWN_MS, WAKE_RULES } from './pet.js';
 import { Navigation, menus, quickActions, makeDebouncer } from './navigation.js';
 import { timelineFor, framePosition, frameRegistration, atlasFor, pickIdle } from './motion.js';
-import { WALK_ATLAS, planWalk, walkSample, walkFramePosition, walkRegistration } from './roaming.js';
+import { motionAsset, motionFramePosition, motionTimeline } from './motion-pack.js';
+import { planWalk, walkSample } from './roaming.js';
 
 const $ = id => document.getElementById(id);
 const STORAGE_KEY = 'tower-pet-save-v1'; // Existing browser saves remain accessible.
@@ -27,30 +28,42 @@ let roomX = 0;
 let walkRequest = 0;
 let idleTimer;
 let walkNext = true;
-let walkReady = false;
+const walkReady = { adult: false, kitten: false };
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const walkImage = new Image();
-walkImage.src = WALK_ATLAS;
-walkImage.decode().then(() => { walkReady = true; }).catch(() => { /* Keep existing idle poses if the new asset cannot load. */ });
+for (const stage of ['adult', 'kitten']) {
+  const image = new Image();
+  image.src = motionAsset('walk', stage).src;
+  image.decode().then(() => { walkReady[stage] = true; })
+    .catch(() => { /* Fall back to idle when an age-specific walk asset is unavailable. */ });
+}
 
-// A growth stage owns one complete atlas; actions never swap character sources.
-function showFrame(index, label = '陪著你') {
+// Character identity comes from a stage-specific sheet. Never alter the whole sprite per pose.
+function showFrame(index, label = '陪著你', motionAction = null) {
   const stage = growthStage(pet);
-  const source = atlasFor(stage);
-  const { x, y } = framePosition(index, stage);
-  const offset = frameRegistration(index, stage);
+  const preview = motionAction ? motionAsset(motionAction, stage) : null;
   const atlas = $('pet-atlas');
-  atlas.dataset.kind = 'care';
   $('pet-facing').style.transform = 'none';
-  atlas.style.backgroundImage = `url('${source.src}')`;
-  atlas.style.backgroundSize = `${source.columns * 100}% ${source.rows * 100}%`;
-  atlas.style.backgroundPosition = `calc(${x}% + ${offset.x}px) calc(${y}% + ${offset.y}px)`;
-  // Registration must not expose pixels from the neighbouring atlas cell.
-  atlas.style.clipPath = `inset(${Math.max(0, offset.y)}px ${Math.max(0, -offset.x)}px ${Math.max(0, -offset.y)}px ${Math.max(0, offset.x)}px)`;
-  $('pet-atlas').setAttribute('aria-label', `${pet.name} ${label}`);
-  $('screen').dataset.frame = String(index);
+  if (preview) {
+    const { x, y } = motionFramePosition(index, preview);
+    atlas.dataset.kind = 'motion';
+    atlas.style.backgroundImage = `url('${preview.src}')`;
+    atlas.style.backgroundSize = `${preview.columns * 100}% ${preview.rows * 100}%`;
+    atlas.style.backgroundPosition = `${x}% ${y}%`;
+    atlas.style.clipPath = 'none';
+  } else {
+    const source = atlasFor(stage);
+    const { x, y } = framePosition(index, stage);
+    const offset = frameRegistration(index, stage);
+    atlas.dataset.kind = 'care';
+    atlas.style.backgroundImage = `url('${source.src}')`;
+    atlas.style.backgroundSize = `${source.columns * 100}% ${source.rows * 100}%`;
+    atlas.style.backgroundPosition = `calc(${x}% + ${offset.x}px) calc(${y}% + ${offset.y}px)`;
+    atlas.style.clipPath = `inset(${Math.max(0, offset.y)}px ${Math.max(0, -offset.x)}px ${Math.max(0, -offset.y)}px ${Math.max(0, offset.x)}px)`;
+  }
+  atlas.setAttribute('aria-label', `${pet.name} ${label}`);
+  $('screen').dataset.frame = preview ? `${preview.action}-${index}` : String(index);
   $('room-scene').setAttribute('aria-label', `${pet.name} 的像素房間；${label}`);
-  $('room-scene').dataset.growth = growthStage(pet);
+  $('room-scene').dataset.growth = stage;
 }
 
 function message(text = '') {
@@ -182,13 +195,13 @@ function idle() {
   sleeping = false;
   $('room-scene').dataset.action = 'idle';
   $('room-scene').dataset.phase = 'idle';
-  showFrame(0, '陪著你');
+  showFrame(0, '陪著你', 'idle');
   render();
   scheduleIdle();
 }
 
 function runMotion(action, onDone = idle, recoveryFrames = null) {
-  const frames = recoveryFrames || timelineFor(action === 'snack' ? 'feed' : action, growthStage(pet));
+  const frames = recoveryFrames || motionTimeline(action, growthStage(pet)) || timelineFor(action, growthStage(pet));
   if (!frames) { onDone(); return; }
   clearTimeout(actionTimer);
   let index = 0;
@@ -198,7 +211,7 @@ function runMotion(action, onDone = idle, recoveryFrames = null) {
     $('room-scene').dataset.action = action;
     $('room-scene').dataset.phase = frame.phase;
     activeCaption = frame.caption;
-    showFrame(frame.frame, frame.caption);
+    showFrame(frame.frame, frame.caption, frame.assetAction);
     refreshStatus();
     actionTimer = setTimeout(next, frame.ms);
   };
@@ -206,14 +219,15 @@ function runMotion(action, onDone = idle, recoveryFrames = null) {
 }
 
 function sleepSettled() {
+  clearTimeout(idleTimer);
   busy = false;
   sleeping = true;
   $('room-scene').dataset.action = 'rest';
   $('room-scene').dataset.phase = 'sleep';
-  showFrame(timelineFor('rest', growthStage(pet)).at(-1).frame, '睡著了');
+  showFrame(0, '安靜熟睡', 'sleep');
   render();
   message('熟睡中 · B / C 喚醒');
-  scheduleIdle();
+  if (!reducedMotion.matches) runMotion('sleep', sleepSettled);
 }
 
 function wake(note = '') {
@@ -249,7 +263,7 @@ function act(action) {
     message('已開始新的旅程');
     return;
   }
-  if (!timelineFor(action === 'snack' ? 'feed' : action)) return;
+  if (!motionTimeline(action, growthStage(pet)) && !timelineFor(action, growthStage(pet))) return;
   const blocked = actionBlockReason(pet, action);
   if (blocked) { message(blocked); return; }
   pendingAction = { action, navigation: { screen: nav.screen, cursor: nav.cursor, quickCursor: nav.quickCursor, stack: [...nav.stack] } };
@@ -271,13 +285,13 @@ function completeAction() {
   const newStage = growthStage(pet);
   const grew = newStage !== oldStage;
   Object.assign(nav, transaction.navigation);
-  // Growing up returns to the room so the player sees the new size.
+  // Growth shows the celebration and switches only between the two approved age identities.
   if (grew) {
     nav.home();
-    $('room-scene').classList.add('is-growing-up'); // Must precede the stage change for the size transition.
+    $('room-scene').classList.add('is-growing-up'); // Celebration only; character swaps art with no morph.
   }
   idle();
-  const labels = {feed:'吃飽一點了',snack:'點心吃完了',play:'玩得很開心',clean:'身體乾淨了',groom:'小臉洗好了',pet:'喜歡你的陪伴',stretch:'伸展完成',window:'看完窗外了'};
+  const labels = {feed:'吃飽一點了',snack:'點心吃完了',drink:'喝完水了',toilet:'如廁完成',play:'玩得很開心',clean:'身體乾淨了',groom:'小臉洗好了',pet:'喜歡你的陪伴',stretch:'伸展完成',window:'看完窗外了'};
   message(grew ? `關係更近了 · ${pet.name} 長大了` : `${labels[transaction.action]}${pet.bond > previousBond ? ` · 關係 +${pet.bond - previousBond}` : ''}`);
   if (grew) celebrateGrowth(oldStage, newStage);
 }
@@ -303,7 +317,7 @@ function cancelAction() {
   const transaction = pendingAction;
   if (!transaction) return;
   pendingAction = null;
-  const recovery = timelineFor(transaction.action, growthStage(pet)).slice(-2)
+  const recovery = (motionTimeline(transaction.action, growthStage(pet)) || timelineFor(transaction.action, growthStage(pet))).slice(-2)
     .map(frame => ({ ...frame, caption: '收回動作', phase: 'recover', ms: 180 }));
   runMotion(transaction.action, () => {
     Object.assign(nav, transaction.navigation);
@@ -332,7 +346,7 @@ function control(key) {
   stopAmbient();
   $('room-scene').dataset.action = 'idle';
   $('room-scene').dataset.phase = 'idle';
-  showFrame(0, '陪著你');
+  showFrame(0, '陪著你', 'idle');
   feedback = '';
   const action = nav.key(key);
   render();
@@ -374,23 +388,24 @@ function walkAround() {
   $('room-scene').dataset.phase = 'idle';
   $('pet-facing').style.transform = `scaleX(${plan.direction})`;
   atlas.dataset.kind = 'walk';
-  atlas.style.backgroundImage = `url('${WALK_ATLAS}')`;
-  atlas.style.backgroundSize = '400% 400%';
-  const offset = walkRegistration(growthStage(pet));
-  atlas.style.clipPath = `inset(${offset.y}px 5px 0px 0px)`;
+  const walking = motionAsset('walk',growthStage(pet));
+  atlas.style.backgroundImage = `url('${walking.src}')`;
+  atlas.style.backgroundSize = `${walking.columns*100}% ${walking.rows*100}%`;
+  atlas.style.clipPath = 'none';
   atlas.setAttribute('aria-label', `${pet.name} 散步中`);
   $('room-scene').setAttribute('aria-label', `${pet.name} 的像素房間；散步中`);
   const step = now => {
     const sample = walkSample(plan, now - started);
-    const pos = walkFramePosition(sample.frame, growthStage(pet));
+    const frame = Math.floor(Math.max(0,now-started)/(1000/walking.fps))%walking.frames;
+    const pos = motionFramePosition(frame,walking);
     roomX = sample.x;
     $('pet-visual').style.translate = `${roomX}px 0px`;
-    atlas.style.backgroundPosition = `calc(${pos.x}% + ${offset.x}px) calc(${pos.y}% + ${offset.y}px)`;
-    $('screen').dataset.frame = `walk-${sample.frame}`;
+    atlas.style.backgroundPosition = `${pos.x}% ${pos.y}%`;
+    $('screen').dataset.frame = `walk-${frame}`;
     if (sample.done) {
       walkRequest = 0;
       $('room-scene').dataset.action = 'idle';
-      showFrame(0);
+      showFrame(0, '陪著你', 'idle');
       scheduleIdle();
     } else walkRequest = requestAnimationFrame(step);
   };
@@ -402,26 +417,28 @@ function scheduleIdle() {
   const { behavior, delay } = pickIdle();
   idleTimer = setTimeout(() => {
     if (busy || nav.screen !== 'room' || document.hidden || !$('growth-celebration').hidden) { scheduleIdle(); return; }
-    if (sleeping) { runMotion('sleep', sleepSettled); return; }
-    if (walkNext && walkReady && !reducedMotion.matches) {
+    if (sleeping) { if (!reducedMotion.matches) runMotion('sleep', sleepSettled); return; }
+    if (walkNext && walkReady[growthStage(pet) === 'adult' ? 'adult' : 'kitten'] && !reducedMotion.matches) {
       walkNext = false;
       walkAround();
       return;
     }
     walkNext = true;
-    runMotion('idle', () => {
+    const ambient = {tail:'tail_wag', lick:'groom', look:'curious', stretch:'stretch'}[behavior.id] || 'idle';
+    const mood = pet.hygiene < 20 ? 'sick' : pet.hunger < 15 && pet.happiness < 40 ? 'angry' : pet.happiness < 20 ? 'sad' : pet.energy < 25 ? 'yawn' : pet.happiness >= 90 && behavior.id === 'tail' ? 'happy' : ambient;
+    runMotion(mood, () => {
       $('room-scene').dataset.action = 'idle';
       $('room-scene').dataset.phase = 'idle';
-      showFrame(0, '陪著你');
+      showFrame(0, '陪著你', 'idle');
       scheduleIdle();
-    }, behavior.frames);
+    });
   }, delay);
 }
 document.addEventListener('visibilitychange', () => {
   if (document.hidden && !busy && !sleeping) {
     stopAmbient();
     $('room-scene').dataset.action = 'idle';
-    showFrame(0);
+    showFrame(0, '陪著你', 'idle');
   }
   if (!document.hidden) scheduleIdle();
 });
@@ -429,7 +446,7 @@ reducedMotion.addEventListener('change', () => {
   if (reducedMotion.matches && walkRequest) {
     stopAmbient();
     $('room-scene').dataset.action = 'idle';
-    showFrame(0);
+    showFrame(0, '陪著你', 'idle');
     scheduleIdle();
   }
 });

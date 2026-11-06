@@ -24,10 +24,11 @@ body { margin:0; background:var(--paper); color:var(--ink); font-family:ui-monos
 .pet-facing { position:absolute; inset:0; width:156px; height:156px; }
 #pet-atlas { position:absolute; inset:0; width:156px; height:156px; transform-origin:center bottom; transition:none !important; background-size:400% 400%; background-repeat:no-repeat; image-rendering:pixelated; }
 #room-scene[data-growth="kitten"] #pet-atlas { transform:scale(.69); }
-#room-scene[data-growth="growing"] #pet-atlas { transform:scale(.78); }
+#room-scene[data-growth="growing"] #pet-atlas { transform:scale(.69); }
 #room-scene[data-growth="adult"] #pet-atlas { transform:scale(.88); }
-/* Only a growth event animates size; actions and page load never do. */
-#room-scene.is-growing-up #pet-atlas { transition:transform 1.2s ease-out !important; }
+/* Growing keeps the exact kitten art; adulthood swaps the full stage-specific atlas.
+   No shape morph or interpolated scaling is used for the growth event. */
+#room-scene.is-growing-up #pet-atlas { transition:none !important; }
 .growth-celebration { position:absolute; top:44px; left:20px; right:20px; height:52px; z-index:6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:var(--px-face); box-shadow:inset 0 0 0 2px var(--px-ink), inset 0 4px 0 0 var(--px-light), inset 0 -4px 0 0 var(--px-shade); color:var(--px-ink); font-size:10px; font-weight:700; text-align:center; clip-path:polygon(2px 0,calc(100% - 2px) 0,calc(100% - 2px) 2px,100% 2px,100% calc(100% - 2px),calc(100% - 2px) calc(100% - 2px),calc(100% - 2px) 100%,2px 100%,2px calc(100% - 2px),0 calc(100% - 2px),0 2px,2px 2px) }
 .growth-celebration[hidden] { display:none; }
 .growth-celebration strong { font-size:15px; color:#73513c; letter-spacing:.05em; }

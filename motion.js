@@ -3,7 +3,7 @@ export const FRAME_COUNT = 64;
 export const SPRITE_ATLAS = '/public/assets/momo-adult-64-v3.png';
 export const KITTEN_ATLAS = '/public/assets/momo-kitten-64-v2.png';
 export function atlasFor(stage = 'adult') {
-  return { src: stage === 'kitten' ? KITTEN_ATLAS : SPRITE_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
+  return { src: stage === 'adult' ? SPRITE_ATLAS : KITTEN_ATLAS, columns: 8, rows: 8, frames: FRAME_COUNT };
 }
 const captions = {
   blink: ['陪著你','搖搖尾巴','眨眨眼','閉上眼睛','張開眼睛','動動耳朵','看看你','陪著你'],
@@ -63,7 +63,7 @@ export function framePosition(frame, stage = 'adult') {
 const IDLE_ANCHOR = { kitten: [86.0, 147.0], adult: [94.0, 147.0] };
 export function frameRegistration(frame, stage = 'adult') {
   framePosition(frame, stage);
-  const [anchorX, anchorY] = IDLE_ANCHOR[stage === 'kitten' ? 'kitten' : 'adult'];
+  const [anchorX, anchorY] = IDLE_ANCHOR[stage === 'adult' ? 'adult' : 'kitten'];
   const cell = 1254 / 8;
   return { x: (cell / 2 - anchorX) * 156 / cell, y: (147 - anchorY) * 156 / cell };
 }

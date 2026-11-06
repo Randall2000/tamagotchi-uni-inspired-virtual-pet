@@ -48,5 +48,5 @@ test('kitten and adult have eight distinct transparent walking frames in separat
     }
     assert.equal(hashes.size, 8);
   }
-  assert.deepEqual(walkFramePosition(5, 'growing'), walkFramePosition(5, 'adult'));
+  assert.deepEqual(walkFramePosition(5, 'growing'), walkFramePosition(5, 'kitten'));
 });

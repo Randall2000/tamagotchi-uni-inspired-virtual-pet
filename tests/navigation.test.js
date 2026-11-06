@@ -22,7 +22,7 @@ test('menu is one level: every entry except settings is an action', () => {
     if (item.label === '設定') assert.equal(item.menu, 'settings');
     else assert.ok(item.action && !item.menu && !item.screen, item.label);
   }
-  assert.deepEqual(menus.main.map(item => item.label), ['睡覺', '點心', '洗臉', '伸懶腰', '看窗外', '設定']);
+  assert.deepEqual(menus.main.map(item => item.label), ['睡覺', '點心', '喝水', '如廁', '洗臉', '伸懶腰', '看窗外', '設定']);
   assert.deepEqual(Object.keys(menus), ['main', 'settings']);
 });
 
@@ -55,12 +55,12 @@ test('full menu is controlled by A/B/C only, preserving selection on returning f
   assert.equal(n.key('b'), 'rest');
   n.key('a');
   assert.equal(n.key('b'), 'snack');
-  for (let i = 0; i < 4; i++) n.key('a');
+  for (let i = 0; i < 6; i++) n.key('a');
   assert.equal(n.key('b'), null);
   assert.equal(n.screen, 'settings');
   assert.equal(n.key('c'), null);
   assert.equal(n.screen, 'main');
-  assert.equal(n.cursor, 5);
+  assert.equal(n.cursor, 7);
   n.key('c');
   assert.equal(n.screen, 'room');
 });

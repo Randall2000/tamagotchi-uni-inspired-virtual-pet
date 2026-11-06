@@ -13,6 +13,8 @@ export const menus = {
   main: [
     { label: '睡覺', action: 'rest', hint: '精力 +18 · 進入睡眠' },
     { label: '點心', action: 'snack', hint: '心情 +6 · 飽足 +4' },
+    { label: '喝水', action: 'drink', hint: '補充水分 · 精力 +3' },
+    { label: '如廁', action: 'toilet', hint: '使用貓砂盆' },
     { label: '洗臉', action: 'groom', hint: '清潔 +10' },
     { label: '伸懶腰', action: 'stretch', hint: '放鬆一下' },
     { label: '看窗外', action: 'window', hint: '一起看看風景' },

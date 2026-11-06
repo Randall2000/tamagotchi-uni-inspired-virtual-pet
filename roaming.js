@@ -8,7 +8,7 @@ export const WALK_FRAME_MS = 140;
 // compensate per frame: feet move as part of the gait, the torso does not bob.
 export function walkRegistration(stage) {
   const cell = 1254 / 4;
-  return { x: -5, y: 147 - (stage === 'kitten' ? 286 : 291) * 156 / cell };
+  return { x: -5, y: 147 - (stage === 'adult' ? 291 : 286) * 156 / cell };
 }
 
 export function planWalk(from = 0, random = Math.random) {
@@ -29,6 +29,6 @@ export function walkSample(plan, elapsed) {
 
 export function walkFramePosition(frame, stage) {
   if (!Number.isInteger(frame) || frame < 0 || frame > 7) throw new RangeError('Invalid walk frame');
-  const index = frame + (stage === 'kitten' ? 0 : 8);
+  const index = frame + (stage === 'adult' ? 8 : 0);
   return { x: (index % 4) * 100 / 3, y: Math.floor(index / 4) * 100 / 3 };
 }

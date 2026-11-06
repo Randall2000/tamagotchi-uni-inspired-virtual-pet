@@ -4,7 +4,14 @@
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
-> **現行版本 v0.9.2**，變更見 [docs/RELEASE_0.9.2.md](docs/RELEASE_0.9.2.md)（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+> **現行版本 v0.10.0**，變更見 [docs/RELEASE_0.10.0.md](docs/RELEASE_0.10.0.md)（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+
+## v0.10.0：19 組動作 × 幼貓與成貓
+
+- 實際使用 `public/assets/momo-motions-preview/` 的 38 張 RGBA PNG 動畫圖集；各圖集 128×128 px/格、8 欄，依 16／24／32 格與 8／12 FPS 播放。
+- 餵食、點心、喝水、清潔、玩耍、摸摸、如廁、睡前、睡眠、起床、探索與表情使用對應圖集，走路採逐格步態加實際位移。
+- 動作只變換影格，不會用整張角色圖左右搖晃、旋轉、縮放來假裝動畫；幼貓和成貓的圖集獨立。年齡「成長中」仍使用幼貓圖像。
+- **這批是重組預覽素材，不是 38 組人工精修的逐格動作**：部分影格重複，走路／睡覺等仍需逐像素審核；可參閱 [動作整合與素材限制](docs/MOMO_19_MOTION_INTEGRATION.md)。
 
 ## 網頁原型 v0.5：使用 4×4 Sprite Atlas 逐格角色動畫
 

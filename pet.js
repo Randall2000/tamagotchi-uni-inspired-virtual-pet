@@ -48,6 +48,8 @@ export function applyAction(pet, action, now = Date.now()) {
     next.hunger = clamp(next.hunger + 4);
     next.happiness = clamp(next.happiness + 6);
   }
+  if (action === 'drink') next.energy = clamp(next.energy + 3);
+  if (action === 'toilet') next.hygiene = clamp(next.hygiene + 5);
   if (action === 'play') {
     next.happiness = clamp(next.happiness + 14);
     next.energy = clamp(next.energy - 8);
