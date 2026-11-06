@@ -131,14 +131,14 @@
 
 ### 2.8 ChatGPT 重新生成的角色素材（規格與條件見 [ART_SPEC_CHATGPT.md](ART_SPEC_CHATGPT.md)）
 
-WEB-PX-08 未通過，角色改由 ChatGPT 重新生圖。每張動作圖用 `scripts/intake-chatgpt-sheet.py` 跑 ART-RAW／ART-PX／ART-ID 自動檢查，再由 Randall 做 ART-VIS 目視。
+WEB-PX-08 未通過，角色改由 ChatGPT 重新生圖（32×32）。每張動作圖用 `scripts/intake-chatgpt-sheet.py` 跑 ART-RAW／ART-PX／ART-ID／ART-MOVE（生動度）自動檢查，再由 Randall 做 ART-VIS 目視。
 
 | ID | 等級 | 前置 | 步驟 | 預期結果 | 方式 | 狀態 |
 |---|---|---|---|---|---|---|
-| WEB-ART-00 | 🔴 | — | 用模擬圖測收圖工具：合格圖、模糊又超出格子的壞圖、尺寸錯誤的圖 | 合格圖 14 項全 PASS、結束代碼 0；壞圖擋下 5 項（非像素圖、顏色偏離、超出格子、身體跳動）；尺寸錯誤直接退件 | 自動 | PASS（2026-11-06） |
+| WEB-ART-00 | 🔴 | — | 用模擬圖測收圖工具：合格圖、模糊又超出格子的壞圖、尺寸錯誤的圖、只有嘴巴在動的圖、現行遊戲待機圖、伸懶腰 | 合格圖全 PASS；壞圖擋下 5 項；尺寸錯誤退件；只動嘴巴 ART-MOVE-01～03 全擋；現行待機圖 ART-MOVE-02 擋下（輪廓重疊 ≥ 0.95）；伸懶腰 ART-MOVE 全過 | 自動 | PASS（2026-11-06） |
 | WEB-ART-01 | 🔴 | ChatGPT 提示詞 A | 生幼貓角色設定圖 | Randall 簽核外觀（ART-VIS-01） | 手動 | 第 1 輪退件（2026-11-06，原始 PNG）：像素格整齊度 69–76%、高 26 格（上限 24）；張嘴、頸部灰線、前 3 格太像 → 規格改 32×32，待用新提示詞重生 |
 | WEB-ART-02 | 🔴 | 提示詞 B＋幼貓設定圖 | 生成貓角色設定圖 | 與幼貓是同一隻；成長有感（ART-VIS-01、06） | 手動 | 第 1 輪退件（2026-11-06，原始 PNG）：同一隻貓、比例對；高 31 格（上限 28）、貼格子邊緣、整齊度 62–70% → 待重生 |
-| WEB-ART-03 | 🔴 | 提示詞 C | 幼貓 19 個動作各一張，逐張跑收圖工具 | 每張 ART-RAW／PX／ID 全 PASS，ART-VIS-02～05 簽核（0／19） | 自動＋手動 | NOT RUN |
+| WEB-ART-03 | 🔴 | 提示詞 C | 幼貓 19 個動作各一張，逐張跑收圖工具 | 每張 ART-RAW／PX／ID／MOVE 全 PASS，ART-VIS-02～05、07（生動）簽核（0／19） | 自動＋手動 | NOT RUN |
 | WEB-ART-04 | 🔴 | 提示詞 C | 成貓 19 個動作 | 同上（0／19） | 自動＋手動 | NOT RUN |
 | WEB-ART-05 | 🔴 | 兩個年齡的 idle 都已收圖 | 收圖工具比較高度 | 成貓比幼貓高 ≥ 4 像素（ART-ID-06） | 自動 | NOT RUN |
 | WEB-ART-06 | 🔴 | 03、04 全通過 | 換進遊戲後重跑 | WEB-PX-01～07、WEB-ANIM-04 全 PASS；WEB-PX-08 重新目視通過 | 自動＋手動 | NOT RUN |

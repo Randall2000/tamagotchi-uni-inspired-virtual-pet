@@ -10,7 +10,7 @@ ART-PX, ART-ID) and writes the result in the game's format (each logical pixel a
 It never touches the game's assets. Exit code 0 only when every automated check passes.
 
 Usage: python3 scripts/intake-chatgpt-sheet.py <png> --stage kitten|adult --action <name|identity> [--frames N]
-  --action identity  a character sheet (8 different poses): no size/feet/centre consistency checks
+  --action identity  a character sheet (8 poses + 8 expressions): no size/feet/centre/liveliness checks
 """
 import argparse
 import importlib.util
@@ -36,10 +36,49 @@ pp.FEET_ROWS = 3            # toe gaps: notch filling stops 3 rows above the bot
 MAX_HEIGHT = {"kitten": 24, "adult": 28}
 ACTIONS = {name: 8 for name in [
     "idle", "walk", "eat", "drink", "snack", "play", "groom", "petting", "sleep_prep", "sleep",
-    "wake", "yawn", "tail_wag", "curious", "happy", "sad", "angry", "sick", "toilet", "identity"]}
+    "wake", "yawn", "tail_wag", "curious", "happy", "sad", "angry", "sick", "toilet"]}
+ACTIONS["identity"] = 16    # 8 poses + 8 expressions
 PROP_ACTIONS = {"eat", "drink", "snack", "play", "toilet"}
 LYING_ACTIONS = {"sleep", "sleep_prep", "sick", "toilet", "wake", "identity"}
 EYES_CLOSED_ACTIONS = {"sleep", "sleep_prep", "sick"}
+# Calm actions need one frame with silhouette IoU <= 0.92; big actions two frames <= 0.85.
+# Thresholds are provisional until the first approved ChatGPT sheets are measured.
+CALM_ACTIONS = {"idle", "tail_wag", "sleep", "walk", "curious", "sad", "sick", "yawn"}
+
+
+def liveliness(logical, action):
+    """ART-MOVE: changes must not stay on the face, the silhouette must change, and the head,
+    body and legs must all move during the action."""
+    heights = []
+    for f in logical:
+        fy = np.nonzero(f >= 0)[0]
+        heights.append((fy.min(), fy.max()) if len(fy) else (0, 0))
+    top = min(t for t, _ in heights)
+    bottom = max(b for _, b in heights)
+    span = max(1, bottom - top + 1)
+    face_only, extents, union = 0, [], np.zeros_like(logical[0], dtype=bool)
+    for a, b in zip(logical, logical[1:]):
+        changed = (a != b) & ((a >= 0) | (b >= 0))
+        union |= changed
+        cy = np.nonzero(changed)[0]
+        extent = (cy.max() - cy.min() + 1) / span if len(cy) else 0.0
+        extents.append(round(float(extent), 2))
+        face_only += extent < 0.30
+    first = logical[0] >= 0
+    ious = []
+    for f in logical[1:]:
+        m = f >= 0
+        ious.append(round(float((first & m).sum() / max(1, (first | m).sum())), 2))
+    thirds = [int(union[top + k * span // 3: top + (k + 1) * span // 3].sum()) for k in range(3)]
+    calm = action in CALM_ACTIONS
+    need_iou, need_count = (0.92, 1) if calm else (0.85, 2)
+    return {
+        "ART-MOVE-01": (face_only <= 2, {"face_only_transitions": int(face_only), "change_height_share": extents}),
+        "ART-MOVE-02": (sum(i <= need_iou for i in ious) >= need_count,
+                        {"silhouette_iou_vs_frame1": ious, "need": f"{need_count} frame(s) <= {need_iou}"}),
+        "ART-MOVE-03": (sum(t >= 4 for t in thirds) >= (2 if action == "sleep" else 3),
+                        {"changed_pixels_head_body_legs": thirds}),
+    }
 OUTLINE, PINK_EAR = pp.COLORS.index("#1a0e17"), pp.COLORS.index("#e98796")
 
 
@@ -185,7 +224,11 @@ def main():
     ap.add_argument("--stage", required=True, choices=["kitten", "adult"])
     ap.add_argument("--action", required=True, choices=sorted(ACTIONS))
     ap.add_argument("--frames", type=int)
+    ap.add_argument("--out", help="output folder (default output/art-intake); use a separate one for experiments")
     args = ap.parse_args()
+    global OUT_DIR
+    if args.out:
+        OUT_DIR = Path(args.out).resolve()
     frames_needed = args.frames or ACTIONS[args.action]
     r = {}
     raw = np.asarray(Image.open(args.png).convert("RGBA"))
@@ -291,6 +334,9 @@ def main():
           {"changed_between_frames": [round(d, 3) for d in diffs], "identical_pairs": duplicates})
     check(r, "ART-ID-07", max(heights) <= MAX_HEIGHT[args.stage],
           {"max_height": max(heights), "limit": MAX_HEIGHT[args.stage]})
+    if args.action != "identity":
+        for key, (ok, detail) in liveliness(logical, args.action).items():
+            check(r, key, ok, detail)
     if args.action in ("idle", "identity"):
         other = OUT_DIR / ("adult" if args.stage == "kitten" else "kitten") / f"{args.action}-report.json"
         if other.exists():
@@ -330,8 +376,9 @@ def finish(args, results, logical, raw_cells):
     (out / f"{args.action}-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str) + "\n")
     for k, v in results.items():
         print(f"{'PASS' if v['pass'] else 'FAIL'}  {k}  {v['detail'] if not v['pass'] else ''}")
+    shown = out.relative_to(ROOT) if out.is_relative_to(ROOT) else out
     print(("ALL AUTOMATED CHECKS PASS" if not failed else f"{len(failed)} FAILED: {', '.join(failed)}") +
-          f"  → {out.relative_to(ROOT)}/{args.action}-report.json")
+          f"  → {shown}/{args.action}-report.json")
     return 0 if not failed else 1
 
 
