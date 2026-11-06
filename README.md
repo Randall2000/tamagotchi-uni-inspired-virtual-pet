@@ -4,7 +4,7 @@
 
 公開 Preview：<https://tamagotchi-uni-inspired-virtual-pet.vercel.app>
 
-> **現行版本 v0.10.6**，變更見 [docs/RELEASE_0.10.6.md](docs/RELEASE_0.10.6.md)（[v0.10.5](docs/RELEASE_0.10.5.md)）；角色色票與像素規則見 [docs/PALETTE.md](docs/PALETTE.md)（[v0.10.4](docs/RELEASE_0.10.4.md)、[v0.10.3](docs/RELEASE_0.10.3.md)、[v0.10.2](docs/RELEASE_0.10.2.md)）（[v0.10.1](docs/RELEASE_0.10.1.md)）（[v0.10.0](docs/RELEASE_0.10.0.md)）（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
+> **現行版本 v0.10.6**，變更見 [docs/RELEASE_0.10.6.md](docs/RELEASE_0.10.6.md)（[v0.10.5](docs/RELEASE_0.10.5.md)）；角色色票與像素規則見 [docs/PALETTE.md](docs/PALETTE.md)；角色重新生圖規格與驗證條件見 [docs/ART_SPEC_CHATGPT.md](docs/ART_SPEC_CHATGPT.md)（[v0.10.4](docs/RELEASE_0.10.4.md)、[v0.10.3](docs/RELEASE_0.10.3.md)、[v0.10.2](docs/RELEASE_0.10.2.md)）（[v0.10.1](docs/RELEASE_0.10.1.md)）（[v0.10.0](docs/RELEASE_0.10.0.md)）（[v0.9.2](docs/RELEASE_0.9.2.md)）（[v0.9.1](docs/RELEASE_0.9.1.md)、[v0.9.0](docs/RELEASE_0.9.0.md)、[v0.8.2](docs/RELEASE_0.8.2.md)、[v0.8.1](docs/RELEASE_0.8.1.md)、[v0.8](docs/RELEASE_0.8.md)、[v0.7](docs/RELEASE_0.7.md)、[v0.6](docs/RELEASE_0.6.md)）。下方 v0.5 段落是歷史紀錄；操作與數值以 [docs/BALANCE.md](docs/BALANCE.md) 為準，驗收照 [docs/ACCEPTANCE_WEB.md](docs/ACCEPTANCE_WEB.md)。
 
 ## v0.10.3：幼貓虹膜錯色修復（來源色強制驗收）
 

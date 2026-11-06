@@ -127,7 +127,21 @@
 | WEB-PX-07 | 🔴 | 手機 375×812（2 倍）、桌機 | 看 `#room-scene` 的 `data-device-px-per-art-px`；角色寬 × 螢幕密度 ÷ 64 | 為整數；1:1 放大截圖每格同寬、輪廓乾淨 | 手動 | PASS（`61cdcb3` 線上：375×812@2 幼／成 3,3 倍、每格 3.000px；1440×900@2 幼／成 4,5 倍、每格 4.000px） |
 | WEB-PX-09 | 🔴 | — | 檢查房間圖與色票 | 房間 120×72、全部顏色都在色票內、無孤立雜點；色票全部顏色任兩色 ΔE ≥ 10（PX-08） | 自動：`room background uses only palette colours…`、`palette: 24 character colours plus room…` | PASS（v0.10.6） |
 | WEB-PX-10 | 🔴 | 手機 375×812（2 倍）、桌機 | 看 `#room-scene` 的 `data-device-px-per-room-px`；房間寬 × 螢幕密度 ÷ 120 | 為整數；房間貼齊地面置中，留邊處是牆色／地板色、沒有空白（PX-09） | 自動：`room background: 120x72 pixel art…`＋手動 | PASS（`93acf6f` 線上 375×812@2：房間每格 3.000 實體 px、與貓相同；貼地 0px；本機 1440×900@2：房間 5、幼／成 4,5） |
-| WEB-PX-08 | 🔴 | 手機 | 看幼貓、成貓待機與吃飯、玩耍、睡覺，以及房間 | 邊緣不毛躁、黑毛白毛不花、顏色不混；房間與貓像素大小一致（主觀驗收） | 手動（驗收者） | NOT RUN |
+| WEB-PX-08 | 🔴 | 手機 | 看幼貓、成貓待機與吃飯、玩耍、睡覺，以及房間 | 邊緣不毛躁、黑毛白毛不花、顏色不混；房間與貓像素大小一致（主觀驗收） | 手動（驗收者） | **FAIL**（2026-11-06 Randall 驗收：角色未通過；改由 ChatGPT 重新生圖，依 [ART_SPEC_CHATGPT.md](ART_SPEC_CHATGPT.md) 與 §2.8 驗收） |
+
+### 2.8 ChatGPT 重新生成的角色素材（規格與條件見 [ART_SPEC_CHATGPT.md](ART_SPEC_CHATGPT.md)）
+
+WEB-PX-08 未通過，角色改由 ChatGPT 重新生圖。每張動作圖用 `scripts/intake-chatgpt-sheet.py` 跑 ART-RAW／ART-PX／ART-ID 自動檢查，再由 Randall 做 ART-VIS 目視。
+
+| ID | 等級 | 前置 | 步驟 | 預期結果 | 方式 | 狀態 |
+|---|---|---|---|---|---|---|
+| WEB-ART-00 | 🔴 | — | 用模擬圖測收圖工具：合格圖、模糊又超出格子的壞圖、尺寸錯誤的圖 | 合格圖 14 項全 PASS、結束代碼 0；壞圖擋下 5 項（非像素圖、顏色偏離、超出格子、身體跳動）；尺寸錯誤直接退件 | 自動 | PASS（2026-11-06） |
+| WEB-ART-01 | 🔴 | ChatGPT 提示詞 A | 生幼貓角色設定圖 | Randall 簽核外觀（ART-VIS-01） | 手動 | NOT RUN |
+| WEB-ART-02 | 🔴 | 提示詞 B＋幼貓設定圖 | 生成貓角色設定圖 | 與幼貓是同一隻；成長有感（ART-VIS-01、06） | 手動 | NOT RUN |
+| WEB-ART-03 | 🔴 | 提示詞 C | 幼貓 19 個動作各一張，逐張跑收圖工具 | 每張 ART-RAW／PX／ID 全 PASS，ART-VIS-02～05 簽核（0／19） | 自動＋手動 | NOT RUN |
+| WEB-ART-04 | 🔴 | 提示詞 C | 成貓 19 個動作 | 同上（0／19） | 自動＋手動 | NOT RUN |
+| WEB-ART-05 | 🔴 | 兩個年齡的 idle 都已收圖 | 收圖工具比較高度 | 成貓比幼貓高 ≥ 4 像素（ART-ID-06） | 自動 | NOT RUN |
+| WEB-ART-06 | 🔴 | 03、04 全通過 | 換進遊戲後重跑 | WEB-PX-01～07、WEB-ANIM-04 全 PASS；WEB-PX-08 重新目視通過 | 自動＋手動 | NOT RUN |
 
 ## 3. 不在 Web 驗收範圍
 
@@ -149,9 +163,10 @@
 
 | 項目 | 數量 |
 |---|---|
-| 總數（不含被取代的 2 項） | 58 |
-| PASS | 56 |
-| NOT RUN | 2（WEB-ANIM-05、WEB-PX-08 需人眼觀看） |
+| 總數（不含被取代的 2 項） | 65 |
+| PASS | 57 |
+| FAIL | 1（WEB-PX-08：角色目視未通過 → 改 ChatGPT 重新生圖） |
+| NOT RUN | 7（WEB-ANIM-05；WEB-ART-01～06 等 ChatGPT 生圖） |
 | FAIL | 0 |
 
-**Web v0.10.6**（2026-11-06，commit `93acf6f`）：58 項中 56 項 PASS、0 件 FAIL；WEB-ANIM-05、WEB-PX-08 需要驗收者用眼睛看。v0.10.0～0.10.4 的動作包、自主行為、幼貓眼睛驗收見各版 RELEASE 文件。
+**Web v0.10.6**（2026-11-06）：65 項中 57 項 PASS、1 件 FAIL（WEB-PX-08 角色目視未通過）；角色改由 ChatGPT 重新生圖，進度見 §2.8。

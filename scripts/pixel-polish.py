@@ -49,10 +49,11 @@ def to_lab(rgb):
 
 
 PAL = json.loads(PALETTE_FILE.read_text(encoding="utf-8"))
-COLORS = [c["hex"] for c in PAL["colors"]]
+CHARACTER = [c for c in PAL["colors"] if c["family"] != "room"]  # room colours are for the background only
+COLORS = [c["hex"] for c in CHARACTER]
 RGB = np.array([hex_rgb(h) for h in COLORS], dtype=np.uint8)
 LAB = to_lab(RGB)
-FAMILY = np.array([c["family"] for c in PAL["colors"]])
+FAMILY = np.array([c["family"] for c in CHARACTER])
 OUTLINE = COLORS.index(PAL["rules"]["outline"])
 WHITE = COLORS.index("#fbf6f3")
 MID = np.array([h in MID_GREYS for h in COLORS])

@@ -585,6 +585,7 @@ Web 原型用來驗證玩法與手感，**不取代** M3 的 Mac MVP；Web 與 R
 | D-12 | 食物庫存 | 背包上線前不扣食物；「狀態不允許就拒絕」取代「沒有食物」 | 已定，2026-11-05 |
 | D-13 | 好感加分冷卻 | 所有行為共用冷卻（B-BOND-02），防止連按刷好感 | 已定，2026-11-05 |
 | D-14 | 文件結構 | PRD／BALANCE／ACCEPTANCE_WEB／ACCEPTANCE_MAC_HW 四份；v1.1 移到 `archive/` | 已定，2026-11-05 |
+| D-15 | 角色美術來源 | 現有角色圖目視驗收未通過（WEB-PX-08）；改由 ChatGPT 依 [ART_SPEC_CHATGPT.md](ART_SPEC_CHATGPT.md) 重新生成，收圖工具自動檢查＋Randall 目視簽核後才換進遊戲 | 已定，2026-11-06 |
 
 ## 15. Definition of Ready（DoR）／Definition of Done（DoD）
 
